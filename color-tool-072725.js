@@ -131,7 +131,7 @@
   dragHandle.addEventListener("mousedown", e => {
     dragStartX = e.clientX;
     dragStartY = e.clientY;
-    dragTimer = setTimeout(() => startDrag(e), 100);
+    dragTimer = setTimeout(() => startDrag(e), 10);
     window.addEventListener("mousemove", detectMove);
     window.addEventListener("mouseup", cancelPreDrag);
     e.preventDefault();
@@ -180,7 +180,7 @@
     if (e.touches.length !== 1) return;
     dragStartX = e.touches[0].clientX;
     dragStartY = e.touches[0].clientY;
-    dragTimer = setTimeout(() => startDragTouch(e), 300);
+    dragTimer = setTimeout(() => startDragTouch(e), 10);
     window.addEventListener("touchmove", detectMoveTouch);
     window.addEventListener("touchend", cancelPreDragTouch);
     e.preventDefault();
