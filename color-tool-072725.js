@@ -226,5 +226,4 @@
     window.removeEventListener("touchend", endDragTouch);
   }
 
-  changeColors();
 })();
