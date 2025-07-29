@@ -66,7 +66,7 @@
   container.style.cssText = `
     position: fixed;
     top: 10px; left: 10px;
-    background: #0008;
+    background: #C4EFF5;
     color: #fff;
     font-family: sans-serif;
     font-size: 14px;
