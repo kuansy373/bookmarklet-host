@@ -162,13 +162,6 @@ container.append(row1, row2);
   handleAndClose.append(dragHandle, closeButton);
 
   row1.append(button, bgLock, fgLock, handleAndClose);
-
-  const hexText = document.createElement("div");
-  hexText.id = "color-toggle-hex-text";
-  hexText.style.fontFamily = "monospace";
-  hexText.style.userSelect = "text";
-  hexText.textContent = "BG: --- / FG: ---";
-
   row2.appendChild(hexText);
 
   container.append(row1, row2);
