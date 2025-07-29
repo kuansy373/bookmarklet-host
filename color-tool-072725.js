@@ -41,8 +41,15 @@
     }
     styleTag.textContent = `
       html, body { background-color: ${bg} !important; color: ${fg} !important; }
-      * { background-color: transparent !important; color: ${fg} !important; }
-    `;
+  * {
+    background-color: transparent !important;
+    color: ${fg} !important;
+  }
+  #color-toggle-container, #color-toggle-container * {
+    background-color: #C4EFF5 !important;
+    color: #000000 !important;
+  }
+`;
 
     const hexText = document.getElementById("color-toggle-hex-text");
     if (hexText) hexText.textContent = `BG: ${bgHex} / FG: ${fgHex}`;
@@ -66,8 +73,6 @@
   container.style.cssText = `
     position: fixed;
     top: 10px; left: 10px;
-    background: #C4EFF5;
-    color: #fff;
     font-family: sans-serif;
     font-size: 14px;
     z-index: 99999;
