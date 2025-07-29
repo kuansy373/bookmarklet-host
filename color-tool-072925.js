@@ -84,10 +84,41 @@
     cursor: default;
   `;
 
-  const row1 = document.createElement("div");
-  row1.style.display = "flex";
-  row1.style.alignItems = "center";
-  row1.style.gap = "0.5em";
+  // 1行目コンテナ（flex row）
+const row1 = document.createElement("div");
+row1.style.display = "flex";
+row1.style.alignItems = "center";
+row1.style.gap = "0.5em";
+
+// 1行目要素
+row1.append(button, bgLock, fgLock, dragHandle);
+
+// 2行目コンテナ（flex row、左右分散）
+const row2 = document.createElement("div");
+row2.style.display = "flex";
+row2.style.alignItems = "center";
+row2.style.justifyContent = "space-between";
+row2.style.marginTop = "4px";
+
+// 2行目左側テキスト（BGとFGの色表示）
+const hexContainer = document.createElement("div");
+hexContainer.style.display = "flex";
+hexContainer.style.gap = "0.5em";
+const hexText = document.createElement("div");
+hexText.id = "color-toggle-hex-text";
+hexText.style.fontFamily = "monospace";
+hexText.style.userSelect = "text";
+hexText.textContent = "BG: --- / FG: ---";
+hexContainer.appendChild(hexText);
+
+// 2行目右側閉じるボタン
+closeButton.style.cursor = "pointer";
+
+// 2行目に左右に分けて追加
+row2.append(hexContainer, closeButton);
+
+// containerに2行追加
+container.append(row1, row2);
 
   const button = document.createElement("button");
   button.textContent = "🎨色変更";
