@@ -163,9 +163,6 @@ container.append(row1, row2);
 
   row1.append(button, bgLock, fgLock, handleAndClose);
 
-  const row2 = document.createElement("div");
-  row2.style.marginTop = "4px";
-
   const hexText = document.createElement("div");
   hexText.id = "color-toggle-hex-text";
   hexText.style.fontFamily = "monospace";
