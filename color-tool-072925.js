@@ -68,6 +68,7 @@
     applyColors(window.__bgHSL, window.__fgHSL);
   }
 
+  // === UI要素の作成 ===
   const container = document.createElement("div");
   container.id = "color-toggle-container";
   container.style.cssText = `
@@ -84,41 +85,11 @@
     cursor: default;
   `;
 
-  // 1行目コンテナ（flex row）
-const row1 = document.createElement("div");
-row1.style.display = "flex";
-row1.style.alignItems = "center";
-row1.style.gap = "0.5em";
-
-// 1行目要素
-row1.append(button, bgLock, fgLock, dragHandle);
-
-// 2行目コンテナ（flex row、左右分散）
-const row2 = document.createElement("div");
-row2.style.display = "flex";
-row2.style.alignItems = "center";
-row2.style.justifyContent = "space-between";
-row2.style.marginTop = "4px";
-
-// 2行目左側テキスト（BGとFGの色表示）
-const hexContainer = document.createElement("div");
-hexContainer.style.display = "flex";
-hexContainer.style.gap = "0.5em";
-const hexText = document.createElement("div");
-hexText.id = "color-toggle-hex-text";
-hexText.style.fontFamily = "monospace";
-hexText.style.userSelect = "text";
-hexText.textContent = "BG: --- / FG: ---";
-hexContainer.appendChild(hexText);
-
-// 2行目右側閉じるボタン
-closeButton.style.cursor = "pointer";
-
-// 2行目に左右に分けて追加
-row2.append(hexContainer, closeButton);
-
-// containerに2行追加
-container.append(row1, row2);
+  // 1行目（ボタンなど横並び）
+  const row1 = document.createElement("div");
+  row1.style.display = "flex";
+  row1.style.alignItems = "center";
+  row1.style.gap = "0.5em";
 
   const button = document.createElement("button");
   button.textContent = "🎨色変更";
@@ -139,31 +110,31 @@ container.append(row1, row2);
 
   const dragHandle = document.createElement("div");
   dragHandle.textContent = "🟰";
-  dragHandle.style.cssText = `
-    cursor: grab;
-    padding: 0 4px;
-  `;
+  dragHandle.style.cssText = `cursor: grab; padding: 0 4px;`;
+
+  row1.append(button, bgLock, fgLock, dragHandle);
+
+  // 2行目（左右に分けて、左がhexテキスト・右が❎️）
+  const row2 = document.createElement("div");
+  row2.style.display = "flex";
+  row2.style.justifyContent = "space-between";
+  row2.style.alignItems = "center";
+  row2.style.marginTop = "4px";
+
+  const hexText = document.createElement("div");
+  hexText.id = "color-toggle-hex-text";
+  hexText.style.fontFamily = "monospace";
+  hexText.style.userSelect = "text";
+  hexText.textContent = "BG: --- / FG: ---";
 
   const closeButton = document.createElement("div");
   closeButton.textContent = "❎️";
-  closeButton.style.cssText = `
-    cursor: pointer;
-    padding: 0 4px;
-  `;
+  closeButton.style.cssText = `cursor: pointer; padding: 0 4px;`;
   closeButton.onclick = () => {
     container.style.display = "none";
   };
 
-  const handleAndClose = document.createElement("div");
-  handleAndClose.style.display = "flex";
-  handleAndClose.style.flexDirection = "column";
-  handleAndClose.style.justifyContent = "center";
-  handleAndClose.style.alignItems = "center";
-  handleAndClose.append(dragHandle, closeButton);
-
-  row1.append(button, bgLock, fgLock, handleAndClose);
-  row2.appendChild(hexText);
-
+  row2.append(hexText, closeButton);
   container.append(row1, row2);
   document.body.appendChild(container);
 
