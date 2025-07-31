@@ -258,32 +258,34 @@
       };
     }
 
-    function changeColors() {
-      if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
-      if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
+function changeColors() {
+  if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
+  if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
 
-      if (!document.getElementById("color-toggle-bg-lock").checked) {
-        window.__bgHSL = getRandomHSL();
-      }
-      if (!document.getElementById("color-toggle-fg-lock").checked) {
-        window.__fgHSL = getRandomHSL();
-      }
+  const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
+  const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
 
-      const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-      const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+  if (!bgLocked) {
+    window.__bgHSL = getRandomHSL();
+    const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
+    currentBg = savedBg = bgHex;
+  }
 
-      currentBg = savedBg = bgHex;
-      currentFg = savedFg = fgHex;
+  if (!fgLocked) {
+    window.__fgHSL = getRandomHSL();
+    const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+    currentFg = savedFg = fgHex;
+  }
 
-      applyStyle("background-color", bgHex);
-      applyStyle("color", fgHex);
+  applyStyle("background-color", savedBg);
+  applyStyle("color", savedFg);
 
-      updateSwatch(document.getElementById("bgSwatch"), bgHex, bgHex);
-      updateSwatch(document.getElementById("fgSwatch"), fgHex, fgHex);
+  updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+  updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
-      updateColorHexDisplays();
-      updateContrast();
-    }
+  updateColorHexDisplays();
+  updateContrast();
+}
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
