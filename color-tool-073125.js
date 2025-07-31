@@ -99,7 +99,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <div id="bgHex" class="hex-display">-</div>
+        <input id="bgHex" class="hex-display">-</div>
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -107,7 +107,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <div id="fgHex" class="hex-display">-</div>
+        <input id="fgHex" class="hex-display">-</div>
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -150,8 +150,8 @@
     const updateColorHexDisplays = () => {
       const bgHexEl = document.getElementById("bgHex");
       const fgHexEl = document.getElementById("fgHex");
-      if (bgHexEl) bgHexEl.textContent = currentBg;
-      if (fgHexEl) fgHexEl.textContent = currentFg;
+      if (bgHexEl) bgHexEl.value = currentBg;
+      if (fgHexEl) fgHexEl.value = currentFg;
     };
 
     const getContrast = (fg, bg) => {
@@ -284,6 +284,14 @@
       updateColorHexDisplays();
       updateContrast();
     }
+
+    const updateColorHexDisplays = () => {
+  const bgHexEl = document.getElementById("bgHex");
+  const fgHexEl = document.getElementById("fgHex");
+  if (bgHexEl) bgHexEl.value = currentBg;
+  if (fgHexEl) fgHexEl.value = currentFg;
+};
+
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
