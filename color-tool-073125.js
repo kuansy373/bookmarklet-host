@@ -83,7 +83,7 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        min-width: 80px;
+        min-width: 70px;
         text-align: center;
       }
     `;
@@ -99,7 +99,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="bgHex" class="hex-display" value="-" />
+        <div id="bgHex" class="hex-display">-</div>
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -107,7 +107,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="fgHex" class="hex-display" value="-" />
+        <div id="fgHex" class="hex-display">-</div>
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -147,6 +147,13 @@
       swatch.querySelector('.color-saved').style.background = saved;
     };
 
+    const updateColorHexDisplays = () => {
+      const bgHexEl = document.getElementById("bgHex");
+      const fgHexEl = document.getElementById("fgHex");
+      if (bgHexEl) bgHexEl.textContent = currentBg;
+      if (fgHexEl) fgHexEl.textContent = currentFg;
+    };
+
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
         const rgb = hex
@@ -167,13 +174,6 @@
     let currentFg = savedFg,
         currentBg = savedBg;
 
-    const updateColorHexDisplays = () => {
-      const bgHexEl = document.getElementById("bgHex");
-      const fgHexEl = document.getElementById("fgHex");
-      if (bgHexEl) bgHexEl.value = currentBg;
-      if (fgHexEl) fgHexEl.value = currentFg;
-    };
-
     const initPickr = (id, prop) => {
       const swatch = document.getElementById(id + 'Swatch');
       const isFg = prop === 'color';
@@ -187,12 +187,12 @@
         theme: 'classic',
         default: getSaved(),
         components: {
-          preview: true,
-          opacity: false,
-          hue: true,
+          preview: !0,
+          opacity: !1,
+          hue: !0,
           interaction: {
-            input: true,
-            save: true,
+            input: !0,
+            save: !0,
           },
         },
       });
@@ -203,7 +203,6 @@
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, getSaved());
         updateContrast();
-        updateColorHexDisplays();
       });
 
       pickr.on('save', (color) => {
@@ -213,7 +212,6 @@
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, hex);
         updateContrast();
-        updateColorHexDisplays();
       });
 
       pickr.on('hide', () => {
@@ -221,7 +219,6 @@
         applyStyle(prop, getSaved());
         updateSwatch(swatch, getSaved(), getSaved());
         updateContrast();
-        updateColorHexDisplays();
       });
 
       updateSwatch(swatch, getCurrent(), getSaved());
@@ -234,29 +231,6 @@
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
     updateColorHexDisplays();
-
-    // ✅ HEX入力フィールドで色変更
-    document.getElementById("bgHex").addEventListener("input", (e) => {
-      const val = e.target.value.trim();
-      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)) {
-        currentBg = savedBg = val;
-        applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
-        bgPickr.setColor(val);
-        updateContrast();
-      }
-    });
-
-    document.getElementById("fgHex").addEventListener("input", (e) => {
-      const val = e.target.value.trim();
-      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)) {
-        currentFg = savedFg = val;
-        applyStyle("color", val);
-        updateSwatch(document.getElementById("fgSwatch"), val, val);
-        fgPickr.setColor(val);
-        updateContrast();
-      }
-    });
 
     function hslToHex(h, s, l) {
       s /= 100; l /= 100;
@@ -306,9 +280,8 @@
 
       updateSwatch(document.getElementById("bgSwatch"), bgHex, bgHex);
       updateSwatch(document.getElementById("fgSwatch"), fgHex, fgHex);
+
       updateColorHexDisplays();
-      bgPickr.setColor(bgHex);
-      fgPickr.setColor(fgHex);
       updateContrast();
     }
 
