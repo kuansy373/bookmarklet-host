@@ -285,13 +285,29 @@
       updateContrast();
     }
 
-    const updateColorHexDisplays = () => {
-  const bgHexEl = document.getElementById("bgHex");
-  const fgHexEl = document.getElementById("fgHex");
-  if (bgHexEl) bgHexEl.value = currentBg;
-  if (fgHexEl) fgHexEl.value = currentFg;
-};
+    document.getElementById('bgHex').addEventListener('change', (e) => {
+  const hex = e.target.value.trim();
+  if (/^#([0-9a-f]{6})$/i.test(hex)) {
+    currentBg = savedBg = hex;
+    applyStyle('background-color', hex);
+    updateSwatch(document.getElementById('bgSwatch'), hex, hex);
+    updateContrast();
+  } else {
+    e.target.value = currentBg; // 入力ミスなら元に戻す
+  }
+});
 
+document.getElementById('fgHex').addEventListener('change', (e) => {
+  const hex = e.target.value.trim();
+  if (/^#([0-9a-f]{6})$/i.test(hex)) {
+    currentFg = savedFg = hex;
+    applyStyle('color', hex);
+    updateSwatch(document.getElementById('fgSwatch'), hex, hex);
+    updateContrast();
+  } else {
+    e.target.value = currentFg; // 入力ミスなら元に戻す
+  }
+});
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
