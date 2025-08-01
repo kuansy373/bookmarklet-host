@@ -279,8 +279,8 @@
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 30) + 70,
-        l: Math.floor(Math.random() * 30) + 30
+        s: Math.floor(Math.random() * 40) + 60,
+        l: Math.floor(Math.random() * 80) + 10
       };
     }
 
