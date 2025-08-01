@@ -86,6 +86,14 @@
         min-width: 70px;
         text-align: center;
       }
+      .hex-load-btn {
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 1em;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
     `;
     document.head.appendChild(style);
 
@@ -99,7 +107,8 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <div id="bgHex" class="hex-display">-</div>
+        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="bgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -107,7 +116,8 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <div id="fgHex" class="hex-display">-</div>
+        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="fgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -148,10 +158,8 @@
     };
 
     const updateColorHexDisplays = () => {
-      const bgHexEl = document.getElementById("bgHex");
-      const fgHexEl = document.getElementById("fgHex");
-      if (bgHexEl) bgHexEl.textContent = currentBg;
-      if (fgHexEl) fgHexEl.textContent = currentFg;
+      document.getElementById("bgHex").value = currentBg;
+      document.getElementById("fgHex").value = currentFg;
     };
 
     const getContrast = (fg, bg) => {
@@ -187,12 +195,12 @@
         theme: 'classic',
         default: getSaved(),
         components: {
-          preview: !0,
-          opacity: !1,
-          hue: !0,
+          preview: true,
+          opacity: false,
+          hue: true,
           interaction: {
-            input: !0,
-            save: !0,
+            input: true,
+            save: true,
           },
         },
       });
@@ -202,6 +210,7 @@
         setCurrent(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, getSaved());
+        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -211,6 +220,7 @@
         setSaved(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, hex);
+        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -218,6 +228,7 @@
         setCurrent(getSaved());
         applyStyle(prop, getSaved());
         updateSwatch(swatch, getSaved(), getSaved());
+        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -231,6 +242,21 @@
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
     updateColorHexDisplays();
+
+    // ⇦ ボタン機能：HEX欄の値を Pickr に反映
+    document.getElementById('bgHexLoad').onclick = () => {
+      const val = document.getElementById('bgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgPickr.setColor(val, true);
+      }
+    };
+
+    document.getElementById('fgHexLoad').onclick = () => {
+      const val = document.getElementById('fgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        fgPickr.setColor(val, true);
+      }
+    };
 
     function hslToHex(h, s, l) {
       s /= 100; l /= 100;
@@ -262,30 +288,52 @@
       if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
       if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
 
-      if (!document.getElementById("color-toggle-bg-lock").checked) {
+      const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
+
+      if (!bgLocked) {
         window.__bgHSL = getRandomHSL();
+        const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
+        currentBg = savedBg = bgHex;
       }
-      if (!document.getElementById("color-toggle-fg-lock").checked) {
+
+      if (!fgLocked) {
         window.__fgHSL = getRandomHSL();
+        const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+        currentFg = savedFg = fgHex;
       }
 
-      const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-      const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+      applyStyle("background-color", savedBg);
+      applyStyle("color", savedFg);
 
-      currentBg = savedBg = bgHex;
-      currentFg = savedFg = fgHex;
-
-      applyStyle("background-color", bgHex);
-      applyStyle("color", fgHex);
-
-      updateSwatch(document.getElementById("bgSwatch"), bgHex, bgHex);
-      updateSwatch(document.getElementById("fgSwatch"), fgHex, fgHex);
+      updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+      updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
       updateColorHexDisplays();
       updateContrast();
     }
 
     document.getElementById("randomColorBtn").onclick = changeColors;
+
+    document.getElementById("bgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentBg = savedBg = val;
+        applyStyle("background-color", val);
+        updateSwatch(document.getElementById("bgSwatch"), val, val);
+        updateContrast();
+      }
+    });
+
+    document.getElementById("fgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentFg = savedFg = val;
+        applyStyle("color", val);
+        updateSwatch(document.getElementById("fgSwatch"), val, val);
+        updateContrast();
+      }
+    });
 
     document.getElementById('pickrClose').onclick = () => {
       fgPickr.destroyAndRemove();
