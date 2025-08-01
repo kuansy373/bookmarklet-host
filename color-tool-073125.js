@@ -114,6 +114,24 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
+      <div class="row">
+  <div class="label">BG:</div>
+  <div id="bgSwatch" class="color-swatch">
+    <div class="color-saved"></div>
+    <div class="color-current"></div>
+  </div>
+  <button id="bgInjectBtn">⇦</button>
+  <input id="bgHex" class="hex-display">
+</div>
+<div class="row">
+  <div class="label">FG:</div>
+  <div id="fgSwatch" class="color-swatch">
+    <div class="color-saved"></div>
+    <div class="color-current"></div>
+  </div>
+  <button id="fgInjectBtn">⇦</button>
+  <input id="fgHex" class="hex-display">
+</div>
       <div>
         <strong>Contrast:</strong> <span id="contrastRatio">-</span>
       </div>
@@ -231,6 +249,21 @@
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
     updateColorHexDisplays();
+    
+    document.getElementById("bgInjectBtn").onclick = () => {
+  const val = document.getElementById("bgHex").value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    bgPickr.setColor(val); // Pickr UI に反映
+  }
+};
+
+document.getElementById("fgInjectBtn").onclick = () => {
+  const val = document.getElementById("fgHex").value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    fgPickr.setColor(val);
+  }
+};
+
 
     function hslToHex(h, s, l) {
       s /= 100; l /= 100;
