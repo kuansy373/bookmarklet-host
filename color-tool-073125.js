@@ -19,7 +19,7 @@
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
     const style = document.createElement('style');
-    style.textContent = '
+    style.textContent = `
       #pickrContainer {
         position: fixed;
         top: 10px;
@@ -86,12 +86,12 @@
         min-width: 70px;
         text-align: center;
       }
-    ';
+    `;
     document.head.appendChild(style);
 
     const container = document.createElement('div');
     container.id = 'pickrContainer';
-    container.innerHTML = 
+    container.innerHTML = `
       <div id="pickrClose">✕</div>
       <div class="row">
         <div class="label">BG:</div>
@@ -99,7 +99,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="bgHex" class="hex-display">-</div>
+        <input id="bgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -107,7 +107,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="fgHex" class="hex-display">-</div>
+        <input id="fgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -117,7 +117,7 @@
       <div>
         <strong>Contrast:</strong> <span id="contrastRatio">-</span>
       </div>
-    ;
+    `;
     document.body.appendChild(container);
 
     const getHex = (prop) => {
@@ -136,9 +136,9 @@
         el.id = id;
         document.head.appendChild(el);
       }
-      el.textContent = *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
         ${prop}: ${value} !important;
-      };
+      }`;
     };
 
     const updateSwatch = (swatch, current, saved) => {
@@ -183,16 +183,16 @@
       const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
 
       const pickr = Pickr.create({
-        el: #${id}Swatch,
+        el: `#${id}Swatch`,
         theme: 'classic',
         default: getSaved(),
         components: {
-          preview: !0,
-          opacity: !1,
-          hue: !0,
+          preview: true,
+          opacity: false,
+          hue: true,
           interaction: {
-            input: !0,
-            save: !0,
+            input: true,
+            save: true,
           },
         },
       });
@@ -258,56 +258,56 @@
       };
     }
 
-function changeColors() {
-  if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
-  if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
+    function changeColors() {
+      if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
+      if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
 
-  const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
-  const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
+      const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
 
-  if (!bgLocked) {
-    window.__bgHSL = getRandomHSL();
-    const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-    currentBg = savedBg = bgHex;
-  }
+      if (!bgLocked) {
+        window.__bgHSL = getRandomHSL();
+        const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
+        currentBg = savedBg = bgHex;
+      }
 
-  if (!fgLocked) {
-    window.__fgHSL = getRandomHSL();
-    const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
-    currentFg = savedFg = fgHex;
-  }
+      if (!fgLocked) {
+        window.__fgHSL = getRandomHSL();
+        const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+        currentFg = savedFg = fgHex;
+      }
 
-  applyStyle("background-color", savedBg);
-  applyStyle("color", savedFg);
+      applyStyle("background-color", savedBg);
+      applyStyle("color", savedFg);
 
-  updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
-  updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
+      updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+      updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
-  updateColorHexDisplays();
-  updateContrast();
-}
+      updateColorHexDisplays();
+      updateContrast();
+    }
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
     document.getElementById("bgHex").addEventListener("change", (e) => {
-  const val = e.target.value.trim();
-  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-    currentBg = savedBg = val;
-    applyStyle("background-color", val);
-    updateSwatch(document.getElementById("bgSwatch"), val, val);
-    updateContrast();
-  }
-});
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentBg = savedBg = val;
+        applyStyle("background-color", val);
+        updateSwatch(document.getElementById("bgSwatch"), val, val);
+        updateContrast();
+      }
+    });
 
-document.getElementById("fgHex").addEventListener("change", (e) => {
-  const val = e.target.value.trim();
-  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-    currentFg = savedFg = val;
-    applyStyle("color", val);
-    updateSwatch(document.getElementById("fgSwatch"), val, val);
-    updateContrast();
-  }
-});
+    document.getElementById("fgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentFg = savedFg = val;
+        applyStyle("color", val);
+        updateSwatch(document.getElementById("fgSwatch"), val, val);
+        updateContrast();
+      }
+    });
 
     document.getElementById('pickrClose').onclick = () => {
       fgPickr.destroyAndRemove();
