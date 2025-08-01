@@ -42,8 +42,8 @@
         gap: 8px;
       }
       #pickrContainer .label {
-        width: 50px;
         font-weight: bold;
+        width: auto;
       }
       #pickrClose {
         cursor: pointer;
@@ -86,6 +86,14 @@
         min-width: 70px;
         text-align: center;
       }
+      .hex-load-btn {
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 1em;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
     `;
     document.head.appendChild(style);
 
@@ -99,6 +107,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
+        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
       </div>
       <div class="row">
@@ -107,6 +116,7 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
+        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
       </div>
       <div class="row">
@@ -148,10 +158,8 @@
     };
 
     const updateColorHexDisplays = () => {
-      const bgHexEl = document.getElementById("bgHex");
-      const fgHexEl = document.getElementById("fgHex");
-      if (bgHexEl) bgHexEl.value = currentBg;
-      if (fgHexEl) fgHexEl.value = currentFg;
+      document.getElementById("bgHex").value = currentBg;
+      document.getElementById("fgHex").value = currentFg;
     };
 
     const getContrast = (fg, bg) => {
@@ -230,7 +238,22 @@
 
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
+
     updateColorHexDisplays();
+
+    document.getElementById('bgHexLoad').onclick = () => {
+      const val = document.getElementById('bgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgPickr.setColor(val, true);
+      }
+    };
+
+    document.getElementById('fgHexLoad').onclick = () => {
+      const val = document.getElementById('fgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        fgPickr.setColor(val, true);
+      }
+    };
 
     function hslToHex(h, s, l) {
       s /= 100; l /= 100;
@@ -253,8 +276,8 @@
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 30) + 70,
-        l: Math.floor(Math.random() * 30) + 30
+        s: Math.floor(Math.random() * 40) + 60,
+        l: Math.floor(Math.random() * 80) + 10
       };
     }
 
@@ -283,8 +306,8 @@
       updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
       updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
-      updateColorHexDisplays();
       updateContrast();
+      updateColorHexDisplays();
     }
 
     document.getElementById("randomColorBtn").onclick = changeColors;
