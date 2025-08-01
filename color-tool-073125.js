@@ -92,29 +92,9 @@
     const container = document.createElement('div');
     container.id = 'pickrContainer';
     container.innerHTML = `
-      <div id="pickrClose">✕</div>
-      <div class="row">
-        <div class="label">BG:</div>
-        <div id="bgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
-          <div class="color-current"></div>
-        </div>
-        <input id="bgHex" class="hex-display">-</div>
-      </div>
-      <div class="row">
-        <div class="label">FG:</div>
-        <div id="fgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
-          <div class="color-current"></div>
-        </div>
-        <input id="fgHex" class="hex-display">-</div>
-      </div>
-      <div class="row">
-        <button id="randomColorBtn">🎨色変更</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
-      </div>
-      <div class="row">
+     <div id="pickrClose">✕</div>
+
+<div class="row">
   <div class="label">BG:</div>
   <div id="bgSwatch" class="color-swatch">
     <div class="color-saved"></div>
@@ -123,6 +103,7 @@
   <button id="bgInjectBtn">⇦</button>
   <input id="bgHex" class="hex-display">
 </div>
+
 <div class="row">
   <div class="label">FG:</div>
   <div id="fgSwatch" class="color-swatch">
@@ -132,10 +113,17 @@
   <button id="fgInjectBtn">⇦</button>
   <input id="fgHex" class="hex-display">
 </div>
-      <div>
-        <strong>Contrast:</strong> <span id="contrastRatio">-</span>
-      </div>
-    `;
+
+<div class="row">
+  <button id="randomColorBtn">🎨色変更</button>
+  <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
+  <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
+</div>
+
+<div>
+  <strong>Contrast:</strong> <span id="contrastRatio">-</span>
+</div>
+
     document.body.appendChild(container);
 
     const getHex = (prop) => {
