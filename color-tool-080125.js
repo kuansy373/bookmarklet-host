@@ -73,6 +73,9 @@
       .color-swatch > div {
         flex: 1;
       }
+      .color-saved {
+        border-bottom: 1px solid #999;
+      }
       .hex-display {
         font-family: monospace;
         font-size: 0.9em;
@@ -83,12 +86,12 @@
         min-width: 70px;
         text-align: center;
       }
-      .apply-btn {
-        font-size: 1em;
-        padding: 0 4px;
+      .hex-load-btn {
         cursor: pointer;
-        background: #eee;
-        border: 1px solid #999;
+        padding: 2px 6px;
+        font-size: 1em;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
         border-radius: 4px;
       }
     `;
@@ -101,18 +104,20 @@
       <div class="row">
         <div class="label">BG:</div>
         <div id="bgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <button class="apply-btn" id="applyBgHex">⇦</button>
-        <input id="bgHex" class="hex-display">
+        <input id="bgHex" class="hex-display" value="-">
+        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
       </div>
       <div class="row">
         <div class="label">FG:</div>
         <div id="fgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <button class="apply-btn" id="applyFgHex">⇦</button>
-        <input id="fgHex" class="hex-display">
+        <input id="fgHex" class="hex-display" value="-">
+        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -125,123 +130,220 @@
     `;
     document.body.appendChild(container);
 
-    // Pickr 初期化
-    const createPickr = (el, onChange, onSave) =>
-      Pickr.create({
-        el,
+    const getHex = (prop) => {
+      const rgb = getComputedStyle(document.body)[prop];
+      const nums = rgb.match(/\d+/g)?.map(Number);
+      return nums && nums.length >= 3
+        ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('')
+        : '#000000';
+    };
+
+    const applyStyle = (prop, value) => {
+      const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
+      let el = document.getElementById(id);
+      if (!el) {
+        el = document.createElement('style');
+        el.id = id;
+        document.head.appendChild(el);
+      }
+      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+        ${prop}: ${value} !important;
+      }`;
+    };
+
+    const updateSwatch = (swatch, current, saved) => {
+      if (!swatch) return;
+      swatch.querySelector('.color-current').style.background = current;
+      swatch.querySelector('.color-saved').style.background = saved;
+    };
+
+    const updateColorHexDisplays = () => {
+      document.getElementById("bgHex").value = currentBg;
+      document.getElementById("fgHex").value = currentFg;
+    };
+
+    const getContrast = (fg, bg) => {
+      const lum = (hex) => {
+        const rgb = hex
+          .match(/\w\w/g)
+          .map((v) => parseInt(v, 16) / 255)
+          .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+        return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+      };
+      const [l1, l2] = [lum(fg), lum(bg)];
+      return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2);
+    };
+
+    const contrastEl = document.getElementById('contrastRatio');
+    const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
+
+    let savedFg = getHex('color'),
+        savedBg = getHex('backgroundColor');
+    let currentFg = savedFg,
+        currentBg = savedBg;
+
+    const initPickr = (id, prop) => {
+      const swatch = document.getElementById(id + 'Swatch');
+      const isFg = prop === 'color';
+      const getSaved = () => (isFg ? savedFg : savedBg);
+      const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
+      const getCurrent = () => (isFg ? currentFg : currentBg);
+      const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
+
+      const pickr = Pickr.create({
+        el: `#${id}Swatch`,
         theme: 'classic',
-        default: '#000000',
+        default: getSaved(),
         components: {
           preview: true,
-          opacity: true,
+          opacity: false,
           hue: true,
           interaction: {
-            hex: true,
             input: true,
-            save: true
-          }
-        }
-      }).on('change', (color) => {
-        const hex = color.toHEXA().toString();
-        onChange(hex);
-      }).on('save', (color) => {
-        const hex = color.toHEXA().toString();
-        onSave(hex);
+            save: true,
+          },
+        },
       });
 
-    const bgSwatch = document.getElementById("bgSwatch");
-    const fgSwatch = document.getElementById("fgSwatch");
-    const bgHex = document.getElementById("bgHex");
-    const fgHex = document.getElementById("fgHex");
+      pickr.on('change', (color) => {
+        const hex = color.toHEXA().toString();
+        setCurrent(hex);
+        applyStyle(prop, hex);
+        updateSwatch(swatch, hex, getSaved());
+        updateColorHexDisplays();
+        updateContrast();
+      });
 
-    let bgColor = '#ffffff';
-    let fgColor = '#000000';
+      pickr.on('save', (color) => {
+        const hex = color.toHEXA().toString();
+        setCurrent(hex);
+        setSaved(hex);
+        applyStyle(prop, hex);
+        updateSwatch(swatch, hex, hex);
+        updateColorHexDisplays();
+        updateContrast();
+      });
 
-    const updateSwatch = (swatch, color) => {
-      swatch.querySelector('.color-current').style.background = color;
+      pickr.on('hide', () => {
+        setCurrent(getSaved());
+        applyStyle(prop, getSaved());
+        updateSwatch(swatch, getSaved(), getSaved());
+        updateColorHexDisplays();
+        updateContrast();
+      });
+
+      updateSwatch(swatch, getCurrent(), getSaved());
+      applyStyle(prop, getCurrent());
+      updateContrast();
+
+      return pickr;
     };
 
-    const updateHex = (input, color) => {
-      input.value = color;
+    const bgPickr = initPickr('bg', 'background-color');
+    const fgPickr = initPickr('fg', 'color');
+    updateColorHexDisplays();
+
+    // ⇦ ボタン機能：HEX欄の値を Pickr に反映
+    document.getElementById('bgHexLoad').onclick = () => {
+      const val = document.getElementById('bgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgPickr.setColor(val, true);
+      }
     };
 
-    const updateContrast = () => {
-      const contrast = getContrast(bgColor, fgColor).toFixed(2);
-      document.getElementById("contrastRatio").textContent = contrast;
+    document.getElementById('fgHexLoad').onclick = () => {
+      const val = document.getElementById('fgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        fgPickr.setColor(val, true);
+      }
     };
 
-    const getContrast = (bg, fg) => {
-      const lum = (hex) => {
-        const rgb = parseInt(hex.slice(1), 16);
-        const r = (rgb >> 16) / 255;
-        const g = ((rgb >> 8) & 0xff) / 255;
-        const b = (rgb & 0xff) / 255;
-        const f = (x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4);
-        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    function hslToHex(h, s, l) {
+      s /= 100; l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r = 0, g = 0, b = 0;
+      if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+      else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+      else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+      else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+      else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+      else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+    }
+
+    function getRandomHSL() {
+      return {
+        h: Math.floor(Math.random() * 360),
+        s: Math.floor(Math.random() * 30) + 70,
+        l: Math.floor(Math.random() * 30) + 30
       };
-      const l1 = lum(bg);
-      const l2 = lum(fg);
-      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-    };
+    }
 
-    const bgPickr = createPickr(bgSwatch, (hex) => {
-      bgColor = hex;
-      updateSwatch(bgSwatch, hex);
-      updateHex(bgHex, hex);
+    function changeColors() {
+      if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
+      if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
+
+      const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
+
+      if (!bgLocked) {
+        window.__bgHSL = getRandomHSL();
+        const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
+        currentBg = savedBg = bgHex;
+      }
+
+      if (!fgLocked) {
+        window.__fgHSL = getRandomHSL();
+        const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+        currentFg = savedFg = fgHex;
+      }
+
+      applyStyle("background-color", savedBg);
+      applyStyle("color", savedFg);
+
+      updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+      updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
+
+      updateColorHexDisplays();
       updateContrast();
-    }, (hex) => {
-      bgColor = hex;
-      updateSwatch(bgSwatch, hex);
-      updateHex(bgHex, hex);
-      updateContrast();
+    }
+
+    document.getElementById("randomColorBtn").onclick = changeColors;
+
+    document.getElementById("bgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentBg = savedBg = val;
+        applyStyle("background-color", val);
+        updateSwatch(document.getElementById("bgSwatch"), val, val);
+        updateContrast();
+      }
     });
 
-    const fgPickr = createPickr(fgSwatch, (hex) => {
-      fgColor = hex;
-      updateSwatch(fgSwatch, hex);
-      updateHex(fgHex, hex);
-      updateContrast();
-    }, (hex) => {
-      fgColor = hex;
-      updateSwatch(fgSwatch, hex);
-      updateHex(fgHex, hex);
-      updateContrast();
+    document.getElementById("fgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentFg = savedFg = val;
+        applyStyle("color", val);
+        updateSwatch(document.getElementById("fgSwatch"), val, val);
+        updateContrast();
+      }
     });
 
-    // 「⇦」ボタン: setColor（no save）
-    document.getElementById("applyBgHex").onclick = () => {
-      const val = bgHex.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        bgPickr.setColor(val, true); // silent update
-      }
+    document.getElementById('pickrClose').onclick = () => {
+      fgPickr.destroyAndRemove();
+      bgPickr.destroyAndRemove();
+      container.remove();
+      style.remove();
+      applyStyle('color', savedFg);
+      applyStyle('background-color', savedBg);
+      updateContrast();
+      window.__pickrLoaded = false;
     };
-
-    document.getElementById("applyFgHex").onclick = () => {
-      const val = fgHex.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        fgPickr.setColor(val, true); // silent update
-      }
-    };
-
-    // 色変更ボタン（ランダム）
-    document.getElementById("randomColorBtn").onclick = () => {
-      const randomHex = () => '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
-      if (!document.getElementById('color-toggle-bg-lock').checked) {
-        const newBg = randomHex();
-        bgPickr.setColor(newBg);
-      }
-      if (!document.getElementById('color-toggle-fg-lock').checked) {
-        const newFg = randomHex();
-        fgPickr.setColor(newFg);
-      }
-    };
-
-    document.getElementById("pickrClose").onclick = () => {
-      document.getElementById("pickrContainer").remove();
-    };
-
-    // 初期表示
-    bgPickr.setColor(bgColor);
-    fgPickr.setColor(fgColor);
   });
 })();
