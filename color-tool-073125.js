@@ -123,7 +123,7 @@
 <div>
   <strong>Contrast:</strong> <span id="contrastRatio">-</span>
 </div>
-
+;
     document.body.appendChild(container);
 
     const getHex = (prop) => {
