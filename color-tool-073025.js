@@ -42,8 +42,8 @@
         gap: 8px;
       }
       #pickrContainer .label {
-        width: 10px;
         font-weight: bold;
+        width: auto;
       }
       #pickrClose {
         cursor: pointer;
