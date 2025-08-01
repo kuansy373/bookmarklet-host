@@ -19,7 +19,7 @@
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = 
       #pickrContainer {
         position: fixed;
         top: 10px;
@@ -86,12 +86,12 @@
         min-width: 70px;
         text-align: center;
       }
-    `;
+    ;
     document.head.appendChild(style);
 
     const container = document.createElement('div');
     container.id = 'pickrContainer';
-    container.innerHTML = `
+    container.innerHTML = 
       <div id="pickrClose">✕</div>
       <div class="row">
         <div class="label">BG:</div>
@@ -117,7 +117,7 @@
       <div>
         <strong>Contrast:</strong> <span id="contrastRatio">-</span>
       </div>
-    `;
+    ;
     document.body.appendChild(container);
 
     const getHex = (prop) => {
@@ -136,9 +136,9 @@
         el.id = id;
         document.head.appendChild(el);
       }
-      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+      el.textContent = *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
         ${prop}: ${value} !important;
-      }`;
+      };
     };
 
     const updateSwatch = (swatch, current, saved) => {
@@ -183,7 +183,7 @@
       const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
 
       const pickr = Pickr.create({
-        el: `#${id}Swatch`,
+        el: #${id}Swatch,
         theme: 'classic',
         default: getSaved(),
         components: {
