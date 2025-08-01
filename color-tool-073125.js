@@ -19,7 +19,7 @@
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
     const style = document.createElement('style');
-    style.textContent = 
+    style.textContent = '
       #pickrContainer {
         position: fixed;
         top: 10px;
@@ -86,7 +86,7 @@
         min-width: 70px;
         text-align: center;
       }
-    ;
+    ';
     document.head.appendChild(style);
 
     const container = document.createElement('div');
