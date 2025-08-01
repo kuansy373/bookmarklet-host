@@ -73,9 +73,6 @@
       .color-swatch > div {
         flex: 1;
       }
-      .color-saved {
-        border-bottom: 1px solid #999;
-      }
       .hex-display {
         font-family: monospace;
         font-size: 0.9em;
@@ -86,14 +83,13 @@
         min-width: 70px;
         text-align: center;
       }
-      .inject-btn {
+      .apply-btn {
+        font-size: 1em;
+        padding: 0 4px;
         cursor: pointer;
-        font-weight: bold;
         background: #eee;
-        border: 1px solid #aaa;
+        border: 1px solid #999;
         border-radius: 4px;
-        padding: 0 6px;
-        user-select: none;
       }
     `;
     document.head.appendChild(style);
@@ -105,20 +101,18 @@
       <div class="row">
         <div class="label">BG:</div>
         <div id="bgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="bgHex" class="hex-display" value="-">
-        <div id="bgInject" class="inject-btn">⇦</div>
+        <button class="apply-btn" id="applyBgHex">⇦</button>
+        <input id="bgHex" class="hex-display">
       </div>
       <div class="row">
         <div class="label">FG:</div>
         <div id="fgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="fgHex" class="hex-display" value="-">
-        <div id="fgInject" class="inject-btn">⇦</div>
+        <button class="apply-btn" id="applyFgHex">⇦</button>
+        <input id="fgHex" class="hex-display">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -131,10 +125,123 @@
     `;
     document.body.appendChild(container);
 
-    // 残りのロジックは元のコードのままです。
-    // ⇦ボタンは、bgInject と fgInject にイベントリスナーを追加して、
-    // 対応する Pickr インスタンスの setColor を使って更新します。
+    // Pickr 初期化
+    const createPickr = (el, onChange, onSave) =>
+      Pickr.create({
+        el,
+        theme: 'classic',
+        default: '#000000',
+        components: {
+          preview: true,
+          opacity: true,
+          hue: true,
+          interaction: {
+            hex: true,
+            input: true,
+            save: true
+          }
+        }
+      }).on('change', (color) => {
+        const hex = color.toHEXA().toString();
+        onChange(hex);
+      }).on('save', (color) => {
+        const hex = color.toHEXA().toString();
+        onSave(hex);
+      });
 
-    // ...ここに元のコードのロジックを続けて組み込みます
+    const bgSwatch = document.getElementById("bgSwatch");
+    const fgSwatch = document.getElementById("fgSwatch");
+    const bgHex = document.getElementById("bgHex");
+    const fgHex = document.getElementById("fgHex");
+
+    let bgColor = '#ffffff';
+    let fgColor = '#000000';
+
+    const updateSwatch = (swatch, color) => {
+      swatch.querySelector('.color-current').style.background = color;
+    };
+
+    const updateHex = (input, color) => {
+      input.value = color;
+    };
+
+    const updateContrast = () => {
+      const contrast = getContrast(bgColor, fgColor).toFixed(2);
+      document.getElementById("contrastRatio").textContent = contrast;
+    };
+
+    const getContrast = (bg, fg) => {
+      const lum = (hex) => {
+        const rgb = parseInt(hex.slice(1), 16);
+        const r = (rgb >> 16) / 255;
+        const g = ((rgb >> 8) & 0xff) / 255;
+        const b = (rgb & 0xff) / 255;
+        const f = (x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4);
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const l1 = lum(bg);
+      const l2 = lum(fg);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    };
+
+    const bgPickr = createPickr(bgSwatch, (hex) => {
+      bgColor = hex;
+      updateSwatch(bgSwatch, hex);
+      updateHex(bgHex, hex);
+      updateContrast();
+    }, (hex) => {
+      bgColor = hex;
+      updateSwatch(bgSwatch, hex);
+      updateHex(bgHex, hex);
+      updateContrast();
+    });
+
+    const fgPickr = createPickr(fgSwatch, (hex) => {
+      fgColor = hex;
+      updateSwatch(fgSwatch, hex);
+      updateHex(fgHex, hex);
+      updateContrast();
+    }, (hex) => {
+      fgColor = hex;
+      updateSwatch(fgSwatch, hex);
+      updateHex(fgHex, hex);
+      updateContrast();
+    });
+
+    // 「⇦」ボタン: setColor（no save）
+    document.getElementById("applyBgHex").onclick = () => {
+      const val = bgHex.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgPickr.setColor(val, true); // silent update
+      }
+    };
+
+    document.getElementById("applyFgHex").onclick = () => {
+      const val = fgHex.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        fgPickr.setColor(val, true); // silent update
+      }
+    };
+
+    // 色変更ボタン（ランダム）
+    document.getElementById("randomColorBtn").onclick = () => {
+      const randomHex = () => '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+      if (!document.getElementById('color-toggle-bg-lock').checked) {
+        const newBg = randomHex();
+        bgPickr.setColor(newBg);
+      }
+      if (!document.getElementById('color-toggle-fg-lock').checked) {
+        const newFg = randomHex();
+        fgPickr.setColor(newFg);
+      }
+    };
+
+    document.getElementById("pickrClose").onclick = () => {
+      document.getElementById("pickrContainer").remove();
+    };
+
+    // 初期表示
+    bgPickr.setColor(bgColor);
+    fgPickr.setColor(fgColor);
   });
 })();
