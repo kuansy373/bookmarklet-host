@@ -42,7 +42,7 @@
         gap: 8px;
       }
       #pickrContainer .label {
-        width: 50px;
+        width: 10px;
         font-weight: bold;
       }
       #pickrClose {
