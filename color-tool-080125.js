@@ -42,8 +42,8 @@
         gap: 8px;
       }
       #pickrContainer .label {
-        width: 50px;
         font-weight: bold;
+        width: auto;
       }
       #pickrClose {
         cursor: pointer;
@@ -107,8 +107,8 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="bgHex" class="hex-display" value="-">
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="bgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -116,8 +116,8 @@
           <div class="color-saved"></div>
           <div class="color-current"></div>
         </div>
-        <input id="fgHex" class="hex-display" value="-">
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="fgHex" class="hex-display" value="-">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -210,7 +210,6 @@
         setCurrent(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, getSaved());
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -220,7 +219,6 @@
         setSaved(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, hex);
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -228,7 +226,6 @@
         setCurrent(getSaved());
         applyStyle(prop, getSaved());
         updateSwatch(swatch, getSaved(), getSaved());
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -241,21 +238,21 @@
 
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
+
     updateColorHexDisplays();
 
-    // ⇦ ボタン機能：HEX欄の値を Pickr に反映
     document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
-      }
+      }bgPickr.show();
     };
 
     document.getElementById('fgHexLoad').onclick = () => {
       const val = document.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, true);
-      }
+      }fgPickr.show();
     };
 
     function hslToHex(h, s, l) {
@@ -279,8 +276,8 @@
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 30) + 70,
-        l: Math.floor(Math.random() * 30) + 30
+        s: Math.floor(Math.random() * 40) + 60,
+        l: Math.floor(Math.random() * 80) + 10
       };
     }
 
@@ -309,8 +306,8 @@
       updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
       updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
-      updateColorHexDisplays();
       updateContrast();
+      updateColorHexDisplays();
     }
 
     document.getElementById("randomColorBtn").onclick = changeColors;
