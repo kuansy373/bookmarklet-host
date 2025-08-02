@@ -94,50 +94,75 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
-      .contrast-slider-container {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 4px;
-        position: relative;
-      }
-      
-      .slider-wrapper {
-        position: relative;
-        height: 24px;
-        flex: 1;
-      }
-      
-      .slider-wrapper input[type="range"] {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        pointer-events: auto;
-        appearance: none;
-        height: 4px;
-        background: transparent;
-      }
-      
-      .slider-wrapper input[type="range"]::-webkit-slider-thumb {
-        appearance: none;
-        height: 16px;
-        width: 16px;
-        border-radius: 50%;
-        background: #333;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        margin-top: -6px;
-      }
-      
-      .slider-wrapper input[type="range"]::-moz-range-thumb {
-        height: 16px;
-        width: 16px;
-        border-radius: 50%;
-        background: #333;
-        cursor: pointer;
-        border: 1px solid #ccc;
-      }
+      #rangeSliderWrapper {
+  margin-left: 10px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  width: 180px;
+  gap: 8px;
+}
+#rangeSliderWrapper .slider-wrapper {
+  display: flex;
+  width: 100%;
+  height: 30px;
+  gap: 8px;
+}
+#rangeSliderWrapper .value-label {
+  min-width: 30px;
+  text-align: center;
+  font-size: 14px;
+  align-self: center;
+}
+#rangeSliderWrapper .slider-container {
+  position: relative;
+  flex: 1;
+  height: 8px;
+}
+#rangeSliderWrapper .slider-track {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  border-radius: 4px;
+  background: #ddd;
+  z-index: 0;
+}
+#rangeSliderWrapper .range {
+  -webkit-appearance: none;
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: none;
+  pointer-events: none;
+}
+#rangeSliderWrapper .range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 11px;
+  width: 11px;
+  border-radius: 50%;
+  background: #42b983;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+#rangeSliderWrapper .range::-moz-range-thumb {
+  height: 11px;
+  width: 11px;
+  border-radius: 50%;
+  background: #42b983;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+.range-upper {
+  z-index: 2;
+}
+.range-lower {
+  z-index: 1;
+}
+
     `;
     document.head.appendChild(style);
 
@@ -168,43 +193,72 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div>
-        <strong>Contrast:</strong>
-        <span id="contrastRatio">-</span>
-        <div class="contrast-slider-container">
-          <span id="contrastMinValue">1.00</span>
-          <div class="slider-wrapper">
-            <input type="range" id="contrastMin" min="1" max="21" step="0.01" value="1" />
-            <input type="range" id="contrastMax" min="1" max="21" step="0.01" value="21" />
-          </div>
-          <span id="contrastMaxValue">21.00</span>
-        </div>
+      <div class="row">
+        <strong>Contrast:</strong> <span id="contrastRatio">-</span>
+        <div id="rangeSliderWrapper"></div>
       </div>
+
     `;
     document.body.appendChild(container);
+    
+    (function createRangeSliderUI() {
+  const wrapper = document.getElementById('rangeSliderWrapper');
+  wrapper.innerHTML = `
+    <div class="slider-wrapper">
+      <span class="value-label left" id="minVal">1</span>
+      <div class="slider-container">
+        <div class="slider-track" id="sliderTrack"></div>
+        <input type="range" min="1" max="21" value="1" id="rangeMin" class="range range-lower" />
+        <input type="range" min="1" max="21" value="21" id="rangeMax" class="range range-upper" />
+      </div>
+      <span class="value-label right" id="maxVal">21</span>
+    </div>
+  `;
 
-    const contrastMinSlider = document.getElementById('contrastMin');
-const contrastMaxSlider = document.getElementById('contrastMax');
-const contrastMinValueLabel = document.getElementById('contrastMinValue');
-const contrastMaxValueLabel = document.getElementById('contrastMaxValue');
+  const minInput = wrapper.querySelector('#rangeMin');
+  const maxInput = wrapper.querySelector('#rangeMax');
+  const minValEl = wrapper.querySelector('#minVal');
+  const maxValEl = wrapper.querySelector('#maxVal');
+  const track = wrapper.querySelector('#sliderTrack');
 
-const updateSliderLabels = () => {
-  let minVal = parseFloat(contrastMinSlider.value);
-  let maxVal = parseFloat(contrastMaxSlider.value);
-  if (minVal > maxVal) [minVal, maxVal] = [maxVal, minVal];
+  const min = 1;
+  const max = 21;
 
-  contrastMinSlider.value = minVal;
-  contrastMaxSlider.value = maxVal;
+  function updateSliderTrack() {
+    const minValue = parseInt(minInput.value, 10);
+    const maxValue = parseInt(maxInput.value, 10);
+    const range = max - min;
+    const leftPercent = ((minValue - min) / range) * 100;
+    const rightPercent = ((maxValue - min) / range) * 100;
+    track.style.background = `linear-gradient(to right,
+      #ddd 0%,
+      #ddd ${leftPercent}%,
+      #42b983 ${leftPercent}%,
+      #42b983 ${rightPercent}%,
+      #ddd ${rightPercent}%,
+      #ddd 100%)`;
+    minValEl.textContent = minValue;
+    maxValEl.textContent = maxValue;
+  }
 
-  contrastMinValueLabel.textContent = minVal.toFixed(2);
-  contrastMaxValueLabel.textContent = maxVal.toFixed(2);
-};
+  minInput.addEventListener('input', () => {
+    if (parseInt(minInput.value) >= parseInt(maxInput.value)) {
+      minInput.value = parseInt(maxInput.value) - 1;
+    }
+    updateSliderTrack();
+  });
 
-contrastMinSlider.addEventListener('input', updateSliderLabels);
-contrastMaxSlider.addEventListener('input', updateSliderLabels);
-updateSliderLabels();
+  maxInput.addEventListener('input', () => {
+    if (parseInt(maxInput.value) <= parseInt(minInput.value)) {
+      maxInput.value = parseInt(minInput.value) + 1;
+    }
+    updateSliderTrack();
+  });
 
+  updateSliderTrack();
+})();
 
+    
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
       const nums = rgb.match(/\d+/g)?.map(Number);
