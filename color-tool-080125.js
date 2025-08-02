@@ -127,6 +127,13 @@
       <div>
         <strong>Contrast:</strong> <span id="contrastRatio">-</span>
       </div>
+      <div class="row">
+        <div class="label">Contrast Range:</div>
+        <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <span>–</span>
+        <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
+      </div>
+
     `;
     document.body.appendChild(container);
 
@@ -282,33 +289,49 @@
     }
 
     function changeColors() {
-      if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
-      if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
-
       const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
       const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
-
-      if (!bgLocked) {
-        window.__bgHSL = getRandomHSL();
+    
+      const contrastMin = parseFloat(document.getElementById("contrastMin").value) || 1;
+      const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
+    
+      let trials = 0;
+      const maxTrials = 20;
+    
+      while (trials < maxTrials) {
+        trials++;
+    
+        if (!bgLocked) {
+          window.__bgHSL = getRandomHSL();
+        }
+        if (!fgLocked) {
+          window.__fgHSL = getRandomHSL();
+        }
+    
         const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-        currentBg = savedBg = bgHex;
-      }
-
-      if (!fgLocked) {
-        window.__fgHSL = getRandomHSL();
         const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
-        currentFg = savedFg = fgHex;
+    
+        const ratio = parseFloat(getContrast(fgHex, bgHex));
+    
+        if (ratio >= contrastMin && ratio <= contrastMax) {
+          if (!bgLocked) currentBg = savedBg = bgHex;
+          if (!fgLocked) currentFg = savedFg = fgHex;
+    
+          applyStyle("background-color", savedBg);
+          applyStyle("color", savedFg);
+    
+          updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+          updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
+    
+          updateContrast();
+          updateColorHexDisplays();
+          return;
+        }
       }
-
-      applyStyle("background-color", savedBg);
-      applyStyle("color", savedFg);
-
-      updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
-      updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
-
-      updateContrast();
-      updateColorHexDisplays();
+    
+      alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。");
     }
+
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
