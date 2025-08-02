@@ -124,14 +124,13 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div class="row" style="align-items: center;">
-        <strong>Contrast:</strong>
-        <span id="contrastRatio" style="margin: 0 8px;">-</span>
+      <div class="row">
+        <div class="label">Contrast:</div>
+        <span id="contrastRatio" class="hex-display" style="min-width: 50px;"></span>
         <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
         <span>–</span>
         <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
-
     `;
     document.body.appendChild(container);
 
