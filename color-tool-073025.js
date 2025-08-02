@@ -94,6 +94,50 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
+      .contrast-slider-container {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        position: relative;
+      }
+      
+      .slider-wrapper {
+        position: relative;
+        height: 24px;
+        flex: 1;
+      }
+      
+      .slider-wrapper input[type="range"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        pointer-events: auto;
+        appearance: none;
+        height: 4px;
+        background: transparent;
+      }
+      
+      .slider-wrapper input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #333;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        margin-top: -6px;
+      }
+      
+      .slider-wrapper input[type="range"]::-moz-range-thumb {
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #333;
+        cursor: pointer;
+        border: 1px solid #ccc;
+      }
     `;
     document.head.appendChild(style);
 
@@ -124,14 +168,42 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div class="row">
+      <div>
         <strong>Contrast:</strong>
         <span id="contrastRatio">-</span>
-        <input type="range" id="contrastRange" min="1" max="21" step="0.1" value="1" style="flex: 1;">
-        <span id="contrastMin">1.0</span>
+        <div class="contrast-slider-container">
+          <span id="contrastMinValue">1.00</span>
+          <div class="slider-wrapper">
+            <input type="range" id="contrastMin" min="1" max="21" step="0.01" value="1" />
+            <input type="range" id="contrastMax" min="1" max="21" step="0.01" value="21" />
+          </div>
+          <span id="contrastMaxValue">21.00</span>
+        </div>
       </div>
     `;
     document.body.appendChild(container);
+
+    const contrastMinSlider = document.getElementById('contrastMin');
+const contrastMaxSlider = document.getElementById('contrastMax');
+const contrastMinValueLabel = document.getElementById('contrastMinValue');
+const contrastMaxValueLabel = document.getElementById('contrastMaxValue');
+
+const updateSliderLabels = () => {
+  let minVal = parseFloat(contrastMinSlider.value);
+  let maxVal = parseFloat(contrastMaxSlider.value);
+  if (minVal > maxVal) [minVal, maxVal] = [maxVal, minVal];
+
+  contrastMinSlider.value = minVal;
+  contrastMaxSlider.value = maxVal;
+
+  contrastMinValueLabel.textContent = minVal.toFixed(2);
+  contrastMaxValueLabel.textContent = maxVal.toFixed(2);
+};
+
+contrastMinSlider.addEventListener('input', updateSliderLabels);
+contrastMaxSlider.addEventListener('input', updateSliderLabels);
+updateSliderLabels();
+
 
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
@@ -244,14 +316,7 @@
 
     updateColorHexDisplays();
 
-    const contrastRange = document.getElementById("contrastRange");
-    const contrastMin = document.getElementById("contrastMin");
-
-    contrastRange.addEventListener("input", () => {
-    contrastMin.textContent = parseFloat(contrastRange.value).toFixed(1);
-    });
-
-   document.getElementById('bgHexLoad').onclick = () => {
+    document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
