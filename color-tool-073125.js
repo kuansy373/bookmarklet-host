@@ -245,14 +245,14 @@
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
-      }
+      }bgPickr.show();
     };
 
     document.getElementById('fgHexLoad').onclick = () => {
       const val = document.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, true);
-      }
+      }fgPickr.show();
     };
 
     function hslToHex(h, s, l) {
