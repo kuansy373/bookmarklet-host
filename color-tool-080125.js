@@ -124,11 +124,9 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div>
-        <strong>Contrast:</strong> <span id="contrastRatio">-</span>
-      </div>
-      <div class="row">
-        <div class="label">Contrast Range:</div>
+      <div class="row" style="align-items: center;">
+        <strong>Contrast:</strong>
+        <span id="contrastRatio" style="margin: 0 8px;">-</span>
         <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
         <span>–</span>
         <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
@@ -331,19 +329,6 @@
     
       alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。");
     }
-
-
-    document.getElementById("randomColorBtn").onclick = changeColors;
-
-    document.getElementById("bgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentBg = savedBg = val;
-        applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
-        updateContrast();
-      }
-    });
 
     document.getElementById("fgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
