@@ -131,7 +131,6 @@
         <span style="margin: 0 4px;">–</span>
         <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
-
     `;
     document.body.appendChild(container);
 
@@ -329,6 +328,19 @@
     
       alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。");
     }
+
+
+    document.getElementById("randomColorBtn").onclick = changeColors;
+
+    document.getElementById("bgHex").addEventListener("change", (e) => {
+      const val = e.target.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        currentBg = savedBg = val;
+        applyStyle("background-color", val);
+        updateSwatch(document.getElementById("bgSwatch"), val, val);
+        updateContrast();
+      }
+    });
 
     document.getElementById("fgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
