@@ -124,8 +124,11 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div>
-        <strong>Contrast:</strong> <span id="contrastRatio">-</span>
+      <div class="row">
+        <strong>Contrast:</strong>
+        <span id="contrastRatio">-</span>
+        <input type="range" id="contrastRange" min="1" max="21" step="0.1" value="1" style="flex: 1;">
+        <span id="contrastMin">1.0</span>
       </div>
     `;
     document.body.appendChild(container);
@@ -210,7 +213,6 @@
         setCurrent(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, getSaved());
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -220,7 +222,6 @@
         setSaved(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, hex);
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -228,7 +229,6 @@
         setCurrent(getSaved());
         applyStyle(prop, getSaved());
         updateSwatch(swatch, getSaved(), getSaved());
-        updateColorHexDisplays();
         updateContrast();
       });
 
@@ -241,10 +241,17 @@
 
     const bgPickr = initPickr('bg', 'background-color');
     const fgPickr = initPickr('fg', 'color');
+
     updateColorHexDisplays();
 
-    // ⇦ ボタン機能：HEX欄の値を Pickr に反映
-    document.getElementById('bgHexLoad').onclick = () => {
+    const contrastRange = document.getElementById("contrastRange");
+    const contrastMin = document.getElementById("contrastMin");
+
+    contrastRange.addEventListener("input", () => {
+    contrastMin.textContent = parseFloat(contrastRange.value).toFixed(1);
+    });
+
+   document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
@@ -309,8 +316,8 @@
       updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
       updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
 
-      updateColorHexDisplays();
       updateContrast();
+      updateColorHexDisplays();
     }
 
     document.getElementById("randomColorBtn").onclick = changeColors;
