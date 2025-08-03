@@ -100,7 +100,7 @@
       }
         #pickrContainer .row.contrast-row > strong {
           display: inline-block;
-          margin-right: 8px;
+          margin-right: 0;
           min-width: 60px;
       }
     `;
