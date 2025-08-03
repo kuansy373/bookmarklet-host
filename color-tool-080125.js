@@ -138,7 +138,7 @@
         <strong>Contrast:</strong>
         <span id="contrastRatio" style="margin: 0;">-</span>
         <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
-        <span style="margin: 0px;">–</span>
+        <span style="margin: 0;">–</span>
         <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
