@@ -27,6 +27,7 @@
         z-index: 999999;
         background: #C4EFF5 !important;
         padding: 12px;
+        padding-bottom 0;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-family: sans-serif;
@@ -38,7 +39,7 @@
       #pickrContainer .row {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 5px;
         gap: 10px;
       }
       #pickrContainer .label {
