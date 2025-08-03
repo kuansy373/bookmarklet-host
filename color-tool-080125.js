@@ -118,7 +118,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-">
+        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -127,7 +127,7 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-">
+        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
