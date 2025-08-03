@@ -125,7 +125,7 @@
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div class="row" style="align-items: center;">
+      <div class="row">
         <strong>Contrast:</strong>
         <span id="contrastRatio" style="margin: 0 8px;">-</span>
         <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
