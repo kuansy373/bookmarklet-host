@@ -27,6 +27,7 @@
         z-index: 999999;
         background: #C4EFF5 !important;
         padding: 12px;
+        padding-bottom 0;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-family: sans-serif;
@@ -38,12 +39,13 @@
       #pickrContainer .row {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
-        gap: 8px;
+        margin-bottom: 5px;
+        gap: 10px;
       }
       #pickrContainer .label {
         font-weight: bold;
-        width: auto;
+        font-family: monospace;
+        font-size: 21px;
       }
       #pickrClose {
         cursor: pointer;
@@ -135,7 +137,7 @@
       </div>
       <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
-        <span id="contrastRatio" style="margin: 0;">-</span>
+        <span id="contrastRatio" style="width: 45px;">-</span>
         <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
         <span style="margin: 0;">–</span>
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
