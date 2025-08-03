@@ -39,11 +39,12 @@
         display: flex;
         align-items: center;
         margin-bottom: 12px;
-        gap: 8px;
+        gap: 10px;
       }
       #pickrContainer .label {
         font-weight: bold;
-        width: auto;
+        font-family: monospace;
+        font-size: 21px;
       }
       #pickrClose {
         cursor: pointer;
