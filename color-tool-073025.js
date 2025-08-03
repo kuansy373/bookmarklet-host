@@ -83,7 +83,6 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        min-width: 70px;
         text-align: center;
       }
       .hex-load-btn {
@@ -93,6 +92,16 @@
         border: 1px solid #aaa;
         background: #e0e0e0;
         border-radius: 4px;
+      }
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+        #pickrContainer .row.contrast-row > strong {
+          display: inline-block;
+          margin-right: 0;
+          min-width: 60px;
       }
     `;
     document.head.appendChild(style);
@@ -108,7 +117,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-">
+        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -117,15 +126,19 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-">
+        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div>
-        <strong>Contrast:</strong> <span id="contrastRatio">-</span>
+      <div class="row contrast-row" style="align-items: center;">
+        <strong>Contrast:</strong>
+        <span id="contrastRatio" style="margin: 0;">-</span>
+        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <span style="margin: 0;">–</span>
+        <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
     document.body.appendChild(container);
@@ -276,39 +289,55 @@
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 40) + 60,
+        s: Math.floor(Math.random() * 80) + 20,
         l: Math.floor(Math.random() * 80) + 10
       };
     }
 
     function changeColors() {
-      if (!window.__bgHSL) window.__bgHSL = getRandomHSL();
-      if (!window.__fgHSL) window.__fgHSL = getRandomHSL();
-
       const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
       const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
-
-      if (!bgLocked) {
-        window.__bgHSL = getRandomHSL();
+    
+      const contrastMin = parseFloat(document.getElementById("contrastMin").value) || 1;
+      const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
+    
+      let trials = 0;
+      const maxTrials = 300;
+    
+      while (trials < maxTrials) {
+        trials++;
+    
+        if (!bgLocked) {
+          window.__bgHSL = getRandomHSL();
+        }
+        if (!fgLocked) {
+          window.__fgHSL = getRandomHSL();
+        }
+    
         const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-        currentBg = savedBg = bgHex;
-      }
-
-      if (!fgLocked) {
-        window.__fgHSL = getRandomHSL();
         const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
-        currentFg = savedFg = fgHex;
+    
+        const ratio = parseFloat(getContrast(fgHex, bgHex));
+    
+        if (ratio >= contrastMin && ratio <= contrastMax) {
+          if (!bgLocked) currentBg = savedBg = bgHex;
+          if (!fgLocked) currentFg = savedFg = fgHex;
+    
+          applyStyle("background-color", savedBg);
+          applyStyle("color", savedFg);
+    
+          updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+          updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
+    
+          updateContrast();
+          updateColorHexDisplays();
+          return;
+        }
       }
-
-      applyStyle("background-color", savedBg);
-      applyStyle("color", savedFg);
-
-      updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
-      updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
-
-      updateContrast();
-      updateColorHexDisplays();
+    
+      alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。");
     }
+
 
     document.getElementById("randomColorBtn").onclick = changeColors;
 
