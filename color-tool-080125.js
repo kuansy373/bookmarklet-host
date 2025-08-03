@@ -40,6 +40,7 @@
         align-items: center;
         margin-bottom: 12px;
         gap: 8px;
+        width: auto;
       }
       #pickrContainer .label {
         font-weight: bold;
