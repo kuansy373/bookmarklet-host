@@ -293,7 +293,7 @@
       const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
     
       let trials = 0;
-      const maxTrials = 20;
+      const maxTrials = 300;
     
       while (trials < maxTrials) {
         trials++;
