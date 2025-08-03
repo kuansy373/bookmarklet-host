@@ -280,7 +280,7 @@
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 40) + 60,
+        s: Math.floor(Math.random() * 80) + 20,
         l: Math.floor(Math.random() * 80) + 10
       };
     }
