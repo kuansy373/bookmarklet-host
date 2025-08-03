@@ -99,6 +99,11 @@
         gap: 4px;
         margin-bottom: 6px;
       }
+        #pickrContainer .row.contrast-row > strong {
+          display: inline-block;
+          margin-right: 8px;
+          min-width: 60px;
+      }
     `;
     document.head.appendChild(style);
 
