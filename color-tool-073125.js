@@ -83,7 +83,6 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        min-width: 70px;
         text-align: center;
       }
       .hex-load-btn {
@@ -93,6 +92,16 @@
         border: 1px solid #aaa;
         background: #e0e0e0;
         border-radius: 4px;
+      }
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+        #pickrContainer .row.contrast-row > strong {
+          display: inline-block;
+          margin-right: 8px;
+          min-width: 60px;
       }
     `;
     document.head.appendChild(style);
@@ -108,7 +117,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-">
+        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <div class="label">FG:</div>
@@ -117,19 +126,19 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-">
+        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
       </div>
-      <div class="row" style="align-items: center;">
+      <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
-        <span id="contrastRatio" style="margin: 0 8px;">-</span>
-        <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
-        <span style="margin: 0 4px;">–</span>
-        <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
+        <span id="contrastRatio" style="margin: 0;">-</span>
+        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <span style="margin: 0;">–</span>
+        <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
     document.body.appendChild(container);
