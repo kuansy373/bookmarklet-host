@@ -83,7 +83,6 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        min-width: 70px;
         text-align: center;
       }
       .hex-load-btn {
@@ -137,9 +136,9 @@
       <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
         <span id="contrastRatio" style="margin: 0;">-</span>
-        <input id="contrastMin" class="hex-display" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
         <span style="margin: 0;">–</span>
-        <input id="contrastMax" class="hex-display" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
+        <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
     document.body.appendChild(container);
