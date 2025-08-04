@@ -18,6 +18,18 @@
     }),
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
+
+    const filteredCss = cssText
+      .split('}')
+      .filter(rule =>
+        rule.includes('.pcr-button') || rule.includes('.pcr-app::before') || rule.includes('.pcr-app::after')
+      )
+      .map(rule => rule + '}')
+      .join('\n');
+
+    const style = document.createElement('style');
+    style.textContent = filteredCss;
+    shadowRoot.appendChild(style);
     
     // ★ ここから Shadow DOM のホストを作成
     const host = document.createElement('div');
