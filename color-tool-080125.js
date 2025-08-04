@@ -27,7 +27,7 @@
       .map(rule => rule + '}')
       .join('\n');
 
-    const style = document.createElement('style');
+    const style = document.createElement('swatchstyle');
     style.textContent = filteredCss;
     shadowRoot.appendChild(swatchstyle);
     
