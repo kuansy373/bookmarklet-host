@@ -27,9 +27,9 @@
       .map(rule => rule + '}')
       .join('\n');
 
-    const style = document.createElement('swatchstyle');
+    const swatchStyle = document.createElement('style');
     style.textContent = filteredCss;
-    shadowRoot.appendChild(swatchstyle);
+    shadowRoot.appendChild(style);
     
     // ★ ここから Shadow DOM のホストを作成
     const host = document.createElement('div');
