@@ -216,7 +216,7 @@
       const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
 
       const pickr = Pickr.create({
-        el: `#${id}Swatch`,
+        el: swatch,
         theme: 'classic',
         default: getSaved(),
         components: {
