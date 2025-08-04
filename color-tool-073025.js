@@ -98,11 +98,9 @@
       #pickrContainer .row.contrast-row {
         justify-content: flex-start;
         gap: 4px;
-        margin-bottom: 6px;
       }
         #pickrContainer .row.contrast-row > strong {
           display: inline-block;
-          margin-right: 0;
           min-width: 60px;
       }
     `;
