@@ -141,7 +141,7 @@
     `;
     shadowRoot.appendChild(container);
 
-    const container = document.createElement('div');
+    container = document.createElement('div');
     container.id = 'pickrContainer';
     container.innerHTML = `
       <div id="pickrClose">✕</div>
