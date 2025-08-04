@@ -18,6 +18,18 @@
     }),
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
+    
+    // ★ ここから Shadow DOM のホストを作成
+    const host = document.createElement('div');
+    host.style.position = 'fixed';
+    host.style.top = '10px';
+    host.style.right = '10px';
+    host.style.zIndex = '999999';
+    document.body.appendChild(host);
+    
+    const shadowRoot = host.attachShadow({ mode: 'open' });
+    // ★ ここまで
+
     const style = document.createElement('style');
     style.textContent = `
       #pickrContainer {
@@ -104,7 +116,7 @@
           min-width: 60px;
       }
     `;
-    document.head.appendChild(style);
+    shadowRoot.appendChild(style);
 
     const container = document.createElement('div');
     container.id = 'pickrContainer';
@@ -141,7 +153,7 @@
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
-    document.body.appendChild(container);
+    shadowRoot.appendChild(container);
 
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
@@ -153,7 +165,7 @@
 
     const applyStyle = (prop, value) => {
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
-      let el = document.getElementById(id);
+      let el = shadowRoot.getElementById(id);
       if (!el) {
         el = document.createElement('style');
         el.id = id;
@@ -171,8 +183,8 @@
     };
 
     const updateColorHexDisplays = () => {
-      document.getElementById("bgHex").value = currentBg;
-      document.getElementById("fgHex").value = currentFg;
+      shadowRoot.getElementById("bgHex").value = currentBg;
+      shadowRoot.getElementById("fgHex").value = currentFg;
     };
 
     const getContrast = (fg, bg) => {
@@ -187,7 +199,7 @@
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2);
     };
 
-    const contrastEl = document.getElementById('contrastRatio');
+    const contrastEl = shadowRoot.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
 
     let savedFg = getHex('color'),
@@ -196,7 +208,7 @@
         currentBg = savedBg;
 
     const initPickr = (id, prop) => {
-      const swatch = document.getElementById(id + 'Swatch');
+      const swatch = shadowRoot.getElementById(id + 'Swatch');
       const isFg = prop === 'color';
       const getSaved = () => (isFg ? savedFg : savedBg);
       const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
@@ -254,15 +266,15 @@
 
     updateColorHexDisplays();
 
-    document.getElementById('bgHexLoad').onclick = () => {
-      const val = document.getElementById('bgHex').value.trim();
+    shadowRoot.getElementById('bgHexLoad').onclick = () => {
+      const val = shadowRoot.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
       }bgPickr.show();
     };
 
-    document.getElementById('fgHexLoad').onclick = () => {
-      const val = document.getElementById('fgHex').value.trim();
+    shadowRoot.getElementById('fgHexLoad').onclick = () => {
+      const val = shadowRoot.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, true);
       }fgPickr.show();
@@ -295,11 +307,11 @@
     }
 
     function changeColors() {
-      const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
-      const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
+      const bgLocked = shadowRoot.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = shadowRoot.getElementById("color-toggle-fg-lock").checked;
     
-      const contrastMin = parseFloat(document.getElementById("contrastMin").value) || 1;
-      const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
+      const contrastMin = parseFloat(shadowRoot.getElementById("contrastMin").value) || 1;
+      const contrastMax = parseFloat(shadowRoot.getElementById("contrastMax").value) || 21;
     
       let trials = 0;
       const maxTrials = 300;
@@ -326,8 +338,8 @@
           applyStyle("background-color", savedBg);
           applyStyle("color", savedFg);
     
-          updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
-          updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
+          updateSwatch(shadowRoot.getElementById("bgSwatch"), savedBg, savedBg);
+          updateSwatch(shadowRoot.getElementById("fgSwatch"), savedFg, savedFg);
     
           updateContrast();
           updateColorHexDisplays();
@@ -339,29 +351,29 @@
     }
 
 
-    document.getElementById("randomColorBtn").onclick = changeColors;
+    shadowRoot.getElementById("randomColorBtn").onclick = changeColors;
 
-    document.getElementById("bgHex").addEventListener("change", (e) => {
+    shadowRoot.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         currentBg = savedBg = val;
         applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
+        updateSwatch(shadowRoot.getElementById("bgSwatch"), val, val);
         updateContrast();
       }
     });
 
-    document.getElementById("fgHex").addEventListener("change", (e) => {
+    shadowRoot.getElementById("fgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         currentFg = savedFg = val;
         applyStyle("color", val);
-        updateSwatch(document.getElementById("fgSwatch"), val, val);
+        updateSwatch(shadowRoot.getElementById("fgSwatch"), val, val);
         updateContrast();
       }
     });
 
-    document.getElementById('pickrClose').onclick = () => {
+    shadowRoot.getElementById('pickrClose').onclick = () => {
       fgPickr.destroyAndRemove();
       bgPickr.destroyAndRemove();
       container.remove();
