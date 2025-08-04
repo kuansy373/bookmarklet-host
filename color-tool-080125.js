@@ -18,14 +18,6 @@
     }),
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
-
-    fetch('https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css')
-    .then(res => res.text())
-    .then(cssText => {
-      const pickrStyle = document.createElement('style');
-      pickrStyle.textContent = cssText;
-      shadowRoot.appendChild(pickrStyle);
-    });
     
     // ★ ここから Shadow DOM のホストを作成
     const host = document.createElement('div');
