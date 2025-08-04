@@ -29,7 +29,7 @@
 
     const style = document.createElement('style');
     style.textContent = filteredCss;
-    shadowRoot.appendChild(style);
+    shadowRoot.appendChild(swatchstyle);
     
     // ★ ここから Shadow DOM のホストを作成
     const host = document.createElement('div');
