@@ -14,7 +14,7 @@
   Promise.all([
     load('link', {
       rel: 'stylesheet',
-      href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css:2',
+      href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css',
     }),
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
