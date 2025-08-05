@@ -18,21 +18,16 @@
     }),
     load('script', { src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr' }),
   ]).then(() => {
-    const host = document.createElement('div');
-    host.style.position = 'fixed';
-    host.style.top = '10px';
-    host.style.right = '10px';
-    host.style.zIndex = '999999';
-    document.body.appendChild(host);
-
-    const shadowRoot = host.attachShadow({ mode: 'open' });
-
     const style = document.createElement('style');
     style.textContent = `
       #pickrContainer {
-        position: relative;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999999;
         background: #C4EFF5 !important;
         padding: 12px;
+        padding-bottom 0;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-family: sans-serif;
@@ -41,13 +36,13 @@
       #pickrContainer, #pickrContainer *, .pcr-app, .pcr-app * {
         color: #000000 !important;
       }
-      .row {
+      #pickrContainer .row {
         display: flex;
         align-items: center;
         margin-bottom: 5px;
         gap: 10px;
       }
-      .label {
+      #pickrContainer .label {
         font-weight: bold;
         font-family: monospace;
         font-size: 21px;
@@ -59,6 +54,13 @@
         top: 4px;
         right: 8px;
         font-weight: bold;
+      }
+      .pcr-app {
+        position: fixed !important;
+        top: 200px !important;
+        right: 10px !important;
+        z-index: 1000000 !important;
+        background: #C4EFF5 !important;
       }
       .color-swatch {
         width: 30px;
@@ -93,18 +95,18 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
-      .contrast-row {
+      #pickrContainer .row.contrast-row {
         justify-content: flex-start;
         gap: 4px;
       }
-      .contrast-row > strong {
-        display: inline-block;
-        min-width: 60px;
+        #pickrContainer .row.contrast-row > strong {
+          display: inline-block;
+          min-width: 60px;
       }
     `;
-    shadowRoot.appendChild(style);
+    document.head.appendChild(style);
 
-    let container = document.createElement('div');
+    const container = document.createElement('div');
     container.id = 'pickrContainer';
     container.innerHTML = `
       <div id="pickrClose">✕</div>
@@ -139,44 +141,7 @@
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
     `;
-    shadowRoot.appendChild(container);
-
-    container = document.createElement('div');
-    container.id = 'pickrContainer';
-    container.innerHTML = `
-      <div id="pickrClose">✕</div>
-      <div class="row">
-        <div class="label">BG:</div>
-        <div id="bgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
-          <div class="color-current"></div>
-        </div>
-        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
-      </div>
-      <div class="row">
-        <div class="label">FG:</div>
-        <div id="fgSwatch" class="color-swatch">
-          <div class="color-saved"></div>
-          <div class="color-current"></div>
-        </div>
-        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
-      </div>
-      <div class="row">
-        <button id="randomColorBtn">🎨色変更</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
-      </div>
-      <div class="row contrast-row" style="align-items: center;">
-        <strong>Contrast:</strong>
-        <span id="contrastRatio" style="width: 45px;">-</span>
-        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
-        <span style="margin: 0;">–</span>
-        <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
-      </div>
-    `;
-    shadowRoot.appendChild(container);
+    document.body.appendChild(container);
 
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
@@ -188,7 +153,7 @@
 
     const applyStyle = (prop, value) => {
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
-      let el = shadowRoot.getElementById(id);
+      let el = document.getElementById(id);
       if (!el) {
         el = document.createElement('style');
         el.id = id;
@@ -206,8 +171,8 @@
     };
 
     const updateColorHexDisplays = () => {
-      shadowRoot.getElementById("bgHex").value = currentBg;
-      shadowRoot.getElementById("fgHex").value = currentFg;
+      document.getElementById("bgHex").value = currentBg;
+      document.getElementById("fgHex").value = currentFg;
     };
 
     const getContrast = (fg, bg) => {
@@ -222,7 +187,7 @@
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2);
     };
 
-    const contrastEl = shadowRoot.getElementById('contrastRatio');
+    const contrastEl = document.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
 
     let savedFg = getHex('color'),
@@ -231,7 +196,7 @@
         currentBg = savedBg;
 
     const initPickr = (id, prop) => {
-      const swatch = shadowRoot.getElementById(id + 'Swatch');
+      const swatch = document.getElementById(id + 'Swatch');
       const isFg = prop === 'color';
       const getSaved = () => (isFg ? savedFg : savedBg);
       const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
@@ -239,7 +204,7 @@
       const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
 
       const pickr = Pickr.create({
-        el: swatch,
+        el: `#${id}Swatch`,
         theme: 'classic',
         default: getSaved(),
         components: {
@@ -283,21 +248,50 @@
 
       return pickr;
     };
+    
+      let bgPickr = null;
+      let fgPickr = null;
+      
+      try {
+        bgPickr = initPickr('bg', 'background-color');
+        fgPickr = initPickr('fg', 'color');
+      } catch (e) {
+        console.warn('Pickrの初期化に失敗しました:', e);
+        // Pickr未使用でも最低限動作するダミーオブジェクト
+        bgPickr = {
+          setColor: (color) => {
+            currentBg = savedBg = color;
+            applyStyle('background-color', color);
+            updateSwatch(document.getElementById('bgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+        fgPickr = {
+          setColor: (color) => {
+            currentFg = savedFg = color;
+            applyStyle('color', color);
+            updateSwatch(document.getElementById('fgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+      }
 
-    const bgPickr = initPickr('bg', 'background-color');
-    const fgPickr = initPickr('fg', 'color');
 
     updateColorHexDisplays();
 
-    shadowRoot.getElementById('bgHexLoad').onclick = () => {
-      const val = shadowRoot.getElementById('bgHex').value.trim();
+    document.getElementById('bgHexLoad').onclick = () => {
+      const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, true);
       }bgPickr.show();
     };
 
-    shadowRoot.getElementById('fgHexLoad').onclick = () => {
-      const val = shadowRoot.getElementById('fgHex').value.trim();
+    document.getElementById('fgHexLoad').onclick = () => {
+      const val = document.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, true);
       }fgPickr.show();
@@ -330,11 +324,11 @@
     }
 
     function changeColors() {
-      const bgLocked = shadowRoot.getElementById("color-toggle-bg-lock").checked;
-      const fgLocked = shadowRoot.getElementById("color-toggle-fg-lock").checked;
+      const bgLocked = document.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = document.getElementById("color-toggle-fg-lock").checked;
     
-      const contrastMin = parseFloat(shadowRoot.getElementById("contrastMin").value) || 1;
-      const contrastMax = parseFloat(shadowRoot.getElementById("contrastMax").value) || 21;
+      const contrastMin = parseFloat(document.getElementById("contrastMin").value) || 1;
+      const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
     
       let trials = 0;
       const maxTrials = 300;
@@ -361,8 +355,8 @@
           applyStyle("background-color", savedBg);
           applyStyle("color", savedFg);
     
-          updateSwatch(shadowRoot.getElementById("bgSwatch"), savedBg, savedBg);
-          updateSwatch(shadowRoot.getElementById("fgSwatch"), savedFg, savedFg);
+          updateSwatch(document.getElementById("bgSwatch"), savedBg, savedBg);
+          updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
     
           updateContrast();
           updateColorHexDisplays();
@@ -374,29 +368,29 @@
     }
 
 
-    shadowRoot.getElementById("randomColorBtn").onclick = changeColors;
+    document.getElementById("randomColorBtn").onclick = changeColors;
 
-    shadowRoot.getElementById("bgHex").addEventListener("change", (e) => {
+    document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         currentBg = savedBg = val;
         applyStyle("background-color", val);
-        updateSwatch(shadowRoot.getElementById("bgSwatch"), val, val);
+        updateSwatch(document.getElementById("bgSwatch"), val, val);
         updateContrast();
       }
     });
 
-    shadowRoot.getElementById("fgHex").addEventListener("change", (e) => {
+    document.getElementById("fgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         currentFg = savedFg = val;
         applyStyle("color", val);
-        updateSwatch(shadowRoot.getElementById("fgSwatch"), val, val);
+        updateSwatch(document.getElementById("fgSwatch"), val, val);
         updateContrast();
       }
     });
 
-    shadowRoot.getElementById('pickrClose').onclick = () => {
+    document.getElementById('pickrClose').onclick = () => {
       fgPickr.destroyAndRemove();
       bgPickr.destroyAndRemove();
       container.remove();
