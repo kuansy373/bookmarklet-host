@@ -248,9 +248,38 @@
 
       return pickr;
     };
+    
+      let bgPickr = null;
+      let fgPickr = null;
+      
+      try {
+        bgPickr = initPickr('bg', 'background-color');
+        fgPickr = initPickr('fg', 'color');
+      } catch (e) {
+        console.warn('Pickrの初期化に失敗しました:', e);
+        // Pickr未使用でも最低限動作するダミーオブジェクト
+        bgPickr = {
+          setColor: (color) => {
+            currentBg = savedBg = color;
+            applyStyle('background-color', color);
+            updateSwatch(document.getElementById('bgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+        fgPickr = {
+          setColor: (color) => {
+            currentFg = savedFg = color;
+            applyStyle('color', color);
+            updateSwatch(document.getElementById('fgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+      }
 
-    const bgPickr = initPickr('bg', 'background-color');
-    const fgPickr = initPickr('fg', 'color');
 
     updateColorHexDisplays();
 
