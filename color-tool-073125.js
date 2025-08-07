@@ -136,7 +136,7 @@
       <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
         <span id="contrastRatio" style="width: 45px;">-</span>
-        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3" title="Minimum contrast ratio">
         <span style="margin: 0;">–</span>
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
