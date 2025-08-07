@@ -136,7 +136,7 @@
       <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
         <span id="contrastRatio" style="width: 45px;">-</span>
-        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3.0" title="Minimum contrast ratio">
+        <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3" title="Minimum contrast ratio">
         <span style="margin: 0;">–</span>
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
       </div>
@@ -248,9 +248,38 @@
 
       return pickr;
     };
+    
+      let bgPickr = null;
+      let fgPickr = null;
+      
+      try {
+        bgPickr = initPickr('bg', 'background-color');
+        fgPickr = initPickr('fg', 'color');
+      } catch (e) {
+        console.warn('Pickrの初期化に失敗しました:', e);
+        // Pickr未使用でも最低限動作するダミーオブジェクト
+        bgPickr = {
+          setColor: (color) => {
+            currentBg = savedBg = color;
+            applyStyle('background-color', color);
+            updateSwatch(document.getElementById('bgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+        fgPickr = {
+          setColor: (color) => {
+            currentFg = savedFg = color;
+            applyStyle('color', color);
+            updateSwatch(document.getElementById('fgSwatch'), color, color);
+            updateContrast();
+          },
+          show: () => {},
+          destroyAndRemove: () => {},
+        };
+      }
 
-    const bgPickr = initPickr('bg', 'background-color');
-    const fgPickr = initPickr('fg', 'color');
 
     updateColorHexDisplays();
 
