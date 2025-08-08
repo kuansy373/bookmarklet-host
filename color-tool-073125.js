@@ -135,7 +135,7 @@
       </div>
       <div class="row contrast-row" style="align-items: center;">
         <strong>Contrast:</strong>
-        <span id="contrastRatio" style="width: 45px;">-</span>
+        <span id="contrastRatio" style="width: 51px;">-</span>
         <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3" title="Minimum contrast ratio">
         <span style="margin: 0;">–</span>
         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">
@@ -143,37 +143,42 @@
     `;
     document.body.appendChild(container);
 
-    const getHex = (prop) => {
-      const rgb = getComputedStyle(document.body)[prop];
-      const nums = rgb.match(/\d+/g)?.map(Number);
-      return nums && nums.length >= 3
-        ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('')
-        : '#000000';
-    };
-
+     const getHex = (prop) => {
+    const rgb = getComputedStyle(document.body)[prop];
+    // transparent や rgba(0,0,0,0) の場合は null を返す
+    if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
+      return null;
+    }
+    const nums = rgb.match(/\d+/g)?.map(Number);
+    return nums && nums.length >= 3
+      ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('')
+      : null;
+  };
+  
     const applyStyle = (prop, value) => {
-      const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
-      let el = document.getElementById(id);
-      if (!el) {
-        el = document.createElement('style');
-        el.id = id;
-        document.head.appendChild(el);
-      }
-      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-        ${prop}: ${value} !important;
-      }`;
-    };
-
-    const updateSwatch = (swatch, current, saved) => {
-      if (!swatch) return;
-      swatch.querySelector('.color-current').style.background = current;
-      swatch.querySelector('.color-saved').style.background = saved;
-    };
-
-    const updateColorHexDisplays = () => {
-      document.getElementById("bgHex").value = currentBg;
-      document.getElementById("fgHex").value = currentFg;
-    };
+    if (!value) return; // 値が無いときは何もしない
+    const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('style');
+      el.id = id;
+      document.head.appendChild(el);
+    }
+    el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+      ${prop}: ${value} !important;
+    }`;
+  };
+  
+      const updateSwatch = (swatch, current, saved) => {
+        if (!swatch) return;
+        swatch.querySelector('.color-current').style.background = current;
+        swatch.querySelector('.color-saved').style.background = saved;
+      };
+  
+      const updateColorHexDisplays = () => {
+        document.getElementById("bgHex").value = currentBg;
+        document.getElementById("fgHex").value = currentFg;
+      };
 
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
@@ -190,10 +195,10 @@
     const contrastEl = document.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
 
-    let savedFg = getHex('color'),
-        savedBg = getHex('backgroundColor');
-    let currentFg = savedFg,
-        currentBg = savedBg;
+    let savedFg = getHex('color') || '#000000';   // 無ければ黒文字
+    let savedBg = getHex('backgroundColor') || '#ffffff'; // 無ければ白背景
+    let currentFg = savedFg;
+    let currentBg = savedBg;
 
     const initPickr = (id, prop) => {
       const swatch = document.getElementById(id + 'Swatch');
