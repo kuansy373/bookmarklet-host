@@ -127,6 +127,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
+        <button id="swapColorsBtn" class="hex-load-btn">↔</button> <!-- ★追加 -->
       </div>
       <div class="row">
         <button id="randomColorBtn">🎨色変更</button>
@@ -143,7 +144,7 @@
     `;
     document.body.appendChild(container);
 
-     const getHex = (prop) => {
+    const getHex = (prop) => {
     const rgb = getComputedStyle(document.body)[prop];
     // transparent や rgba(0,0,0,0) の場合は null を返す
     if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
@@ -374,6 +375,15 @@
 
 
     document.getElementById("randomColorBtn").onclick = changeColors;
+
+    document.getElementById("swapColorsBtn").onclick = () => {
+      [currentFg, currentBg] = [currentBg, currentFg];
+      [savedFg, savedBg] = [currentFg, currentBg];
+      applyStyle("color", currentFg);
+      applyStyle("background-color", currentBg);
+      updateColorHexDisplays();
+      updateContrast();
+    };
 
     document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
