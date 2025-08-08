@@ -1,4 +1,4 @@
-Javascript: (function() {
+(function() {
   if (window.__pickrLoaded) return;
   window.__pickrLoaded = !0;
   const load = (tag, attrs) => new Promise((res, rej) => {
