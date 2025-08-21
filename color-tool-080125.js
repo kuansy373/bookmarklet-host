@@ -111,20 +111,22 @@
         all: initial;
         font-family: monospace;
         font-size: 15px;
-        width: 60px;       /* hex-displayと違う横幅に */
+        width: 40px;       /* hex-displayと違う横幅に */
         padding: 2px 4px;
-        background: #f0f0f0; /* 背景色を変えて区別 */
+        background: #ffffff;
         border: 1px solid #999;
         border-radius: 4px;
         text-align: center;
-        color: #333;
       }
           
       #randomColorBtn {
+        all: initial;
         background: #e0e0e0;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
+        font-size: 15px;
+        font-family: monospace;
       }
     
       #pickrContainer .row.contrast-row {
