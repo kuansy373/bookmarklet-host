@@ -15,11 +15,176 @@
     src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr'
   }), ]).then(() => {
     const style = document.createElement('style');
-    style.textContent = `       #pickrContainer {         position: fixed;         top: 10px;         right: 10px;         z-index: 999999;         background: #C4EFF5 !important;         padding: 12px;         padding-bottom 0;         border: 1px solid #ccc;         border-radius: 8px;         font-family: sans-serif;         box-shadow: 0 2px 10px rgba(0,0,0,0.3);       }       #pickrContainer, #pickrContainer *, .pcr-app, .pcr-app * {         color: #000000 !important;       }       #pickrContainer .row {         display: flex;         align-items: center;         margin-bottom: 5px;         gap: 10px;       }       #pickrContainer .label {         font-weight: bold;         font-family: monospace;         font-size: 21px;       }       #pickrClose {         cursor: pointer;         color: red;         position: absolute;         top: 4px;         right: 8px;         font-weight: bold;       }       .pcr-app {         position: fixed !important;         top: 200px !important;         right: 10px !important;         z-index: 1000000 !important;         background: #C4EFF5 !important;       }       .color-swatch {         width: 30px;         height: 30px;         border: 1px solid #999;         border-radius: 4px;         cursor: pointer;         display: flex;         flex-direction: column;         overflow: hidden;       }       .color-swatch > div {         flex: 1;       }       .color-saved {         border-bottom: 1px solid #999;       }       .hex-display {         font-family: monospace;         font-size: 0.9em;         padding: 2px 4px;         background: #fff;         border: 1px solid #ccc;         border-radius: 4px;         text-align: center;       }       .hex-load-btn {         cursor: pointer;         padding: 2px 6px;         font-size: 1em;         border: 1px solid #aaa;         background: #e0e0e0;         border-radius: 4px;       }   #randomColorBtn {  background: #e0e0e0;  border: 1px solid #aaa;  border-radius: 4px;  padding: 2px 6px;  }    #pickrContainer .row.contrast-row {         justify-content: flex-start;         gap: 4px;       }         #pickrContainer .row.contrast-row > strong {           display: inline-block;           min-width: 60px;       }     `;
+    style.textContent = `
+      #pickrContainer {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999999;
+        background: #C4EFF5 !important;
+        padding: 12px;
+        padding-bottom: 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-family: sans-serif;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      }
+    
+      #pickrContainer,
+      #pickrContainer *,
+      .pcr-app,
+      .pcr-app * {
+        color: #000000 !important;
+      }
+    
+      #pickrContainer .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        gap: 10px;
+      }
+    
+      #pickrContainer .label {
+        font-weight: bold;
+        font-family: monospace;
+        font-size: 21px;
+      }
+    
+      #pickrClose {
+        cursor: pointer;
+        color: red;
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        font-weight: bold;
+      }
+    
+      .pcr-app {
+        position: fixed !important;
+        top: 200px !important;
+        right: 10px !important;
+        z-index: 1000000 !important;
+        background: #C4EFF5 !important;
+      }
+    
+      .color-swatch {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #999;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+    
+      .color-swatch > div {
+        flex: 1;
+      }
+    
+      .color-saved {
+        border-bottom: 1px solid #999;
+      }
+    
+      .hex-display {
+        font-family: monospace;
+        font-size: 0.9em;
+        padding: 2px 4px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+      }
+    
+      .hex-load-btn {
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 1em;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
+    
+      #randomColorBtn {
+        background: #e0e0e0;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: 2px 6px;
+      }
+    
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+      }
+    
+      #pickrContainer .row.contrast-row > strong {
+        display: inline-block;
+        min-width: 60px;
+      }
+    `;
+
     document.head.appendChild(style);
     const container = document.createElement('div');
     container.id = 'pickrContainer';
-    container.innerHTML = `       <div id="pickrClose">✕</div>       <div class="row">         <div class="label">BG:</div>         <div id="bgSwatch" class="color-swatch">           <div class="color-saved"></div>           <div class="color-current"></div>         </div>         <button id="bgHexLoad" class="hex-load-btn">⇦</button>         <input id="bgHex" class="hex-display" value="-" style="width: 90px;">       </div>       <div class="row">         <div class="label">FG:</div>         <div id="fgSwatch" class="color-swatch">           <div class="color-saved"></div>           <div class="color-current"></div>         </div>         <button id="fgHexLoad" class="hex-load-btn">⇦</button>         <input id="fgHex" class="hex-display" value="-" style="width: 90px;">         <button id="swapColorsBtn" class="hex-load-btn">↕</button> <!-- ★追加 -->       </div>       <div class="row">         <button id="randomColorBtn">🎨色変更</button>         <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>         <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>       </div>       <div class="row contrast-row" style="align-items: center;">         <strong>Contrast:</strong>         <span id="contrastRatio" style="width: 51px;">-</span>         <input id="contrastMin" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="3" title="Minimum contrast ratio">         <span style="margin: 0;">–</span>         <input id="contrastMax" class="hex-display" style="width: 50px;" type="number" min="1" max="21" step="0.1" value="21" title="Maximum contrast ratio">       </div>     `;
+    container.innerHTML = `
+      <div id="pickrClose">✕</div>
+    
+      <div class="row">
+        <div class="label">BG:</div>
+        <div id="bgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
+          <div class="color-current"></div>
+        </div>
+        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
+      </div>
+    
+      <div class="row">
+        <div class="label">FG:</div>
+        <div id="fgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
+          <div class="color-current"></div>
+        </div>
+        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
+        <button id="swapColorsBtn" class="hex-load-btn">↕</button> <!-- ★追加 -->
+      </div>
+    
+      <div class="row">
+        <button id="randomColorBtn">🎨色変更</button>
+        <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
+        <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
+      </div>
+    
+      <div class="row contrast-row" style="align-items: center;">
+        <strong>Contrast:</strong>
+        <span id="contrastRatio" style="width: 51px;">-</span>
+        <input
+          id="contrastMin"
+          class="hex-display"
+          style="width: 50px;"
+          type="number"
+          min="1"
+          max="21"
+          step="0.1"
+          value="3"
+          title="Minimum contrast ratio"
+        >
+        <span style="margin: 0;">–</span>
+        <input
+          id="contrastMax"
+          class="hex-display"
+          style="width: 50px;"
+          type="number"
+          min="1"
+          max="21"
+          step="0.1"
+          value="21"
+          title="Maximum contrast ratio"
+        >
+      </div>
+    `;
+
     document.body.appendChild(container);
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
