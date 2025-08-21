@@ -278,8 +278,8 @@
     let bgPickr = null;
     let fgPickr = null;
     try {
-      bgPickr = initPickr('bg', getHex('backgroundColor') || '#ffffff');
-      fgPickr = initPickr('fg', getHex('color') || '#000000');
+      bgPickr = initPickr('bg', 'background-color');
+      fgPickr = initPickr('fg', 'color')
     } catch (e) {
       console.warn('Pickrの初期化に失敗しました:', e);
       bgPickr = {
