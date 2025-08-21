@@ -106,7 +106,19 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
-    
+
+      .contrast-display {
+        font-family: monospace;
+        font-size: 14px;
+        width: 120px;       /* hex-displayと違う横幅に */
+        padding: 2px 4px;
+        background: #f0f0f0; /* 背景色を変えて区別 */
+        border: 1px solid #999;
+        border-radius: 4px;
+        text-align: center;
+        color: #333;
+      }
+          
       #randomColorBtn {
         background: #e0e0e0;
         border: 1px solid #aaa;
@@ -164,8 +176,7 @@
         <span id="contrastRatio" style="width: 51px;">-</span>
         <input
           id="contrastMin"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
@@ -176,8 +187,7 @@
         <span style="margin: 0;">–</span>
         <input
           id="contrastMax"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
