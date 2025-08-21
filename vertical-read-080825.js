@@ -20,9 +20,33 @@
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   container.innerHTML = text;
-  container.style.cssText = `     writing-mode: vertical-rl;     white-space: nowrap;     letter-spacing: 0.25em;     line-height: 1.8;     font-size: 23px;     display: block;     padding: 2em;     contain: none;     content-visibility: visible;     will-change: transform;     transform: translateZ(0);`;
+  container.style.cssText = `
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  letter-spacing: 0.25em;
+  line-height: 1.8;
+  font-size: 23px;
+  display: block;
+  padding: 2em;
+  contain: none;
+  content-visibility: visible;
+  will-change: transform;
+  transform: translateZ(0);
+`;
   document.body.appendChild(container);
-  document.body.style.cssText = `     background-color: #e8d3c7;     color: #2c4f45;     display: flex;     justify-content: center;     font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;     font-feature-settings: 'pkna';     -moz-osx-font-smoothing: grayscale;     -webkit-font-smoothing: antialiased;     margin: 0;     padding: 0;     overflow-x: hidden;`;
+  document.body.style.cssText = `
+  background-color: #e8d3c7;
+  color: #2c4f45;
+  display: flex;
+  justify-content: center;
+  font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
+  font-feature-settings: 'pkna';
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+`;
   const scrollSlider = document.createElement('input');
   scrollSlider.type = 'range';
   scrollSlider.min = 0;
