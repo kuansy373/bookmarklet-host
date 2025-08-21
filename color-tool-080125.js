@@ -96,6 +96,7 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: center;
+        width: 80px;
       }
     
       .hex-load-btn {
@@ -111,7 +112,7 @@
       input.contrast-display {
         all: initial;
         font-family: monospace;
-        font-size: 15px;
+        font-size: 14px;
         width: 40px;       /* hex-displayと違う横幅に */
         padding: 2px 4px;
         background: #ffffff;
@@ -155,7 +156,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="bgHex" class="hex-display" value="-">
       </div>
     
       <div class="row">
