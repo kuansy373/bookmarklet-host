@@ -108,6 +108,7 @@
       }
 
       input.contrast-display {
+        all: initial;
         font-family: monospace;
         font-size: 15px;
         width: 60px;       /* hex-displayと違う横幅に */
