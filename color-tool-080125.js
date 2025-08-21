@@ -147,7 +147,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
-        <button id="swapColorsBtn" class="hex-load-btn">↕</button> <!-- ★追加 -->
+        <button id="swapColorsBtn" class="hex-load-btn">↕</button>
       </div>
     
       <div class="row">
