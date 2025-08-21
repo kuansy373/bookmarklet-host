@@ -98,6 +98,7 @@
       }
     
       .hex-load-btn {
+        all: initial;
         cursor: pointer;
         padding: 2px 6px;
         font-size: 1em;
