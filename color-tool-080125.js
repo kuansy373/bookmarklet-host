@@ -166,7 +166,7 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="fgHex" class="hex-display" value="-">
         <button id="swapColorsBtn" class="hex-load-btn">↕</button>
       </div>
     
