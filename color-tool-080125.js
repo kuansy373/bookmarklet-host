@@ -107,10 +107,10 @@
         border-radius: 4px;
       }
 
-      .contrast-display {
+      input.contrast-display {
         font-family: monospace;
-        font-size: 14px;
-        width: 120px;       /* hex-displayと違う横幅に */
+        font-size: 15px;
+        width: 60px;       /* hex-displayと違う横幅に */
         padding: 2px 4px;
         background: #f0f0f0; /* 背景色を変えて区別 */
         border: 1px solid #999;
