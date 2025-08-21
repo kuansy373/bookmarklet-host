@@ -17,6 +17,7 @@
     const style = document.createElement('style');
     style.textContent = `
       #pickrContainer {
+        all: initial;
         position: fixed;
         top: 10px;
         right: 10px;
@@ -122,6 +123,7 @@
         min-width: 60px;
       }
     `;
+
 
     document.head.appendChild(style);
     const container = document.createElement('div');
