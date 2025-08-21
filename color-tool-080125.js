@@ -88,8 +88,9 @@
       }
     
       .hex-display {
+        all: initial;
         font-family: monospace;
-        font-size: 0.9em;
+        font-size: 13px;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
