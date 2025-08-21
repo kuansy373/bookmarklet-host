@@ -17,6 +17,7 @@
     const style = document.createElement('style');
     style.textContent = `
       #pickrContainer {
+        all: initial;
         position: fixed;
         top: 10px;
         right: 10px;
@@ -87,16 +88,19 @@
       }
     
       .hex-display {
+        all: initial;
         font-family: monospace;
-        font-size: 0.9em;
+        font-size: 13px;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: center;
+        width: 80px;
       }
     
       .hex-load-btn {
+        all: initial;
         cursor: pointer;
         padding: 2px 6px;
         font-size: 1em;
@@ -104,12 +108,27 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
-    
+
+      input.contrast-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 14px;
+        width: 40px;
+        padding: 2px 4px;
+        background: #ffffff;
+        border: 1px solid #999;
+        border-radius: 4px;
+        text-align: center;
+      }
+          
       #randomColorBtn {
+        all: initial;
         background: #e0e0e0;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
+        font-size: 15px;
+        font-family: monospace;
       }
     
       #pickrContainer .row.contrast-row {
@@ -136,7 +155,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="bgHex" class="hex-display" value="-">
       </div>
     
       <div class="row">
@@ -146,7 +165,7 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="fgHex" class="hex-display" value="-">
         <button id="swapColorsBtn" class="hex-load-btn">↕</button>
       </div>
     
@@ -161,8 +180,7 @@
         <span id="contrastRatio" style="width: 51px;">-</span>
         <input
           id="contrastMin"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
@@ -173,8 +191,7 @@
         <span style="margin: 0;">–</span>
         <input
           id="contrastMax"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
