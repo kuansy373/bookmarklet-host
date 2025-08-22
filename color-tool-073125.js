@@ -53,7 +53,6 @@
     
       #pickrClose {
         cursor: pointer;
-        color: red;
         position: absolute;
         top: 4px;
         right: 8px;
@@ -67,7 +66,26 @@
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
       }
-    
+
+      .pickr .pcr-button {
+        all: unset;
+        display: inline-block;
+        position: relative;
+        height: 12.3px;
+        width: 12.3px;
+        padding: .5em;
+        cursor: pointer;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        border-radius: .15em;
+        background-size: 0;
+        transition: all .3s;
+      }
+
+      .pcr-last-color {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      
       .color-swatch {
         width: 30px;
         height: 30px;
@@ -113,7 +131,7 @@
         all: initial;
         font-family: monospace;
         font-size: 14px;
-        width: 40px;
+        width: 40px;       /* hex-displayと違う横幅に */
         padding: 2px 4px;
         background: #ffffff;
         border: 1px solid #999;
@@ -140,7 +158,13 @@
         display: inline-block;
         min-width: 60px;
       }
+      #dragHandle {
+        cursor: move;
+        padding: 1px;
+        margin-right: 15px;
+      }
     `;
+
 
     document.head.appendChild(style);
     const container = document.createElement('div');
@@ -156,6 +180,7 @@
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
+        <button id="dragHandle" class="hex-load-btn">🟰</button>
       </div>
     
       <div class="row">
@@ -203,6 +228,35 @@
     `;
 
     document.body.appendChild(container);
+
+    // ここからドラッグ処理を追加
+    (function() {
+      const dragHandle = document.getElementById('dragHandle');
+      const container = document.getElementById('pickrContainer');
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+    
+      dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
+    
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        container.style.left = e.clientX - offsetX + 'px';
+        container.style.top = e.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      });
+    
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    })();
+    
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
       if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
@@ -299,6 +353,7 @@
       fgPickr = initPickr('fg', 'color')
     } catch (e) {
       console.warn('Pickrの初期化に失敗しました:', e);
+      alert('Pickrの初期化に失敗しました:', e);
       bgPickr = {
         setColor: (color) => {
           currentBg = savedBg = color;
@@ -454,4 +509,8 @@
       window.__pickrLoaded = !1
     }
   })
+  .catch((err) => {
+    alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+    console.error("Pickr load error:", err);
+});
 })()
