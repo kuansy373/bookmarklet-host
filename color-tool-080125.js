@@ -80,7 +80,12 @@
         background-size: 0;
         transition: all .3s;
       }
-    
+
+      .pcr-last-color {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      
       .color-swatch {
         width: 30px;
         height: 30px;
