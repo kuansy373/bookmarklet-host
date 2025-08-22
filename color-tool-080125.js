@@ -318,6 +318,7 @@
       fgPickr = initPickr('fg', 'color')
     } catch (e) {
       console.warn('Pickrの初期化に失敗しました:', e);
+      alert('Pickrの初期化に失敗しました:', e);
       bgPickr = {
         setColor: (color) => {
           currentBg = savedBg = color;
@@ -472,5 +473,8 @@
       updateContrast();
       window.__pickrLoaded = !1
     }
-  })
+  }).catch((err) => {
+    alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+    console.error("Pickr load error:", err);
+});
 })()
