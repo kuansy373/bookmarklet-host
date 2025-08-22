@@ -159,7 +159,9 @@
         min-width: 60px;
       }
       #dragHandle {
-        cursor: move; /* ドラッグ可能であることを視覚的に示す */
+        cursor: move;
+        padding: 1px;
+        margin-rght: 15px;
       }
     `;
 
