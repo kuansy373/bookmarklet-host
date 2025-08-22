@@ -293,6 +293,31 @@
       const [l1, l2] = [lum(fg), lum(bg)];
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
     };
+
+    function hexToHSL(hex) {
+      let r = parseInt(hex.substr(1,2),16)/255;
+      let g = parseInt(hex.substr(3,2),16)/255;
+      let b = parseInt(hex.substr(5,2),16)/255;
+    
+      let max = Math.max(r,g,b), min = Math.min(r,g,b);
+      let h, s, l = (max + min)/2;
+    
+      if(max == min){
+        h = s = 0; // achromatic
+      } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+          case r: h = (g - b)/d + (g < b ? 6 : 0); break;
+          case g: h = (b - r)/d + 2; break;
+          case b: h = (r - g)/d + 4; break;
+        }
+        h *= 60;
+      }
+    
+      return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
+    }
+    
     const contrastEl = document.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
     let savedFg = getHex('color') || '#000000';
@@ -333,7 +358,9 @@
         setSaved(hex);
         applyStyle(prop, hex);
         updateSwatch(swatch, hex, hex);
-        updateContrast()
+        updateContrast();
+        if (isFg) window.__fgHSL = hexToHSL(hex);
+        else window.__bgHSL = hexToHSL(hex);
       });
       pickr.on('hide', () => {
         setCurrent(getSaved());
@@ -486,7 +513,8 @@
         currentBg = savedBg = val;
         applyStyle("background-color", val);
         updateSwatch(document.getElementById("bgSwatch"), val, val);
-        updateContrast()
+        updateContrast();
+        window.__bgHSL = hexToHSL(val);
       }
     });
     document.getElementById("fgHex").addEventListener("change", (e) => {
