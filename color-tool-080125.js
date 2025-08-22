@@ -473,7 +473,8 @@
       updateContrast();
       window.__pickrLoaded = !1
     }
-  }).catch((err) => {
+  })
+    .catch((err) => {
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
     console.error("Pickr load error:", err);
 });
