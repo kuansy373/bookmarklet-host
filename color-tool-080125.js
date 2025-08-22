@@ -158,6 +158,9 @@
         display: inline-block;
         min-width: 60px;
       }
+      #dragHandle {
+        cursor: move; /* ドラッグ可能であることを視覚的に示す */
+      }
     `;
 
 
@@ -175,6 +178,7 @@
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
+        <button id="dragHandle" class="hex-load-btn">🟰</button>
       </div>
     
       <div class="row">
@@ -222,6 +226,35 @@
     `;
 
     document.body.appendChild(container);
+
+    // ここからドラッグ処理を追加
+    (function() {
+      const dragHandle = document.getElementById('dragHandle');
+      const container = document.getElementById('pickrContainer');
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+    
+      dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
+    
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        container.style.left = e.clientX - offsetX + 'px';
+        container.style.top = e.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      });
+    
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    })();
+    
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
       if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
