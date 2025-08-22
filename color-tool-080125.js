@@ -230,32 +230,57 @@
     document.body.appendChild(container);
 
     // ここからドラッグ処理を追加
-    (function() {
-      const dragHandle = document.getElementById('dragHandle');
-      const container = document.getElementById('pickrContainer');
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
-    
-      dragHandle.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - container.getBoundingClientRect().left;
-        offsetY = e.clientY - container.getBoundingClientRect().top;
-        e.preventDefault();
-      });
-    
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        container.style.left = e.clientX - offsetX + 'px';
-        container.style.top = e.clientY - offsetY + 'px';
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
-      });
-    
-      document.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-    })();
+  (function() {
+    const dragHandle = document.getElementById('dragHandle');
+    const container = document.getElementById('pickrContainer');
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+  
+    // --- マウス操作 ---
+    dragHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - container.getBoundingClientRect().left;
+      offsetY = e.clientY - container.getBoundingClientRect().top;
+      e.preventDefault();
+    });
+  
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      container.style.left = e.clientX - offsetX + 'px';
+      container.style.top = e.clientY - offsetY + 'px';
+      container.style.right = 'auto';
+      container.style.bottom = 'auto';
+    });
+  
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  
+    // --- タッチ操作 ---
+    dragHandle.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      isDragging = true;
+      offsetX = touch.clientX - container.getBoundingClientRect().left;
+      offsetY = touch.clientY - container.getBoundingClientRect().top;
+      e.preventDefault();
+    });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    container.style.left = touch.clientX - offsetX + 'px';
+    container.style.top = touch.clientY - offsetY + 'px';
+    container.style.right = 'auto';
+    container.style.bottom = 'auto';
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+})();
+
     
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
