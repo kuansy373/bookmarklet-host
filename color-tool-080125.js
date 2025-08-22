@@ -161,7 +161,7 @@
       #dragHandle {
         cursor: move;
         padding: 1px;
-        margin-rght: 15px;
+        margin-right: 15px;
       }
     `;
 
