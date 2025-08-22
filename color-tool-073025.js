@@ -17,6 +17,7 @@
     const style = document.createElement('style');
     style.textContent = `
       #pickrContainer {
+        all: initial;
         position: fixed;
         top: 10px;
         right: 10px;
@@ -52,7 +53,6 @@
     
       #pickrClose {
         cursor: pointer;
-        color: red;
         position: absolute;
         top: 4px;
         right: 8px;
@@ -66,7 +66,26 @@
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
       }
-    
+
+      .pickr .pcr-button {
+        all: unset;
+        display: inline-block;
+        position: relative;
+        height: 12.3px;
+        width: 12.3px;
+        padding: .5em;
+        cursor: pointer;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        border-radius: .15em;
+        background-size: 0;
+        transition: all .3s;
+      }
+
+      .pcr-last-color {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      
       .color-swatch {
         width: 30px;
         height: 30px;
@@ -87,16 +106,19 @@
       }
     
       .hex-display {
+        all: initial;
         font-family: monospace;
-        font-size: 0.9em;
+        font-size: 13px;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: center;
+        width: 80px;
       }
     
       .hex-load-btn {
+        all: initial;
         cursor: pointer;
         padding: 2px 6px;
         font-size: 1em;
@@ -104,12 +126,27 @@
         background: #e0e0e0;
         border-radius: 4px;
       }
-    
+
+      input.contrast-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 14px;
+        width: 40px;       /* hex-displayと違う横幅に */
+        padding: 2px 4px;
+        background: #ffffff;
+        border: 1px solid #999;
+        border-radius: 4px;
+        text-align: center;
+      }
+          
       #randomColorBtn {
+        all: initial;
         background: #e0e0e0;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
+        font-size: 15px;
+        font-family: monospace;
       }
     
       #pickrContainer .row.contrast-row {
@@ -122,6 +159,7 @@
         min-width: 60px;
       }
     `;
+
 
     document.head.appendChild(style);
     const container = document.createElement('div');
@@ -136,7 +174,7 @@
           <div class="color-current"></div>
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="bgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="bgHex" class="hex-display" value="-">
       </div>
     
       <div class="row">
@@ -146,7 +184,7 @@
           <div class="color-current"></div>
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-        <input id="fgHex" class="hex-display" value="-" style="width: 90px;">
+        <input id="fgHex" class="hex-display" value="-">
         <button id="swapColorsBtn" class="hex-load-btn">↕</button>
       </div>
     
@@ -161,8 +199,7 @@
         <span id="contrastRatio" style="width: 51px;">-</span>
         <input
           id="contrastMin"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
@@ -173,8 +210,7 @@
         <span style="margin: 0;">–</span>
         <input
           id="contrastMax"
-          class="hex-display"
-          style="width: 50px;"
+          class="contrast-display"
           type="number"
           min="1"
           max="21"
@@ -282,6 +318,7 @@
       fgPickr = initPickr('fg', 'color')
     } catch (e) {
       console.warn('Pickrの初期化に失敗しました:', e);
+      alert('Pickrの初期化に失敗しました:', e);
       bgPickr = {
         setColor: (color) => {
           currentBg = savedBg = color;
@@ -436,5 +473,8 @@
       updateContrast();
       window.__pickrLoaded = !1
     }
-  })
+  }).catch((err) => {
+    alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+    console.error("Pickr load error:", err);
+});
 })()
