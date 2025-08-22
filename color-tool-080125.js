@@ -53,7 +53,6 @@
     
       #pickrClose {
         cursor: pointer;
-        color: red;
         position: absolute;
         top: 4px;
         right: 8px;
@@ -66,6 +65,20 @@
         right: 10px !important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
+      }
+
+      .pickr .pcr-button {
+        all: unset;
+        display: inline-block;
+        position: relative;
+        height: 12.3px;
+        width: 12.3px;
+        padding: .5em;
+        cursor: pointer;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        border-radius: .15em;
+        background-size: 0;
+        transition: all .3s;
       }
     
       .color-swatch {
