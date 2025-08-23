@@ -61,7 +61,9 @@
     
       .pcr-app {
         position: fixed !important;
-        top: 200px !important;
+        left: initial !important;
+        bottom: initial !important;
+        top: 180px !important;
         right: 10px !important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
