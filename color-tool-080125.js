@@ -65,6 +65,7 @@
         bottom: initial !important;
         top: 180px !important;
         right: 10px !important;
+        padding: 10px !important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
       }
@@ -87,7 +88,11 @@
         margin-top: 0;
         margin-bottom: 0;
       }
-      
+
+      .pcr-swatches {
+        all: initial;
+      }
+
       .color-swatch {
         width: 30px;
         height: 30px;
