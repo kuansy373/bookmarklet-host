@@ -90,7 +90,7 @@
       }
 
       .pcr-swatches {
-        all: initial;
+        all: initial !important;
       }
 
       .color-swatch {
