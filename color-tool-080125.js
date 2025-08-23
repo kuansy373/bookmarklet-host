@@ -66,8 +66,18 @@
         top: 180px !important;
         right: 10px !important;
         padding: 10px !important;
+        width; 370px: !important;
+        height: 150px important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
+      }
+
+      .pcr-selection {
+        height: 100px;
+      }
+
+      .pcr-color-pallet {
+        height: auto;
       }
 
       .pickr .pcr-button {
