@@ -76,7 +76,7 @@
         height: 100px !important;
       }
 
-      .pcr-color-pallet {
+      .pcr-color-palette {
         height: auto !important;
       }
 
