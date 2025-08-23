@@ -73,11 +73,11 @@
       }
 
       .pcr-selection {
-        height: 100px;
+        height: 100px !important;
       }
 
       .pcr-color-pallet {
-        height: auto;
+        height: auto !important;
       }
 
       .pickr .pcr-button {
