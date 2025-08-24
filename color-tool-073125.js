@@ -24,6 +24,7 @@
         z-index: 999999;
         background: #C4EFF5 !important;
         padding: 12px;
+        padding: 5px;
         padding-bottom: 0;
         border: 1px solid #ccc;
         border-radius: 8px;
@@ -42,7 +43,7 @@
         display: flex;
         align-items: center;
         margin-bottom: 5px;
-        gap: 10px;
+        gap: 5px;
       }
     
       #pickrContainer .label {
@@ -54,17 +55,30 @@
       #pickrClose {
         cursor: pointer;
         position: absolute;
-        top: 4px;
-        right: 8px;
-        font-weight: bold;
+        top: 5px;
+        right: 7px;
+        font-weight: 100;
       }
     
       .pcr-app {
         position: fixed !important;
-        top: 200px !important;
+        left: initial !important;
+        bottom: initial !important;
+        top: 180px !important;
         right: 10px !important;
+        padding: 10px !important;
+        width: 310px !important;
+        height: 150px !important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
+      }
+
+      .pcr-selection {
+        height: 100px !important;
+      }
+
+      .pcr-color-palette {
+        height: auto !important;
       }
 
       .pickr .pcr-button {
@@ -81,11 +95,34 @@
         transition: all .3s;
       }
 
+      .pcr-color-preview {
+        width: 22px !important;
+        margin-right: 10px !important;
+        }
+
+        .pcr-color-chooser{
+          margin-left: 10px !important;
+          }
+
       .pcr-last-color {
         margin-top: 0;
         margin-bottom: 0;
       }
-      
+
+      .pcr-swatches {
+        all: initial !important;
+      }
+
+      .pcr-result {
+        height: 20px !important;
+        margin-top: 10px !important;
+      }
+
+      .pcr-save {
+        height: 22px!important;
+        margin-top: 10px !important;
+        }
+
       .color-swatch {
         width: 30px;
         height: 30px;
@@ -132,7 +169,7 @@
         font-family: monospace;
         font-size: 14px;
         width: 40px;       /* hex-displayと違う横幅に */
-        padding: 2px 4px;
+        padding: 1px;
         background: #ffffff;
         border: 1px solid #999;
         border-radius: 4px;
@@ -160,8 +197,8 @@
       }
       #dragHandle {
         cursor: move;
-        padding: 1px;
-        margin-right: 15px;
+        padding: 0px;
+        margin-right: 20px;
       }
     `;
 
@@ -230,32 +267,57 @@
     document.body.appendChild(container);
 
     // ここからドラッグ処理を追加
-    (function() {
-      const dragHandle = document.getElementById('dragHandle');
-      const container = document.getElementById('pickrContainer');
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
-    
-      dragHandle.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - container.getBoundingClientRect().left;
-        offsetY = e.clientY - container.getBoundingClientRect().top;
-        e.preventDefault();
-      });
-    
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        container.style.left = e.clientX - offsetX + 'px';
-        container.style.top = e.clientY - offsetY + 'px';
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
-      });
-    
-      document.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-    })();
+  (function() {
+    const dragHandle = document.getElementById('dragHandle');
+    const container = document.getElementById('pickrContainer');
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+  
+    // --- マウス操作 ---
+    dragHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - container.getBoundingClientRect().left;
+      offsetY = e.clientY - container.getBoundingClientRect().top;
+      e.preventDefault();
+    });
+  
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      container.style.left = e.clientX - offsetX + 'px';
+      container.style.top = e.clientY - offsetY + 'px';
+      container.style.right = 'auto';
+      container.style.bottom = 'auto';
+    });
+  
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  
+    // --- タッチ操作 ---
+    dragHandle.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      isDragging = true;
+      offsetX = touch.clientX - container.getBoundingClientRect().left;
+      offsetY = touch.clientY - container.getBoundingClientRect().top;
+      e.preventDefault();
+    });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    container.style.left = touch.clientX - offsetX + 'px';
+    container.style.top = touch.clientY - offsetY + 'px';
+    container.style.right = 'auto';
+    container.style.bottom = 'auto';
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+})();
+
     
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
@@ -295,15 +357,17 @@
     };
 
     function hexToHSL(hex) {
+      // hexが不正な場合は黒を返す
+      if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        return { h: 0, s: 0, l: 0 };
+      }
       let r = parseInt(hex.substr(1,2),16)/255;
       let g = parseInt(hex.substr(3,2),16)/255;
       let b = parseInt(hex.substr(5,2),16)/255;
-    
       let max = Math.max(r,g,b), min = Math.min(r,g,b);
       let h, s, l = (max + min)/2;
-    
       if(max == min){
-        h = s = 0; // achromatic
+        h = s = 0; // 無彩色
       } else {
         let d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -314,7 +378,6 @@
         }
         h *= 60;
       }
-    
       return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
     }
     
@@ -473,6 +536,13 @@
       const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
       let trials = 0;
       const maxTrials = 300;
+      // --- HSLオブジェクトが不正な場合は必ず初期化 ---
+      if (!window.__bgHSL || typeof window.__bgHSL.h !== 'number' || typeof window.__bgHSL.s !== 'number' || typeof window.__bgHSL.l !== 'number') {
+        window.__bgHSL = hexToHSL(currentBg);
+      }
+      if (!window.__fgHSL || typeof window.__fgHSL.h !== 'number' || typeof window.__fgHSL.s !== 'number' || typeof window.__fgHSL.l !== 'number') {
+        window.__fgHSL = hexToHSL(currentFg);
+      }
       while (trials < maxTrials) {
         trials++;
         if (!bgLocked) {
