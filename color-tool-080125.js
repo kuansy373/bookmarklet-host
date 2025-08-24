@@ -115,6 +115,11 @@
       .pcr-result {
         height: 20px !important;
         margin-top: 10px !important;
+      }
+
+      .pcr-save {
+        height: 22px!important;
+        margin-top: 10px !important;
         }
 
       .color-swatch {
