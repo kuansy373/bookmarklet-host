@@ -337,15 +337,17 @@
     };
 
     function hexToHSL(hex) {
+      // hexが不正な場合は黒を返す
+      if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        return { h: 0, s: 0, l: 0 };
+      }
       let r = parseInt(hex.substr(1,2),16)/255;
       let g = parseInt(hex.substr(3,2),16)/255;
       let b = parseInt(hex.substr(5,2),16)/255;
-    
       let max = Math.max(r,g,b), min = Math.min(r,g,b);
       let h, s, l = (max + min)/2;
-    
       if(max == min){
-        h = s = 0; // achromatic
+        h = s = 0; // 無彩色
       } else {
         let d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -356,7 +358,6 @@
         }
         h *= 60;
       }
-    
       return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
     }
     
@@ -515,6 +516,13 @@
       const contrastMax = parseFloat(document.getElementById("contrastMax").value) || 21;
       let trials = 0;
       const maxTrials = 300;
+      // --- HSLオブジェクトが不正な場合は必ず初期化 ---
+      if (!window.__bgHSL || typeof window.__bgHSL.h !== 'number' || typeof window.__bgHSL.s !== 'number' || typeof window.__bgHSL.l !== 'number') {
+        window.__bgHSL = hexToHSL(currentBg);
+      }
+      if (!window.__fgHSL || typeof window.__fgHSL.h !== 'number' || typeof window.__fgHSL.s !== 'number' || typeof window.__fgHSL.l !== 'number') {
+        window.__fgHSL = hexToHSL(currentFg);
+      }
       while (trials < maxTrials) {
         trials++;
         if (!bgLocked) {
