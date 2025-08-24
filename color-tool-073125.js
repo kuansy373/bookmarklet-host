@@ -23,8 +23,7 @@
         right: 10px;
         z-index: 999999;
         background: #C4EFF5 !important;
-        padding: 12px;
-        padding: 5px;
+        padding: 7px;
         padding-bottom: 0;
         border: 1px solid #ccc;
         border-radius: 8px;
