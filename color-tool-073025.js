@@ -66,7 +66,7 @@
         top: 180px !important;
         right: 10px !important;
         padding: 10px !important;
-        width: 370px !important;
+        width: 310px !important;
         height: 150px !important;
         z-index: 1000000 !important;
         background: #C4EFF5 !important;
@@ -94,14 +94,22 @@
         transition: all .3s;
       }
 
+      .pcr-color-preview {
+        width: 22px !important;
+        }
+
       .pcr-last-color {
         margin-top: 0;
         margin-bottom: 0;
       }
 
       .pcr-swatches {
-        all: initial !important;
+        margin-top: 3px !imprtant;
       }
+
+      .pcr-result {
+        height: 20px !important;
+        }
 
       .color-swatch {
         width: 30px;
