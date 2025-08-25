@@ -16,6 +16,7 @@
   }), ]).then(() => {
     const style = document.createElement('style');
     style.textContent = `
+      /* ---- #pickrContainer 関連 ---- */
       #pickrContainer {
         all: initial;
         position: fixed;
@@ -23,42 +24,123 @@
         right: 10px;
         z-index: 999999;
         background: #C4EFF5 !important;
-        padding: 12px;
+        padding: 7px;
         padding-bottom: 0;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-family: sans-serif;
         box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       }
-    
+
       #pickrContainer,
       #pickrContainer *,
       .pcr-app,
       .pcr-app * {
         color: #000000 !important;
       }
-    
+
       #pickrContainer .row {
         display: flex;
         align-items: center;
-        margin-bottom: 5px;
-        gap: 10px;
+        margin-bottom: 2px;
+        gap: 5px;
       }
-    
+
       #pickrContainer .label {
         font-weight: bold;
         font-family: monospace;
         font-size: 21px;
       }
-    
+
       #pickrClose {
         cursor: pointer;
         position: absolute;
-        top: 4px;
-        right: 8px;
-        font-weight: bold;
+        top: 5px;
+        right: 7px;
+        font-weight: 100;
       }
-    
+
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+      }
+
+      #pickrContainer .row.contrast-row > strong {
+        display: inline-block;
+        min-width: 60px;
+      }
+
+      #dragHandle {
+        cursor: move;
+        padding: 0px;
+        margin-right: 20px;
+      }
+
+      /* ---- .color-swatch 関連 ---- */
+      .color-swatch {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #999;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .color-swatch > div {
+        flex: 1;
+      }
+
+      .color-saved {
+        border-bottom: 1px solid #999;
+      }
+
+      .hex-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 13px;
+        padding: 2px 4px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        width: 80px;
+      }
+
+      .hex-load-btn {
+        all: initial;
+        cursor: pointer;
+        padding: 2px 2px;
+        font-size: 1em;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
+
+      input.contrast-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 14px;
+        width: 40px;
+        padding: 1px;
+        background: #ffffff;
+        border: 1px solid #999;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      #randomColorBtn {
+        all: initial;
+        background: #e0e0e0;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 15px;
+        font-family: monospace;
+      }
+
+      /* ---- .pcr-app 関連 ---- */
       .pcr-app {
         position: fixed !important;
         left: initial !important;
@@ -96,7 +178,12 @@
 
       .pcr-color-preview {
         width: 22px !important;
-        }
+        margin-right: 10px !important;
+      }
+
+      .pcr-color-chooser{
+        margin-left: 10px !important;
+      }
 
       .pcr-last-color {
         margin-top: 0;
@@ -104,89 +191,17 @@
       }
 
       .pcr-swatches {
-        margin-top: 3px !imprtant;
+        all: initial !important;
       }
 
       .pcr-result {
         height: 20px !important;
-        }
-
-      .color-swatch {
-        width: 30px;
-        height: 30px;
-        border: 1px solid #999;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-    
-      .color-swatch > div {
-        flex: 1;
-      }
-    
-      .color-saved {
-        border-bottom: 1px solid #999;
-      }
-    
-      .hex-display {
-        all: initial;
-        font-family: monospace;
-        font-size: 13px;
-        padding: 2px 4px;
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        text-align: center;
-        width: 80px;
-      }
-    
-      .hex-load-btn {
-        all: initial;
-        cursor: pointer;
-        padding: 2px 6px;
-        font-size: 1em;
-        border: 1px solid #aaa;
-        background: #e0e0e0;
-        border-radius: 4px;
+        margin-top: 10px !important;
       }
 
-      input.contrast-display {
-        all: initial;
-        font-family: monospace;
-        font-size: 14px;
-        width: 40px;       /* hex-displayと違う横幅に */
-        padding: 2px 4px;
-        background: #ffffff;
-        border: 1px solid #999;
-        border-radius: 4px;
-        text-align: center;
-      }
-          
-      #randomColorBtn {
-        all: initial;
-        background: #e0e0e0;
-        border: 1px solid #aaa;
-        border-radius: 4px;
-        padding: 2px 6px;
-        font-size: 15px;
-        font-family: monospace;
-      }
-    
-      #pickrContainer .row.contrast-row {
-        justify-content: flex-start;
-        gap: 4px;
-      }
-    
-      #pickrContainer .row.contrast-row > strong {
-        display: inline-block;
-        min-width: 60px;
-      }
-      #dragHandle {
-        cursor: move;
-        padding: 1px;
-        margin-right: 15px;
+      .pcr-save {
+        height: 22px!important;
+        margin-top: 10px !important;
       }
     `;
 
@@ -254,59 +269,59 @@
 
     document.body.appendChild(container);
 
-    // ここからドラッグ処理を追加
-  (function() {
-    const dragHandle = document.getElementById('dragHandle');
-    const container = document.getElementById('pickrContainer');
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-  
-    // --- マウス操作 ---
-    dragHandle.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      offsetX = e.clientX - container.getBoundingClientRect().left;
-      offsetY = e.clientY - container.getBoundingClientRect().top;
-      e.preventDefault();
-    });
-  
-    document.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      container.style.left = e.clientX - offsetX + 'px';
-      container.style.top = e.clientY - offsetY + 'px';
-      container.style.right = 'auto';
-      container.style.bottom = 'auto';
-    });
-  
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-  
-    // --- タッチ操作 ---
-    dragHandle.addEventListener('touchstart', (e) => {
-      if (e.touches.length !== 1) return;
-      const touch = e.touches[0];
-      isDragging = true;
-      offsetX = touch.clientX - container.getBoundingClientRect().left;
-      offsetY = touch.clientY - container.getBoundingClientRect().top;
-      e.preventDefault();
-    });
+    // --- ドラッグ処理 ---
+    (function() {
+      const dragHandle = document.getElementById('dragHandle');
+      const container = document.getElementById('pickrContainer');
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
 
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    container.style.left = touch.clientX - offsetX + 'px';
-    container.style.top = touch.clientY - offsetY + 'px';
-    container.style.right = 'auto';
-    container.style.bottom = 'auto';
-  }, { passive: false });
+      // --- マウス操作 ---
+      dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
 
-  document.addEventListener('touchend', () => {
-    isDragging = false;
-  });
-})();
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        container.style.left = e.clientX - offsetX + 'px';
+        container.style.top = e.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      });
 
-    
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // --- タッチ操作 ---
+      dragHandle.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        isDragging = true;
+        offsetX = touch.clientX - container.getBoundingClientRect().left;
+        offsetY = touch.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        container.style.left = touch.clientX - offsetX + 'px';
+        container.style.top = touch.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      }, { passive: false });
+
+      document.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+    })();
+
+    // --- ユーティリティ関数 ---
     const getHex = (prop) => {
       const rgb = getComputedStyle(document.body)[prop];
       if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
@@ -343,7 +358,6 @@
       const [l1, l2] = [lum(fg), lum(bg)];
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
     };
-
     function hexToHSL(hex) {
       // hexが不正な場合は黒を返す
       if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
@@ -368,7 +382,8 @@
       }
       return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
     }
-    
+
+    // --- Pickr関連・状態変数 ---
     const contrastEl = document.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
     let savedFg = getHex('color') || '#000000';
@@ -453,6 +468,8 @@
         destroyAndRemove: () => {},
       }
     }
+
+    // --- イベントハンドラ・UI操作 ---
     updateColorHexDisplays();
     document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
