@@ -73,6 +73,8 @@
       #dragHandle {
         cursor: move;
         padding: 0px;
+        padding-bottom: 2px;
+        padding-left: 0.3px;
         margin-right: 20px;
       }
 
@@ -202,6 +204,7 @@
       .pcr-save {
         height: 22px!important;
         margin-top: 10px !important;
+        padding-top: 4px !important;
       }
     `;
 
@@ -434,7 +437,7 @@
                 font-size: 17px;
                 vertical-align: middle;
                 display: inline-block;
-                padding: 0 4px;
+                padding: 0px 4px 3px 4px;
                 border-radius: 4px;
                 background: #e0e0e0;
                 border: 1px solid #aaa;
