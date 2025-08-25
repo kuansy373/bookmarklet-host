@@ -239,8 +239,16 @@
     
       <div class="row">
         <button id="randomColorBtn">🎨Random</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG</label>
+        <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
+          <span id="bgLockIcon">🔓</span>
+          <span style="margin-left:2px;">BG</span>
+        </label>
+        <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
+          <span id="fgLockIcon">🔓</span>
+          <span style="margin-left:2px;">FG</span>
+        </label>
       </div>
     
       <div class="row contrast-row" style="align-items: center;">
@@ -571,6 +579,25 @@
 
     // --- イベントハンドラ・UI操作 ---
     updateColorHexDisplays();
+
+    // --- ロックアイコン制御 ---
+    function updateLockIcons() {
+      document.getElementById('bgLockIcon').textContent =
+        document.getElementById('color-toggle-bg-lock').checked ? '🔒' : '🔓';
+      document.getElementById('fgLockIcon').textContent =
+        document.getElementById('color-toggle-fg-lock').checked ? '🔒' : '🔓';
+      // 背景色をhex-displayの値に合わせる
+      document.getElementById('bgLockIcon').style.background = document.getElementById('bgHex').value;
+      document.getElementById('fgLockIcon').style.background = document.getElementById('fgHex').value;
+      document.getElementById('bgLockIcon').style.borderRadius = '4px';
+      document.getElementById('fgLockIcon').style.borderRadius = '4px';
+      document.getElementById('bgLockIcon').style.padding = '0 4px';
+      document.getElementById('fgLockIcon').style.padding = '0 4px';
+    }
+    document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
+    document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
+    updateLockIcons();
+
     document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
@@ -668,6 +695,7 @@
           updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
           updateContrast();
           updateColorHexDisplays();
+          updateLockIcons(); // 追加: ランダム色変更時にLockIconの色も更新
           return
         }
       }
