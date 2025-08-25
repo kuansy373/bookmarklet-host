@@ -142,6 +142,12 @@
         font-family: monospace;
       }
 
+      #bgLockIcon, #fgLockIcon {
+        border-radius: 4px;
+        padding: 0 4px;
+        margin: 0 4px;
+        display: inline-block;
+
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
         position: fixed !important;
@@ -586,13 +592,9 @@
         document.getElementById('color-toggle-bg-lock').checked ? '🔒' : '🔓';
       document.getElementById('fgLockIcon').textContent =
         document.getElementById('color-toggle-fg-lock').checked ? '🔒' : '🔓';
-      // 背景色をhex-displayの値に合わせる
+      // 背景色のみJSで設定
       document.getElementById('bgLockIcon').style.background = document.getElementById('bgHex').value;
       document.getElementById('fgLockIcon').style.background = document.getElementById('fgHex').value;
-      document.getElementById('bgLockIcon').style.borderRadius = '4px';
-      document.getElementById('fgLockIcon').style.borderRadius = '4px';
-      document.getElementById('bgLockIcon').style.padding = '0 4px';
-      document.getElementById('fgLockIcon').style.padding = '0 4px';
     }
     document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
     document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
