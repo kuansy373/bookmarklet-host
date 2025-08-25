@@ -238,9 +238,9 @@
       </div>
     
       <div class="row">
-        <button id="randomColorBtn">🎨色変更</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
+        <button id="randomColorBtn">🎨Random</button>
+        <label><input type="checkbox" id="color-toggle-bg-lock">BG</label>
+        <label><input type="checkbox" id="color-toggle-fg-lock">FG</label>
       </div>
     
       <div class="row contrast-row" style="align-items: center;">
