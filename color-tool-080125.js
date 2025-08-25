@@ -145,7 +145,7 @@
         position: fixed !important;
         left: initial !important;
         bottom: initial !important;
-        top: 180px !important;
+        top: 150px !important;
         right: 10px !important;
         padding: 10px !important;
         width: 310px !important;
@@ -390,6 +390,10 @@
     let savedBg = getHex('backgroundColor') || '#ffffff';
     let currentFg = savedFg;
     let currentBg = savedBg;
+    // --- pcr-appドラッグ用グローバル変数を追加 ---
+    let globalDragStyle = null;
+    let globalDragRuleIndex = null;
+
     const initPickr = (id, prop) => {
       const swatch = document.getElementById(id + 'Swatch');
       const isFg = prop === 'color';
@@ -442,22 +446,21 @@
 
               // --- ドラッグ処理 ---
               let isDragging = false, offsetX = 0, offsetY = 0;
-              let dragStyle = null;
-              let dragRuleIndex = null;
 
+              // --- グローバルなドラッグ用CSSルールを使う ---
               function applyDragCss(left, top) {
-                if (!dragStyle) {
-                  dragStyle = document.createElement('style');
-                  dragStyle.setAttribute('data-pcr-drag', '1');
-                  document.head.appendChild(dragStyle);
+                if (!globalDragStyle) {
+                  globalDragStyle = document.createElement('style');
+                  globalDragStyle.setAttribute('data-pcr-drag', '1');
+                  document.head.appendChild(globalDragStyle);
                 }
-                const sheet = dragStyle.sheet;
-                if (dragRuleIndex !== null) {
-                  sheet.deleteRule(dragRuleIndex);
-                  dragRuleIndex = null;
+                const sheet = globalDragStyle.sheet;
+                if (globalDragRuleIndex !== null) {
+                  sheet.deleteRule(globalDragRuleIndex);
+                  globalDragRuleIndex = null;
                 }
                 const rule = `.pcr-app { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; position: fixed !important; }`;
-                dragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
+                globalDragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
               }
 
               dragBtn.addEventListener('mousedown', e => {
