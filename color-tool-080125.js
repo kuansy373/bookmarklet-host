@@ -112,7 +112,7 @@
         all: initial;
         cursor: pointer;
         padding: 2px 2px;
-        font-size: 17px;
+        font-size: 1em;
         border: 1px solid #aaa;
         background: #e0e0e0;
         border-radius: 4px;
@@ -231,7 +231,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
-        <button id="swapColorsBtn" class="hex-load-btn">↕</button>
+        <button id="swapColorsBtn" class="hex-load-btn" style="font-family: monospace;font-size: 15px;">↕</button>
       </div>
     
       <div class="row">
