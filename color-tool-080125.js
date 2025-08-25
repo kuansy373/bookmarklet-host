@@ -248,12 +248,12 @@
         <button id="randomColorBtn">🎨Random</button>
         <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
-          <span style="margin-left:2px;">BG:</span>
+          <div style="margin-left:2px;cursor: text;">BG:</div>
           <span id="bgLockIcon">🔓</span>
         </label>
         <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
-          <span style="margin-left:2px;">FG:</span>
+          <div style="margin-left:2px;cursor: text;">FG:</div>
           <span id="fgLockIcon">🔓</span>
         </label>
       </div>
@@ -366,7 +366,8 @@
     };
     const updateColorHexDisplays = () => {
       document.getElementById("bgHex").value = currentBg;
-      document.getElementById("fgHex").value = currentFg
+      document.getElementById("fgHex").value = currentFg;
+      updateLockIcons(); // 追加: hex-display更新時にLockIconの色も更新
     };
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
@@ -589,13 +590,14 @@
 
     // --- ロックアイコン制御 ---
     function updateLockIcons() {
-      document.getElementById('bgLockIcon').textContent =
-        document.getElementById('color-toggle-bg-lock').checked ? '🔒' : '🔓';
-      document.getElementById('fgLockIcon').textContent =
-        document.getElementById('color-toggle-fg-lock').checked ? '🔒' : '🔓';
-      // 背景色のみJSで設定
+      const bgLocked = document.getElementById('color-toggle-bg-lock').checked;
+      const fgLocked = document.getElementById('color-toggle-fg-lock').checked;
+      document.getElementById('bgLockIcon').textContent = bgLocked ? '🔒' : '🔓';
+      document.getElementById('fgLockIcon').textContent = fgLocked ? '🔒' : '🔓';
       document.getElementById('bgLockIcon').style.background = document.getElementById('bgHex').value;
       document.getElementById('fgLockIcon').style.background = document.getElementById('fgHex').value;
+      document.getElementById('bgLockIcon').style.border = bgLocked ? '3px ridge' : '';
+      document.getElementById('fgLockIcon').style.border = fgLocked ? '3px ridge' : '';
     }
     document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
     document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
@@ -606,14 +608,16 @@
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, !0)
       }
-      bgPickr.show()
+      bgPickr.show();
+      updateLockIcons(); // 追加
     };
     document.getElementById('fgHexLoad').onclick = () => {
       const val = document.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, !0)
       }
-      fgPickr.show()
+      fgPickr.show();
+      updateLockIcons(); // 追加
     };
 
     function hslToHex(h, s, l) {
@@ -717,6 +721,7 @@
       updateContrast();
       window.__bgHSL = hexToHSL(currentBg);
       window.__fgHSL = hexToHSL(currentFg);
+      updateLockIcons(); // 追加: swap時にもLockIconの色を更新
     };
     document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
@@ -726,6 +731,7 @@
         updateSwatch(document.getElementById("bgSwatch"), val, val);
         updateContrast();
         window.__bgHSL = hexToHSL(val);
+        updateLockIcons(); // 追加
       }
     });
     document.getElementById("fgHex").addEventListener("change", (e) => {
@@ -734,7 +740,8 @@
         currentFg = savedFg = val;
         applyStyle("color", val);
         updateSwatch(document.getElementById("fgSwatch"), val, val);
-        updateContrast()
+        updateContrast();
+        updateLockIcons(); // 追加
       }
     });
     document.getElementById('pickrClose').onclick = () => {
