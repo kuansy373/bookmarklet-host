@@ -147,7 +147,7 @@
         padding: 0 4px;
         margin: 0 4px;
         display: inline-block;
-      ｝
+      }
 
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
