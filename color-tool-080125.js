@@ -241,13 +241,13 @@
         <button id="randomColorBtn">🎨Random</button>
         <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
+          <span style="margin-left:2px;">BG:</span>
           <span id="bgLockIcon">🔓</span>
-          <span style="margin-left:2px;">BG</span>
         </label>
         <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
+          <span style="margin-left:2px;">FG:</span>
           <span id="fgLockIcon">🔓</span>
-          <span style="margin-left:2px;">FG</span>
         </label>
       </div>
     
