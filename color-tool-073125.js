@@ -73,6 +73,8 @@
       #dragHandle {
         cursor: move;
         padding: 0px;
+        padding-bottom: 2px;
+        padding-left: 0.3px;
         margin-right: 20px;
       }
 
@@ -202,6 +204,7 @@
       .pcr-save {
         height: 22px!important;
         margin-top: 10px !important;
+        padding-top: 4px !important;
       }
     `;
 
@@ -235,9 +238,9 @@
       </div>
     
       <div class="row">
-        <button id="randomColorBtn">🎨色変更</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG固定</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG固定</label>
+        <button id="randomColorBtn">🎨Random</button>
+        <label><input type="checkbox" id="color-toggle-bg-lock">BG</label>
+        <label><input type="checkbox" id="color-toggle-fg-lock">FG</label>
       </div>
     
       <div class="row contrast-row" style="align-items: center;">
@@ -253,7 +256,7 @@
           value="3"
           title="Minimum contrast ratio"
         >
-        <span style="margin: 0;">–</span>
+        <span style="margin: 0;font-size: 10px;font-weight: 500;">～</span>
         <input
           id="contrastMax"
           class="contrast-display"
@@ -434,7 +437,7 @@
                 font-size: 17px;
                 vertical-align: middle;
                 display: inline-block;
-                padding: 0 4px;
+                padding: 0px 4px 3px 4px;
                 border-radius: 4px;
                 background: #e0e0e0;
                 border: 1px solid #aaa;
@@ -672,12 +675,17 @@
     }
     document.getElementById("randomColorBtn").onclick = changeColors;
     document.getElementById("swapColorsBtn").onclick = () => {
+      // ロック状態を無視して完全にスワップ
       [currentFg, currentBg] = [currentBg, currentFg];
       [savedFg, savedBg] = [currentFg, currentBg];
       applyStyle("color", currentFg);
       applyStyle("background-color", currentBg);
+      updateSwatch(document.getElementById("bgSwatch"), currentBg, savedBg);
+      updateSwatch(document.getElementById("fgSwatch"), currentFg, savedFg);
       updateColorHexDisplays();
-      updateContrast()
+      updateContrast();
+      window.__bgHSL = hexToHSL(currentBg);
+      window.__fgHSL = hexToHSL(currentFg);
     };
     document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
