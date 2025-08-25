@@ -672,12 +672,17 @@
     }
     document.getElementById("randomColorBtn").onclick = changeColors;
     document.getElementById("swapColorsBtn").onclick = () => {
+      // ロック状態を無視して完全にスワップ
       [currentFg, currentBg] = [currentBg, currentFg];
       [savedFg, savedBg] = [currentFg, currentBg];
       applyStyle("color", currentFg);
       applyStyle("background-color", currentBg);
+      updateSwatch(document.getElementById("bgSwatch"), currentBg, savedBg);
+      updateSwatch(document.getElementById("fgSwatch"), currentFg, savedFg);
       updateColorHexDisplays();
-      updateContrast()
+      updateContrast();
+      window.__bgHSL = hexToHSL(currentBg);
+      window.__fgHSL = hexToHSL(currentFg);
     };
     document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
