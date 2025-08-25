@@ -256,7 +256,7 @@
           value="3"
           title="Minimum contrast ratio"
         >
-        <span style="margin: 0;">–</span>
+        <span style="margin: 0;font-size: 10px;font-weight: 500;">～</span>
         <input
           id="contrastMax"
           class="contrast-display"
