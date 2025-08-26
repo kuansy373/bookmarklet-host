@@ -143,9 +143,9 @@
       }
 
       #bgLockIcon, #fgLockIcon {
+        font-size: 14px;
         border-radius: 4px;
-        padding: 4px 4px;
-        margin: 0 4px;
+        margin: 0px 0px;
         display: inline-block;
       }
 
@@ -246,14 +246,14 @@
     
       <div class="row">
         <button id="randomColorBtn">🎨Random</button>
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">BG:</div>
         <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
-          <div style="margin-left:2px;cursor: text;">BG:</div>
           <span id="bgLockIcon">🔓</span>
         </label>
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">FG:</div>
         <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
-          <div style="margin-left:2px;cursor: text;">FG:</div>
           <span id="fgLockIcon">🔓</span>
         </label>
       </div>
@@ -600,10 +600,12 @@
       fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
       bgLockIcon.style.background = bgColor;
       fgLockIcon.style.background = fgColor;
-      bgLockIcon.style.border = bgLocked ? `4px ridge ${bgColor}` : '';
-      fgLockIcon.style.border = fgLocked ? `4px ridge ${fgColor}` : '';
-      bgLockIcon.style.padding = bgLocked ? '0px 0px' : '4px 4px';
-      fgLockIcon.style.padding = fgLocked ? '0px 0px' : '4px 4px';
+      bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
+      fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
+      bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
+      fgLockIcon.style.borderRadius = fgLocked ? '0px' : '4px';
+      bgLockIcon.style.padding = bgLocked ? '0px 0px' : '6px 6px';
+      fgLockIcon.style.padding = fgLocked ? '0px 0px' : '6px 6px';
     }
     document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
     document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
