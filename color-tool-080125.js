@@ -144,7 +144,7 @@
 
       #bgLockIcon, #fgLockIcon {
         border-radius: 4px;
-        padding: 0 4px;
+        padding: 4px 4px;
         margin: 0 4px;
         display: inline-block;
       }
@@ -592,12 +592,18 @@
     function updateLockIcons() {
       const bgLocked = document.getElementById('color-toggle-bg-lock').checked;
       const fgLocked = document.getElementById('color-toggle-fg-lock').checked;
-      document.getElementById('bgLockIcon').textContent = bgLocked ? '🔒' : '🔓';
-      document.getElementById('fgLockIcon').textContent = fgLocked ? '🔒' : '🔓';
-      document.getElementById('bgLockIcon').style.background = document.getElementById('bgHex').value;
-      document.getElementById('fgLockIcon').style.background = document.getElementById('fgHex').value;
-      document.getElementById('bgLockIcon').style.border = bgLocked ? '3px ridge' : '';
-      document.getElementById('fgLockIcon').style.border = fgLocked ? '3px ridge' : '';
+      const bgColor = document.getElementById('bgHex').value;
+      const fgColor = document.getElementById('fgHex').value;
+      const bgLockIcon = document.getElementById('bgLockIcon');
+      const fgLockIcon = document.getElementById('fgLockIcon');
+      bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
+      fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
+      bgLockIcon.style.background = bgColor;
+      fgLockIcon.style.background = fgColor;
+      bgLockIcon.style.border = bgLocked ? `4px ridge ${bgColor}` : '';
+      fgLockIcon.style.border = fgLocked ? `4px ridge ${fgColor}` : '';
+      bgLockIcon.style.padding = bgLocked ? '0px 0px' : '4px 4px';
+      fgLockIcon.style.padding = fgLocked ? '0px 0px' : '4px 4px';
     }
     document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
     document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
