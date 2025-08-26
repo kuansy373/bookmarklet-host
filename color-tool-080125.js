@@ -36,6 +36,7 @@
       #pickrContainer *,
       .pcr-app,
       .pcr-app * {
+        line-height: initial !important;
         color: #000000 !important;
       }
 
@@ -144,7 +145,6 @@
 
       #bgLockIcon, #fgLockIcon {
         font-size: 14px;
-        border-radius: 4px;
         margin: 0px 0px;
         display: inline-block;
       }
