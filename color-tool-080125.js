@@ -180,7 +180,7 @@
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-        border-radius: .15em;
+        border-radius: 2px;
         background-size: 0;
         transition: all .3s;
       }
@@ -209,9 +209,13 @@
       }
 
       .pcr-save {
-        height: 22px!important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        height: 22px !important;
+        width: 40px !important;
         margin-top: 10px !important;
-        padding-top: 4px !important;
+        padding-top: 1px !important;
+        border-radius: 2px !important;
       }
     `;
 
