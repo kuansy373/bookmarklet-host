@@ -36,6 +36,7 @@
       #pickrContainer *,
       .pcr-app,
       .pcr-app * {
+        line-height: initial !important;
         color: #000000 !important;
       }
 
@@ -101,7 +102,7 @@
       .hex-display {
         all: initial;
         font-family: monospace;
-        font-size: 13px;
+        font-size: 14px;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
@@ -142,9 +143,16 @@
         font-family: monospace;
       }
 
+      #bgLockIcon, #fgLockIcon {
+        font-size: 14px;
+        margin: 0px 0px;
+        display: inline-block;
+      }
+
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
         position: fixed !important;
+        box-sizing: initial !important;
         left: initial !important;
         bottom: initial !important;
         top: 150px !important;
@@ -157,7 +165,7 @@
       }
 
       .pcr-selection {
-        height: 100px !important;
+        height: 114px !important;
       }
 
       .pcr-color-palette {
@@ -173,7 +181,7 @@
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-        border-radius: .15em;
+        border-radius: 2px;
         background-size: 0;
         transition: all .3s;
       }
@@ -199,12 +207,21 @@
       .pcr-result {
         height: 20px !important;
         margin-top: 10px !important;
+        font-family: monospace !important;
+        font-size: 18px !important;
       }
 
       .pcr-save {
-        height: 22px!important;
+        all: unset;
+        box-shadow: initial !important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        height: 22px !important;
+        width: 40px !important;
         margin-top: 10px !important;
-        padding-top: 4px !important;
+        padding: 0px !important;
+        border: 0px !important;
+        border-radius: 2px !important;
       }
     `;
 
@@ -239,8 +256,16 @@
     
       <div class="row">
         <button id="randomColorBtn">🎨Random</button>
-        <label><input type="checkbox" id="color-toggle-bg-lock">BG</label>
-        <label><input type="checkbox" id="color-toggle-fg-lock">FG</label>
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">BG:</div>
+        <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
+          <span id="bgLockIcon">🔓</span>
+        </label>
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">FG:</div>
+        <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
+          <span id="fgLockIcon">🔓</span>
+        </label>
       </div>
     
       <div class="row contrast-row" style="align-items: center;">
@@ -351,7 +376,8 @@
     };
     const updateColorHexDisplays = () => {
       document.getElementById("bgHex").value = currentBg;
-      document.getElementById("fgHex").value = currentFg
+      document.getElementById("fgHex").value = currentFg;
+      updateLockIcons(); // 追加: hex-display更新時にLockIconの色も更新
     };
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
@@ -571,19 +597,45 @@
 
     // --- イベントハンドラ・UI操作 ---
     updateColorHexDisplays();
+
+    // --- ロックアイコン制御 ---
+    function updateLockIcons() {
+      const bgLocked = document.getElementById('color-toggle-bg-lock').checked;
+      const fgLocked = document.getElementById('color-toggle-fg-lock').checked;
+      const bgColor = document.getElementById('bgHex').value;
+      const fgColor = document.getElementById('fgHex').value;
+      const bgLockIcon = document.getElementById('bgLockIcon');
+      const fgLockIcon = document.getElementById('fgLockIcon');
+      bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
+      fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
+      bgLockIcon.style.background = bgColor;
+      fgLockIcon.style.background = fgColor;
+      bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
+      fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
+      bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
+      fgLockIcon.style.borderRadius = fgLocked ? '0px' : '4px';
+      bgLockIcon.style.padding = bgLocked ? '0px 0px' : '6px 6px';
+      fgLockIcon.style.padding = fgLocked ? '0px 0px' : '6px 6px';
+    }
+    document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
+    document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
+    updateLockIcons();
+
     document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         bgPickr.setColor(val, !0)
       }
-      bgPickr.show()
+      bgPickr.show();
+      updateLockIcons(); // 追加
     };
     document.getElementById('fgHexLoad').onclick = () => {
       const val = document.getElementById('fgHex').value.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(val)) {
         fgPickr.setColor(val, !0)
       }
-      fgPickr.show()
+      fgPickr.show();
+      updateLockIcons(); // 追加
     };
 
     function hslToHex(h, s, l) {
@@ -668,6 +720,7 @@
           updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
           updateContrast();
           updateColorHexDisplays();
+          updateLockIcons(); // 追加: ランダム色変更時にLockIconの色も更新
           return
         }
       }
@@ -686,6 +739,7 @@
       updateContrast();
       window.__bgHSL = hexToHSL(currentBg);
       window.__fgHSL = hexToHSL(currentFg);
+      updateLockIcons(); // 追加: swap時にもLockIconの色を更新
     };
     document.getElementById("bgHex").addEventListener("change", (e) => {
       const val = e.target.value.trim();
@@ -695,6 +749,7 @@
         updateSwatch(document.getElementById("bgSwatch"), val, val);
         updateContrast();
         window.__bgHSL = hexToHSL(val);
+        updateLockIcons(); // 追加
       }
     });
     document.getElementById("fgHex").addEventListener("change", (e) => {
@@ -703,7 +758,8 @@
         currentFg = savedFg = val;
         applyStyle("color", val);
         updateSwatch(document.getElementById("fgSwatch"), val, val);
-        updateContrast()
+        updateContrast();
+        updateLockIcons(); // 追加
       }
     });
     document.getElementById('pickrClose').onclick = () => {
