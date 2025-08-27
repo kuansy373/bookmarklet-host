@@ -364,9 +364,40 @@
       if (!el) {
         el = document.createElement('style');
         el.id = id;
-        document.head.appendChild(el)
+        document.head.appendChild(el);
       }
-      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {       ${prop}: ${value} !important;     }`
+    
+      if (prop === 'background-color') {
+        // --- 通常は body に背景を適用 ---
+        let css = `body { ${prop}: ${value} !important; }`;
+    
+        // --- body直下の全画面サイズの透明ラッパーを検出して無効化 ---
+        const children = Array.from(document.body.children);
+        for (const child of children) {
+          const style = getComputedStyle(child);
+          if (
+            style.width === window.innerWidth + "px" &&
+            style.height === window.innerHeight + "px" &&
+            (style.backgroundColor === "rgba(0, 0, 0, 0)" || style.backgroundColor === "transparent")
+          ) {
+            css += `
+              #${child.id} {
+                background: none !important;
+                opacity: 1 !important;
+              }
+            `;
+          }
+        }
+    
+        el.textContent = css;
+      } else if (prop === 'color') {
+        // --- 文字色用は従来通り全要素に適用 ---
+        el.textContent = `
+          *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+            ${prop}: ${value} !important;
+          }
+        `;
+      }
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
