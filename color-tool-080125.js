@@ -152,6 +152,7 @@
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
         position: fixed !important;
+        box-sizing: initial !important;
         left: initial !important;
         bottom: initial !important;
         top: 150px !important;
@@ -164,7 +165,7 @@
       }
 
       .pcr-selection {
-        height: 100px !important;
+        height: 114px !important;
       }
 
       .pcr-color-palette {
@@ -206,6 +207,7 @@
       .pcr-result {
         height: 20px !important;
         margin-top: 10px !important;
+        font-family: monospace !important;
       }
 
       .pcr-save {
