@@ -209,12 +209,15 @@
       }
 
       .pcr-save {
+        all: unset;
+        box-shadow: initial !important;
         font-size: 12px !important;
         font-weight: normal !important;
         height: 22px !important;
         width: 40px !important;
         margin-top: 10px !important;
-        padding-top: 1px !important;
+        padding: 0px !important;
+        border: 0px !important;
         border-radius: 2px !important;
       }
     `;
