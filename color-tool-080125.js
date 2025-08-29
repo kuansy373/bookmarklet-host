@@ -763,6 +763,23 @@
       }
     });
     document.getElementById('pickrClose').onclick = () => {
+      // pickrClose の位置を取得
+      const rect = document.getElementById('pickrClose').getBoundingClientRect();
+    
+      // pickrOpen ボタンを生成
+      const pickrOpen = document.createElement('div');
+      pickrOpen.id = 'pickrOpen';
+      pickrOpen.textContent = '□';
+      Object.assign(pickrOpen.style, {
+        cursor: 'pointer',
+        position: 'absolute',
+        top: rect.top + 'px',
+        left: rect.left + 'px',
+        fontWeight: '100'
+      });
+      document.body.appendChild(pickrOpen);
+    
+      // 既存の処理
       fgPickr.destroyAndRemove();
       bgPickr.destroyAndRemove();
       container.remove();
@@ -770,8 +787,9 @@
       applyStyle('color', savedFg);
       applyStyle('background-color', savedBg);
       updateContrast();
-      window.__pickrLoaded = !1
-    }
+      window.__pickrLoaded = !1;
+    };
+
   })
   .catch((err) => {
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
