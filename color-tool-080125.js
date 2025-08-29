@@ -213,7 +213,7 @@
         height: 20px !important;
         margin-top: 10px !important;
         font-family: monospace !important;
-        font-size: 18px !important;
+        font-size: 15px !important;
       }
 
       .pcr-save {
@@ -256,7 +256,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
-        <button id="swapColorsBtn" class="hex-load-btn" style="all: initial;font-family: monospace;font-size: 18px;border: 1px solid #aaa;background: #e0e0e0;border-radius: 4px;">↕</button>
+        <button id="swapColorsBtn" style="all: initial;font-family: monospace;font-size: 18px;border: 1px solid #aaa;background: #e0e0e0;border-radius: 4px;">↕</button>
       </div>
     
       <div class="row">
