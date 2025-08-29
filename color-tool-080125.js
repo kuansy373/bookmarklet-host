@@ -54,11 +54,13 @@
       }
 
       #pickrClose {
+        all: initial;
+        font-size: 15px;
+        font-weight: bolder;
         cursor: pointer;
         position: absolute;
         top: 5px;
         right: 7px;
-        font-weight: 100;
       }
 
       #pickrContainer .row.contrast-row {
@@ -103,6 +105,7 @@
         all: initial;
         font-family: monospace;
         font-size: 14px;
+        font-weight: normal;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
@@ -125,6 +128,7 @@
         all: initial;
         font-family: monospace;
         font-size: 14px;
+        font-weight: normal;
         width: 40px;
         padding: 1px;
         background: #ffffff;
@@ -251,7 +255,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
-        <button id="swapColorsBtn" class="hex-load-btn" style="font-family: monospace;font-size: 15px;">↕</button>
+        <button id="swapColorsBtn" class="hex-load-btn" style="all: initial;font-family: monospace;font-size: 18px;border: 1px solid #aaa;background: #e0e0e0;border-radius: 4px;">↕</button>
       </div>
     
       <div class="row">
