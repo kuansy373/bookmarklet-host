@@ -102,7 +102,7 @@
       .hex-display {
         all: initial;
         font-family: monospace;
-        font-size: 13px;
+        font-size: 14px;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
@@ -208,6 +208,7 @@
         height: 20px !important;
         margin-top: 10px !important;
         font-family: monospace !important;
+        font-size: 18px !important;
       }
 
       .pcr-save {
@@ -364,40 +365,9 @@
       if (!el) {
         el = document.createElement('style');
         el.id = id;
-        document.head.appendChild(el);
+        document.head.appendChild(el)
       }
-    
-      if (prop === 'background-color') {
-        // --- 通常は body に背景を適用 ---
-        let css = `body { ${prop}: ${value} !important; }`;
-    
-        // --- body直下の全画面サイズの透明ラッパーを検出して無効化 ---
-        const children = Array.from(document.body.children);
-        for (const child of children) {
-          const style = getComputedStyle(child);
-          if (
-            style.width === window.innerWidth + "px" &&
-            style.height === window.innerHeight + "px" &&
-            (style.backgroundColor === "rgba(0, 0, 0, 0)" || style.backgroundColor === "transparent")
-          ) {
-            css += `
-              #${child.id} {
-                background: none !important;
-                opacity: 1 !important;
-              }
-            `;
-          }
-        }
-    
-        el.textContent = css;
-      } else if (prop === 'color') {
-        // --- 文字色用は従来通り全要素に適用 ---
-        el.textContent = `
-          *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-            ${prop}: ${value} !important;
-          }
-        `;
-      }
+      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {       ${prop}: ${value} !important;     }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
