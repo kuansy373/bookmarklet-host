@@ -743,7 +743,7 @@
     };
 
     document.getElementById('pickrClose').onclick = () => {
-      // ① pickrOpen ボタンを生成
+      // pickrOpen ボタンを生成
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
       pickrOpen.textContent = '□';
@@ -755,16 +755,19 @@
         fontWeight: '100'
       });
       document.body.appendChild(pickrOpen);
+      
+      // Pickr を非表示にする
+      container.style.display = 'none';
+      style.disabled = true; // style を無効化
+      window.__pickrLoaded = false;
     
-      // ② 既存の処理を実行
-      fgPickr.destroyAndRemove();
-      bgPickr.destroyAndRemove();
-      container.remove();
-      style.remove();
-      applyStyle('color', savedFg);
-      applyStyle('background-color', savedBg);
-      updateContrast();
-      window.__pickrLoaded = !1;
+      // pickrOpen クリック時に復元
+      pickrOpen.onclick = () => {
+        container.style.display = 'block';
+        style.disabled = false;
+        pickrOpen.remove();
+        window.__pickrLoaded = true;
+      };
     };
 
   })
