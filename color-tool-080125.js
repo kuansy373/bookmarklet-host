@@ -748,11 +748,13 @@
       pickrOpen.id = 'pickrOpen';
       pickrOpen.textContent = '□';
       Object.assign(pickrOpen.style, {
+        all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
-        top: '5px',
-        right: '7px',
-        fontWeight: '100'
+        top: '10px',
+        right: '10px',
+        opacity: '0.8',
+        fontWeight: 'bolder'
       });
       document.body.appendChild(pickrOpen);
       
