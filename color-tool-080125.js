@@ -763,8 +763,12 @@
       }
     });
     document.getElementById('pickrClose').onclick = () => {
-      // pickrClose の位置を取得
-      const rect = document.getElementById('pickrClose').getBoundingClientRect();
+      const closeEl = document.getElementById('pickrClose');
+      const rect = closeEl.getBoundingClientRect();
+    
+      // ビューポート基準でそのまま使える
+      const top = rect.top;
+      const left = rect.left;
     
       // pickrOpen ボタンを生成
       const pickrOpen = document.createElement('div');
@@ -772,9 +776,9 @@
       pickrOpen.textContent = '□';
       Object.assign(pickrOpen.style, {
         cursor: 'pointer',
-        position: 'absolute',
-        top: rect.top + 'px',
-        left: rect.left + 'px',
+        position: 'fixed',  // ← ここを absolute から fixed に変更
+        top: top + 'px',
+        left: left + 'px',
         fontWeight: '100'
       });
       document.body.appendChild(pickrOpen);
