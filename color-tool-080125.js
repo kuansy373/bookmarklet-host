@@ -119,6 +119,7 @@
         cursor: pointer;
         padding: 2px 2px;
         font-size: 1em;
+        font-weight: bolder;
         border: 1px solid #aaa;
         background: #e0e0e0;
         border-radius: 4px;
