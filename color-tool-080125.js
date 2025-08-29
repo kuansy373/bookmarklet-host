@@ -741,49 +741,22 @@
       window.__fgHSL = hexToHSL(currentFg);
       updateLockIcons(); // 追加: swap時にもLockIconの色を更新
     };
-    document.getElementById("bgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentBg = savedBg = val;
-        applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
-        updateContrast();
-        window.__bgHSL = hexToHSL(val);
-        updateLockIcons(); // 追加
-      }
-    });
-    document.getElementById("fgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentFg = savedFg = val;
-        applyStyle("color", val);
-        updateSwatch(document.getElementById("fgSwatch"), val, val);
-        updateContrast();
-        updateLockIcons(); // 追加
-      }
-    });
+
     document.getElementById('pickrClose').onclick = () => {
-      const closeEl = document.getElementById('pickrClose');
-      const rect = closeEl.getBoundingClientRect();
-    
-      // ビューポート基準でそのまま使える
-      const top = rect.top;
-      const left = rect.left;
-    
-      // pickrOpen ボタンを生成
+      // ① pickrOpen ボタンを生成
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
       pickrOpen.textContent = '□';
       Object.assign(pickrOpen.style, {
         cursor: 'pointer',
-        position: 'fixed',  // ← ここを absolute から fixed に変更
-        top: top + 'px',
-        left: left + 'px',
+        position: 'fixed',
+        top: '5px',
+        right: '7px',
         fontWeight: '100'
       });
       document.body.appendChild(pickrOpen);
     
-      // 既存の処理
+      // ② 既存の処理を実行
       fgPickr.destroyAndRemove();
       bgPickr.destroyAndRemove();
       container.remove();
