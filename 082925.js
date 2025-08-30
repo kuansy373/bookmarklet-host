@@ -88,7 +88,9 @@
   fontSlider.min = 12;
   fontSlider.max = 48;
   fontSlider.value = currentSize;
+  fontSlider.style.webkitAppearance = 'auto';
   Object.assign(fontSlider.style, {
+    padding: 'initial',
     position: 'fixed',
     top: '40px',
     right: '50px',
