@@ -52,6 +52,7 @@
   scrollSlider.min = 0;
   scrollSlider.max = 15;
   scrollSlider.value = 0;
+  scrollSlider.style.border = 'initial';
   scrollSlider.style.position = 'fixed';
   scrollSlider.style.bottom = '-98vh';
   scrollSlider.style.right = '30px';
@@ -88,7 +89,9 @@
   fontSlider.min = 12;
   fontSlider.max = 48;
   fontSlider.value = currentSize;
+  fontSlider.style.webkitAppearance = 'auto';
   Object.assign(fontSlider.style, {
+    padding: 'initial',
     position: 'fixed',
     top: '40px',
     right: '50px',
