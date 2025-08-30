@@ -111,7 +111,8 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: left;
-        width: 84px;
+        width: 86px;
+        height: 13px;
       }
 
       .copy-btn {
@@ -810,13 +811,16 @@
       var targetId = button.getAttribute("data-target");
       var targetInput = document.getElementById(targetId);
       if (targetInput && targetInput.value !== "-") {
-        targetInput.select();
-        document.execCommand("copy");
-        button.textContent = "Copied!";
-        setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+        navigator.clipboard.writeText(targetInput.value).then(function(){
+          button.textContent = "Copied!";
+          setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+        }).catch(function(err){
+          console.error("コピーに失敗しました:", err);
+        });
       }
     });
   });
+
 
   })
   .catch((err) => {
