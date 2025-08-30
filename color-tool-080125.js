@@ -772,7 +772,8 @@
         top: '10px',
         right: '10px',
         opacity: '0.8',
-        fontWeight: 'bolder'
+        fontWeight: 'bolder',
+        zIndex: '999999'  // ← ここを追加！
       });
       document.body.appendChild(pickrOpen);
       
