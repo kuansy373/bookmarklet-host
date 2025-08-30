@@ -119,7 +119,7 @@
         position: absolute;
         right: 55px;
         font-size: 11px;
-        padding: 0px 1px 1.7px 1px;
+        block-size: 17px;
         border: 1.1px solid #749474;
         border-radius: 4px;
         background: #F0FFEC;
