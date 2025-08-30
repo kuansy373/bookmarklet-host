@@ -121,7 +121,7 @@
         right: 55px;
         font-size: 11px;
         block-size: 17px;
-        border: 1.1px solid #749474;
+        border: 1px solid #999;
         border-radius: 4px;
         background: #F0FFEC;
         cursor: pointer;
@@ -240,6 +240,10 @@
         margin-top: 10px !important;
         font-family: monospace !important;
         font-size: 15px !important;
+        background: #fff !important;
+        box-shadow: initial !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
       }
 
       .pcr-save {
@@ -570,6 +574,54 @@
           });
         }, 0);
       });
+      
+    pickr.on('init', instance => {
+      setTimeout(() => {
+        document.querySelectorAll('.pcr-app').forEach(app => {
+          // すでにコピー用ボタンがあればスキップ
+          if (app.querySelector('.pcr-copy')) return;
+    
+          const resultInput = app.querySelector('.pcr-result');
+          if (resultInput) {
+            // Copy ボタン生成
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = 'Copy';
+            copyBtn.className = 'pcr-copy';
+            copyBtn.style.cssText = `
+              all: unset;
+              position: absolute;
+              cursor: pointer;
+              border: 1px solid #999;
+              border-radius: 4px;
+              background: #F0FFEC;
+              padding: initial;
+              margin-top: 5px;
+              font-size: 12px;
+              block-size: 18px;
+              width: 40px;
+              right: 94px;
+              top: 132px;
+              text-align: center;
+            `;
+    
+            // .pcr-result の右隣に追加
+            resultInput.insertAdjacentElement('afterend', copyBtn);
+    
+            // クリック時にクリップボードへコピー
+            copyBtn.addEventListener('click', () => {
+              const hex = instance.getColor().toHEXA().toString();
+              navigator.clipboard.writeText(hex).then(() => {
+                console.log(`Copied ${hex} to clipboard!`);
+              }).catch(err => {
+                console.error('Failed to copy: ', err);
+              });
+            });
+          }
+        });
+      });
+    });
+
+
       pickr.on('change', (color) => {
         const hex = color.toHEXA().toString();
         setCurrent(hex);
