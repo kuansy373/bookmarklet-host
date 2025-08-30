@@ -110,7 +110,8 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        text-align: center;
+        letter-spacing: 0.7px;
+        text-align: left;
         width: 80px;
       }
 
