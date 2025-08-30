@@ -52,6 +52,7 @@
   scrollSlider.min = 0;
   scrollSlider.max = 15;
   scrollSlider.value = 0;
+  scrollSlider.style.border = 'initial';
   scrollSlider.style.position = 'fixed';
   scrollSlider.style.bottom = '-98vh';
   scrollSlider.style.right = '30px';
