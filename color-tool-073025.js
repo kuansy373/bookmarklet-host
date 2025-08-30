@@ -804,6 +804,19 @@
       };
     };
 
+  document.querySelectorAll(".copy-btn").forEach(function(button){
+    button.addEventListener("click", function(){
+      var targetId = button.getAttribute("data-target");
+      var targetInput = document.getElementById(targetId);
+      if (targetInput && targetInput.value !== "-") {
+        targetInput.select();
+        document.execCommand("copy");
+        button.textContent = "Copied!";
+        setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+      }
+    });
+  });
+
   })
   .catch((err) => {
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
