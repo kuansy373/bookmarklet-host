@@ -215,7 +215,7 @@
   document.body.appendChild(increaseBtn);
   document.body.appendChild(openBtn);
   
-
+// ここからPickr
   if (window.__pickrLoaded) return;
   window.__pickrLoaded = !0;
   const load = (tag, attrs) => new Promise((res, rej) => {
@@ -327,9 +327,21 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        letter-spacing: 0.7px;
         text-align: left;
-        width: 80px;
+        width: 86px;
+        height: 13px;
+      }
+
+      .copy-btn {
+        all: initial;
+        position: absolute;
+        right: 55px;
+        font-size: 11px;
+        block-size: 17px;
+        border: 1.1px solid #749474;
+        border-radius: 4px;
+        background: #F0FFEC;
+        cursor: pointer;
       }
 
       .hex-load-btn {
@@ -353,6 +365,7 @@
         width: 19px;
         height: 25px;
         text-align: center;
+        margin-left: 3px;
       }
 
       input.contrast-display {
@@ -411,8 +424,8 @@
         all: unset;
         display: inline-block;
         position: relative;
-        height: 12.3px;
-        width: 12.3px;
+        height: 8.3px;
+        width: 8.3px;
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -475,6 +488,7 @@
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="bgHex">Copy</button>
         <button id="dragHandle" class="hex-load-btn">🟰</button>
       </div>
     
@@ -486,6 +500,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="fgHex">Copy</button>
         <button id="swapColorsBtn" class="switch-bgfg">↕</button>
       </div>
     
@@ -976,29 +991,9 @@
       window.__fgHSL = hexToHSL(currentFg);
       updateLockIcons(); // 追加: swap時にもLockIconの色を更新
     };
-    document.getElementById("bgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentBg = savedBg = val;
-        applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
-        updateContrast();
-        window.__bgHSL = hexToHSL(val);
-        updateLockIcons(); // 追加
-      }
-    });
-    document.getElementById("fgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentFg = savedFg = val;
-        applyStyle("color", val);
-        updateSwatch(document.getElementById("fgSwatch"), val, val);
-        updateContrast();
-        updateLockIcons(); // 追加
-      }
-    });
-    
+
     document.getElementById('pickrClose').onclick = () => {
+      // pickrOpen ボタンを生成
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
       pickrOpen.textContent = '□';
@@ -1008,7 +1003,8 @@
         position: 'fixed',
         top: '80px',
         right: '17.5px',
-        opacity: '0.3'
+        opacity: '0.3',
+        zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
       
@@ -1025,7 +1021,22 @@
         window.__pickrLoaded = true;
       };
     };
-    
+
+  document.querySelectorAll(".copy-btn").forEach(function(button){
+    button.addEventListener("click", function(){
+      var targetId = button.getAttribute("data-target");
+      var targetInput = document.getElementById(targetId);
+      if (targetInput && targetInput.value !== "-") {
+        navigator.clipboard.writeText(targetInput.value).then(function(){
+          button.textContent = "Copied!";
+          setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+        }).catch(function(err){
+          console.error("コピーに失敗しました:", err);
+        });
+      }
+    });
+  });
+
   })
   .catch((err) => {
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
