@@ -111,7 +111,7 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: left;
-        width: 80px;
+        width: 84px;
       }
 
       .copy-btn {
@@ -205,8 +205,8 @@
         all: unset;
         display: inline-block;
         position: relative;
-        height: 12.3px;
-        width: 12.3px;
+        height: 8.3px;
+        width: 8.3px;
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
