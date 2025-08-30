@@ -110,9 +110,21 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        letter-spacing: 0.7px;
         text-align: left;
-        width: 80px;
+        width: 86px;
+        height: 13px;
+      }
+
+      .copy-btn {
+        all: initial;
+        position: absolute;
+        right: 55px;
+        font-size: 11px;
+        block-size: 17px;
+        border: 1.1px solid #749474;
+        border-radius: 4px;
+        background: #F0FFEC;
+        cursor: pointer;
       }
 
       .hex-load-btn {
@@ -136,6 +148,7 @@
         width: 19px;
         height: 25px;
         text-align: center;
+        margin-left: 3px;
       }
 
       input.contrast-display {
@@ -194,8 +207,8 @@
         all: unset;
         display: inline-block;
         position: relative;
-        height: 12.3px;
-        width: 12.3px;
+        height: 8.3px;
+        width: 8.3px;
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -258,6 +271,7 @@
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="bgHex">Copy</button>
         <button id="dragHandle" class="hex-load-btn">🟰</button>
       </div>
     
@@ -269,6 +283,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="fgHex">Copy</button>
         <button id="swapColorsBtn" class="switch-bgfg">↕</button>
       </div>
     
@@ -769,8 +784,8 @@
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
-        top: '10px',
-        right: '10px',
+        top: '15px',
+        right: '15px',
         opacity: '0.8',
         fontWeight: 'bolder',
         zIndex: '999999'  // ← ここを追加！
@@ -790,6 +805,21 @@
         window.__pickrLoaded = true;
       };
     };
+
+  document.querySelectorAll(".copy-btn").forEach(function(button){
+    button.addEventListener("click", function(){
+      var targetId = button.getAttribute("data-target");
+      var targetInput = document.getElementById(targetId);
+      if (targetInput && targetInput.value !== "-") {
+        navigator.clipboard.writeText(targetInput.value).then(function(){
+          button.textContent = "Copied!";
+          setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+        }).catch(function(err){
+          console.error("コピーに失敗しました:", err);
+        });
+      }
+    });
+  });
 
   })
   .catch((err) => {
