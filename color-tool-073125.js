@@ -110,9 +110,20 @@
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        letter-spacing: 0.7px;
         text-align: left;
         width: 80px;
+      }
+
+      .copy-btn {
+        all: initial;
+        position: absolute;
+        right: 60px;
+        font-size: 9px;
+        padding: 1px;
+        border: 1px solid #000;
+        border-radius: 2px;
+        background: #e3e3e3;
+        cursor: pointer;
       }
 
       .hex-load-btn {
@@ -258,6 +269,7 @@
         </div>
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="bgHex">Copy</button>
         <button id="dragHandle" class="hex-load-btn">🟰</button>
       </div>
     
@@ -269,6 +281,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="fgHex">Copy</button>
         <button id="swapColorsBtn" class="switch-bgfg">↕</button>
       </div>
     
@@ -769,8 +782,8 @@
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
-        top: '10px',
-        right: '10px',
+        top: '15px',
+        right: '15px',
         opacity: '0.8',
         fontWeight: 'bolder',
         zIndex: '999999'  // ← ここを追加！
