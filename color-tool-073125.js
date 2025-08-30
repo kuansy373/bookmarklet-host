@@ -111,18 +111,19 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         text-align: left;
-        width: 80px;
+        width: 86px;
+        height: 13px;
       }
 
       .copy-btn {
         all: initial;
         position: absolute;
-        right: 60px;
-        font-size: 9px;
-        padding: 1px;
-        border: 1px solid #000;
-        border-radius: 2px;
-        background: #e3e3e3;
+        right: 55px;
+        font-size: 11px;
+        block-size: 17px;
+        border: 1.1px solid #749474;
+        border-radius: 4px;
+        background: #F0FFEC;
         cursor: pointer;
       }
 
@@ -147,6 +148,7 @@
         width: 19px;
         height: 25px;
         text-align: center;
+        margin-left: 3px;
       }
 
       input.contrast-display {
@@ -205,8 +207,8 @@
         all: unset;
         display: inline-block;
         position: relative;
-        height: 12.3px;
-        width: 12.3px;
+        height: 8.3px;
+        width: 8.3px;
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -803,6 +805,21 @@
         window.__pickrLoaded = true;
       };
     };
+
+  document.querySelectorAll(".copy-btn").forEach(function(button){
+    button.addEventListener("click", function(){
+      var targetId = button.getAttribute("data-target");
+      var targetInput = document.getElementById(targetId);
+      if (targetInput && targetInput.value !== "-") {
+        navigator.clipboard.writeText(targetInput.value).then(function(){
+          button.textContent = "Copied!";
+          setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+        }).catch(function(err){
+          console.error("コピーに失敗しました:", err);
+        });
+      }
+    });
+  });
 
   })
   .catch((err) => {
