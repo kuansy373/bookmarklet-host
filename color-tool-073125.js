@@ -121,7 +121,7 @@
         right: 55px;
         font-size: 11px;
         block-size: 17px;
-        border: 1.1px solid #749474;
+        border: 1px solid #999;
         border-radius: 4px;
         background: #F0FFEC;
         cursor: pointer;
@@ -240,6 +240,10 @@
         margin-top: 10px !important;
         font-family: monospace !important;
         font-size: 15px !important;
+        background: #fff !important;
+        box-shadow: initial !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
       }
 
       .pcr-save {
@@ -570,6 +574,61 @@
           });
         }, 0);
       });
+      
+    pickr.on('init', instance => {
+      setTimeout(() => {
+        document.querySelectorAll('.pcr-app').forEach(app => {
+          // すでにコピー用ボタンがあればスキップ
+          if (app.querySelector('.pcr-copy')) return;
+    
+          const resultInput = app.querySelector('.pcr-result');
+          if (resultInput) {
+            // Copy ボタン生成
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = 'Copy';
+            copyBtn.className = 'pcr-copy';
+            copyBtn.style.cssText = `
+              all: unset;
+              position: absolute;
+              cursor: pointer;
+              border: 1px solid #999;
+              border-radius: 4px;
+              background: #F0FFEC;
+              padding: initial;
+              margin-top: 5px;
+              font-size: 12px;
+              block-size: 18px;
+              width: 42px;
+              right: 94px;
+              top: 132px;
+              text-align: center;
+            `;
+    
+            // .pcr-result の右隣に追加
+            resultInput.insertAdjacentElement('afterend', copyBtn);
+    
+            // クリック時にクリップボードへコピー
+          document.querySelectorAll(".pcr-copy").forEach(function(button){
+            button.addEventListener("click", function(){
+              const app = button.closest('.pcr-app');
+              const resultInput = app.querySelector('.pcr-result');
+          
+              if (resultInput && resultInput.value !== "-") {
+                navigator.clipboard.writeText(resultInput.value).then(function(){
+                  button.textContent = "Copied!";
+                  setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+                }).catch(function(err){
+                  console.error("コピーに失敗しました:", err);
+                });
+              }
+            });
+          });
+          }
+        });
+      });
+    });
+
+
       pickr.on('change', (color) => {
         const hex = color.toHEXA().toString();
         setCurrent(hex);
@@ -784,11 +843,10 @@
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
-        top: '15px',
-        right: '15px',
-        opacity: '0.8',
-        fontWeight: 'bolder',
-        zIndex: '999999'  // ← ここを追加！
+        top: '80px',
+        right: '17.5px',
+        opacity: '0.3',
+        zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
       
