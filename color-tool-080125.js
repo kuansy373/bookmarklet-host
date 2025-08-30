@@ -784,11 +784,10 @@
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
-        top: '15px',
-        right: '15px',
-        opacity: '0.8',
-        fontWeight: 'bolder',
-        zIndex: '999999'  // ← ここを追加！
+        top: '80px',
+        right: '17.5px',
+        opacity: '0.3',
+        zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
       
