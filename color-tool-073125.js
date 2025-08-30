@@ -54,11 +54,13 @@
       }
 
       #pickrClose {
+        all: initial;
+        font-size: 15px;
+        font-weight: bolder;
         cursor: pointer;
         position: absolute;
         top: 5px;
         right: 7px;
-        font-weight: 100;
       }
 
       #pickrContainer .row.contrast-row {
@@ -103,11 +105,13 @@
         all: initial;
         font-family: monospace;
         font-size: 14px;
+        font-weight: normal;
         padding: 2px 4px;
         background: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
-        text-align: center;
+        letter-spacing: 0.7px;
+        text-align: left;
         width: 80px;
       }
 
@@ -116,15 +120,29 @@
         cursor: pointer;
         padding: 2px 2px;
         font-size: 1em;
+        font-weight: bolder;
         border: 1px solid #aaa;
         background: #e0e0e0;
         border-radius: 4px;
+      }
+
+      .switch-bgfg {
+        all: initial;
+        font-family: monospace;
+        font-size: 18px;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+        width: 19px;
+        height: 25px;
+        text-align: center;
       }
 
       input.contrast-display {
         all: initial;
         font-family: monospace;
         font-size: 14px;
+        font-weight: normal;
         width: 40px;
         padding: 1px;
         background: #ffffff;
@@ -208,7 +226,7 @@
         height: 20px !important;
         margin-top: 10px !important;
         font-family: monospace !important;
-        font-size: 18px !important;
+        font-size: 15px !important;
       }
 
       .pcr-save {
@@ -251,7 +269,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
-        <button id="swapColorsBtn" class="hex-load-btn" style="font-family: monospace;font-size: 15px;">↕</button>
+        <button id="swapColorsBtn" class="switch-bgfg">↕</button>
       </div>
     
       <div class="row">
@@ -741,37 +759,38 @@
       window.__fgHSL = hexToHSL(currentFg);
       updateLockIcons(); // 追加: swap時にもLockIconの色を更新
     };
-    document.getElementById("bgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentBg = savedBg = val;
-        applyStyle("background-color", val);
-        updateSwatch(document.getElementById("bgSwatch"), val, val);
-        updateContrast();
-        window.__bgHSL = hexToHSL(val);
-        updateLockIcons(); // 追加
-      }
-    });
-    document.getElementById("fgHex").addEventListener("change", (e) => {
-      const val = e.target.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        currentFg = savedFg = val;
-        applyStyle("color", val);
-        updateSwatch(document.getElementById("fgSwatch"), val, val);
-        updateContrast();
-        updateLockIcons(); // 追加
-      }
-    });
+
     document.getElementById('pickrClose').onclick = () => {
-      fgPickr.destroyAndRemove();
-      bgPickr.destroyAndRemove();
-      container.remove();
-      style.remove();
-      applyStyle('color', savedFg);
-      applyStyle('background-color', savedBg);
-      updateContrast();
-      window.__pickrLoaded = !1
-    }
+      // pickrOpen ボタンを生成
+      const pickrOpen = document.createElement('div');
+      pickrOpen.id = 'pickrOpen';
+      pickrOpen.textContent = '□';
+      Object.assign(pickrOpen.style, {
+        all: 'initial',
+        cursor: 'pointer',
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        opacity: '0.8',
+        fontWeight: 'bolder',
+        zIndex: '999999'  // ← ここを追加！
+      });
+      document.body.appendChild(pickrOpen);
+      
+      // Pickr を非表示にする
+      container.style.display = 'none';
+      style.disabled = true; // style を無効化
+      window.__pickrLoaded = false;
+    
+      // pickrOpen クリック時に復元
+      pickrOpen.onclick = () => {
+        container.style.display = 'block';
+        style.disabled = false;
+        pickrOpen.remove();
+        window.__pickrLoaded = true;
+      };
+    };
+
   })
   .catch((err) => {
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
