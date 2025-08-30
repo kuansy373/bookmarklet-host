@@ -117,12 +117,12 @@
       .copy-btn {
         all: initial;
         position: absolute;
-        right: 60px;
-        font-size: 9px;
-        padding: 1px;
-        border: 1px solid #000;
-        border-radius: 2px;
-        background: #e3e3e3;
+        right: 55px;
+        font-size: 11px;
+        padding: 0px 1px 1.7px 1px;
+        border: 1.1px solid #749474;
+        border-radius: 4px;
+        background: #F0FFEC;
         cursor: pointer;
       }
 
@@ -147,6 +147,7 @@
         width: 19px;
         height: 25px;
         text-align: center;
+        margin-left: 3px;
       }
 
       input.contrast-display {
