@@ -126,6 +126,18 @@
         border-radius: 4px;
       }
 
+      .switch-bgfg {
+        all: initial;
+        font-family: monospace;
+        font-size: 18px;
+        border: 1px solid #aaa;
+        background: #e0e0e0;
+        border-radius: 4px;
+        width: 19px;
+        height: 25px;
+        text-align: center;
+      }
+
       input.contrast-display {
         all: initial;
         font-family: monospace;
@@ -257,7 +269,7 @@
         </div>
         <button id="fgHexLoad" class="hex-load-btn">⇦</button>
         <input id="fgHex" class="hex-display" value="-">
-        <button id="swapColorsBtn" style="all: initial;font-family: monospace;font-size: 18px;border: 1px solid #aaa;background: #e0e0e0;border-radius: 4px;width: 19px;height: 25px;text-align: center;">↕</button>
+        <button id="swapColorsBtn" class="switch-bgfg">↕</button>
       </div>
     
       <div class="row">
