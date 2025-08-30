@@ -611,7 +611,14 @@
             copyBtn.addEventListener('click', () => {
               const hex = instance.getColor().toHEXA().toString();
               navigator.clipboard.writeText(hex).then(() => {
-                console.log(`Copied ${hex} to clipboard!`);
+                // ボタンテキストを変更
+                const oldText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+            
+                // 1.5秒後に元に戻す
+                setTimeout(() => {
+                  copyBtn.textContent = oldText;
+                }, 1500);
               }).catch(err => {
                 console.error('Failed to copy: ', err);
               });
