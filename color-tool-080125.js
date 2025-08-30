@@ -598,7 +598,7 @@
               margin-top: 5px;
               font-size: 12px;
               block-size: 18px;
-              width: 40px;
+              width: 42px;
               right: 94px;
               top: 132px;
               text-align: center;
@@ -608,21 +608,21 @@
             resultInput.insertAdjacentElement('afterend', copyBtn);
     
             // クリック時にクリップボードへコピー
-            copyBtn.addEventListener('click', () => {
-              const hex = instance.getColor().toHEXA().toString();
-              navigator.clipboard.writeText(hex).then(() => {
-                // ボタンテキストを変更
-                const oldText = copyBtn.textContent;
-                copyBtn.textContent = 'Copied!';
-            
-                // 1.5秒後に元に戻す
-                setTimeout(() => {
-                  copyBtn.textContent = oldText;
-                }, 1500);
-              }).catch(err => {
-                console.error('Failed to copy: ', err);
-              });
+          document.querySelectorAll(".pcr-copy").forEach(function(button){
+            button.addEventListener("click", function(){
+              const app = button.closest('.pcr-app');
+              const resultInput = app.querySelector('.pcr-result');
+          
+              if (resultInput && resultInput.value !== "-") {
+                navigator.clipboard.writeText(resultInput.value).then(function(){
+                  button.textContent = "Copied!";
+                  setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+                }).catch(function(err){
+                  console.error("コピーに失敗しました:", err);
+                });
+              }
             });
+          });
           }
         });
       });
