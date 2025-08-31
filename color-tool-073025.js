@@ -178,7 +178,7 @@
 
       #randomColorBtn {
         all: initial;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
@@ -523,7 +523,7 @@
                 display: inline-block;
                 padding: 0px 4px 3px 4px;
                 border-radius: 4px;
-                background: #e0e0e0;
+                background: #FFEEEE;
                 border: 1px solid #aaa;
                 height: 22px;
                 width: 28px;
