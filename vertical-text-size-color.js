@@ -299,6 +299,7 @@
         padding-bottom: 2px;
         padding-left: 0.3px;
         margin-right: 20px;
+        background: #F4F4F4;
       }
 
       #dragHandle:active {
@@ -358,7 +359,7 @@
         font-size: 1em;
         font-weight: bolder;
         border: 1px solid #aaa;
-        background: #FFEEEE;
+        background: #dddddd;
         border-radius: 4px;
       }
 
@@ -371,7 +372,7 @@
         font-family: monospace;
         font-size: 18px;
         border: 1px solid #aaa;
-        background: #FFEEEE;
+        background: #dddddd;
         border-radius: 4px;
         width: 19px;
         height: 25px;
@@ -398,7 +399,7 @@
 
       #randomColorBtn {
         all: initial;
-        background: #FFEEEE;
+        background: #E6FDFF;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
@@ -743,7 +744,7 @@
                 display: inline-block;
                 padding: 0px 4px 3px 4px;
                 border-radius: 4px;
-                background: #FFEEEE;
+                background: #F4F4F4;
                 border: 1px solid #aaa;
                 height: 22px;
                 width: 28px;
