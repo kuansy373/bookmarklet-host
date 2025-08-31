@@ -134,7 +134,7 @@
         font-size: 1em;
         font-weight: bolder;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border-radius: 4px;
       }
 
@@ -143,7 +143,7 @@
         font-family: monospace;
         font-size: 18px;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border-radius: 4px;
         width: 19px;
         height: 25px;
