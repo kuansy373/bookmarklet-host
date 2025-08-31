@@ -35,8 +35,6 @@
 `;
   document.body.appendChild(container);
   document.body.style.cssText = `
-  background-color: #e8d3c7;
-  color: #2c4f45;
   display: flex;
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
