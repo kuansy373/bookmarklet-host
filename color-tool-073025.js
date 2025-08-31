@@ -81,6 +81,10 @@
         margin-right: 20px;
       }
 
+      #dragHandle:active {
+        transform: none;
+      }
+
       /* ---- .color-swatch 関連 ---- */
       .color-swatch {
         width: 30px;
@@ -138,6 +142,10 @@
         border-radius: 4px;
       }
 
+      .hex-load-btn:active {
+        transform: translateY(1px);
+      }
+
       .switch-bgfg {
         all: initial;
         font-family: monospace;
@@ -149,6 +157,10 @@
         height: 25px;
         text-align: center;
         margin-left: 3px;
+      }
+
+      .switch-bgfg:active {
+        transform: translateY(1px);
       }
 
       input.contrast-display {
@@ -172,6 +184,10 @@
         padding: 2px 6px;
         font-size: 15px;
         font-family: monospace;
+      }
+
+      #randomColorBtn:active {
+        transform: translateY(1px);
       }
 
       #bgLockIcon, #fgLockIcon {
@@ -258,6 +274,10 @@
         border: 1px solid #999 !important;
         border-radius: 4px !important;
         background: #97DDC8!important
+      }
+
+      .pcr-save:active {
+        transform: translateY(1px);
       }
     `;
 
