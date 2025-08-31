@@ -168,10 +168,10 @@
         font-family: monospace;
         font-size: 14px;
         font-weight: normal;
-        width: 40px;
+        width: 35px;
         padding: 1px;
         background: #ffffff;
-        border: 1px solid #999;
+        border: 2px solid #999;
         border-radius: 4px;
         text-align: center;
       }
