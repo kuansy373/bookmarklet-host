@@ -301,6 +301,10 @@
         margin-right: 20px;
       }
 
+      #dragHandle:active {
+        transform: none;
+      }
+
       /* ---- .color-swatch 関連 ---- */
       .color-swatch {
         width: 30px;
@@ -341,7 +345,7 @@
         right: 55px;
         font-size: 11px;
         block-size: 17px;
-        border: 1.1px solid #749474;
+        border: 1px solid #999;
         border-radius: 4px;
         background: #F0FFEC;
         cursor: pointer;
@@ -354,8 +358,12 @@
         font-size: 1em;
         font-weight: bolder;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border-radius: 4px;
+      }
+
+      .hex-load-btn:active {
+        transform: translateY(1px);
       }
 
       .switch-bgfg {
@@ -363,7 +371,7 @@
         font-family: monospace;
         font-size: 18px;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border-radius: 4px;
         width: 19px;
         height: 25px;
@@ -371,27 +379,35 @@
         margin-left: 3px;
       }
 
+      .switch-bgfg:active {
+        transform: translateY(1px);
+      }
+
       input.contrast-display {
         all: initial;
         font-family: monospace;
         font-size: 14px;
         font-weight: normal;
-        width: 40px;
+        width: 35px;
         padding: 1px;
         background: #ffffff;
-        border: 1px solid #999;
+        border: 2px solid #999;
         border-radius: 4px;
         text-align: center;
       }
 
       #randomColorBtn {
         all: initial;
-        background: #e0e0e0;
+        background: #FFEEEE;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
         font-size: 15px;
         font-family: monospace;
+      }
+
+      #randomColorBtn:active {
+        transform: translateY(1px);
       }
 
       #bgLockIcon, #fgLockIcon {
@@ -460,6 +476,10 @@
         margin-top: 10px !important;
         font-family: monospace !important;
         font-size: 15px !important;
+        background: #fff !important;
+        box-shadow: initial !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
       }
 
       .pcr-save {
@@ -471,8 +491,13 @@
         width: 40px !important;
         margin-top: 10px !important;
         padding: 0px !important;
-        border: 0px !important;
-        border-radius: 2px !important;
+        border: 1px solid #999 !important;
+        border-radius: 4px !important;
+        background: #97DDC8!important
+      }
+
+      .pcr-save:active {
+        transform: translateY(1px);
       }
     `;
 
@@ -718,7 +743,7 @@
                 display: inline-block;
                 padding: 0px 4px 3px 4px;
                 border-radius: 4px;
-                background: #e0e0e0;
+                background: #FFEEEE;
                 border: 1px solid #aaa;
                 height: 22px;
                 width: 28px;
@@ -790,6 +815,61 @@
           });
         }, 0);
       });
+      
+    pickr.on('init', instance => {
+      setTimeout(() => {
+        document.querySelectorAll('.pcr-app').forEach(app => {
+          // すでにコピー用ボタンがあればスキップ
+          if (app.querySelector('.pcr-copy')) return;
+    
+          const resultInput = app.querySelector('.pcr-result');
+          if (resultInput) {
+            // Copy ボタン生成
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = 'Copy';
+            copyBtn.className = 'pcr-copy';
+            copyBtn.style.cssText = `
+              all: unset;
+              position: absolute;
+              cursor: pointer;
+              border: 1px solid #999;
+              border-radius: 4px;
+              background: #F0FFEC;
+              padding: initial;
+              margin-top: 5px;
+              font-size: 12px;
+              block-size: 18px;
+              width: 42px;
+              right: 94px;
+              top: 132px;
+              text-align: center;
+            `;
+    
+            // .pcr-result の右隣に追加
+            resultInput.insertAdjacentElement('afterend', copyBtn);
+    
+            // クリック時にクリップボードへコピー
+          document.querySelectorAll(".pcr-copy").forEach(function(button){
+            button.addEventListener("click", function(){
+              const app = button.closest('.pcr-app');
+              const resultInput = app.querySelector('.pcr-result');
+          
+              if (resultInput && resultInput.value !== "-") {
+                navigator.clipboard.writeText(resultInput.value).then(function(){
+                  button.textContent = "Copied!";
+                  setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+                }).catch(function(err){
+                  console.error("コピーに失敗しました:", err);
+                });
+              }
+            });
+          });
+          }
+        });
+      });
+    });
+
+
       pickr.on('change', (color) => {
         const hex = color.toHEXA().toString();
         setCurrent(hex);
