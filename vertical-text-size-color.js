@@ -179,7 +179,7 @@ leftbox.addEventListener('change', e => {
     scrollSliderRight.style.display = 'none';
     scrollSliderLeft.style.display = 'block';
   } else {
-    scrollSliderRight.style.display = 'block';
+    scrollSliderRight.style.display = 'none';
     scrollSliderLeft.style.display = 'none';
   }
 });
@@ -195,11 +195,11 @@ bothbox.addEventListener('change', e => {
     scrollSliderRight.style.display = 'block';
   } else if (!leftbox.checked) {
     scrollSliderLeft.style.display = 'none';
-    scrollSliderRight.style.display = 'block';
-  } else {
-    scrollSliderLeft.style.display = 'block';
     scrollSliderRight.style.display = 'none';
-  }
+  } else {
+    scrollSliderLeft.style.display = 'none';
+    scrollSliderRight.style.display = 'none';
+  } 
 });
   // 位置、長さ、透明度
   document.getElementById('scrollX').addEventListener('input', e => {
@@ -230,6 +230,49 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     scrollSliderLeft.style.height = '200vh';
     scrollSliderLeft.style.bottom = '-98vh';
   }
+});
+
+// === UIトグルボタン ===
+const scrollUIToggle = document.createElement('button');
+scrollUIToggle.textContent = '△';
+Object.assign(scrollUIToggle.style, {
+  all: 'initial',
+  position: 'fixed',
+    top: '10px',
+    left: '10px',
+    padding: '0 8px',
+    fontSize: '14px',
+    opacity: '0.3',
+    cursor: 'pointer',
+    zIndex: '10001',
+    display: 'block'
+});
+document.body.appendChild(scrollUIToggle);
+
+// === scrollUI の初期状態は非表示 ===
+scrollUI.style.display = 'none';
+  
+// トグルボタン押下で UI 表示
+scrollUIToggle.addEventListener('click', () => {
+  scrollUI.style.display = 'block';
+});
+
+// scrollUI 内に閉じるボタンを追加
+const scrollSCloseBtn = document.createElement('button');
+scrollSCloseBtn.textContent = '✕';
+Object.assign(scrollSCloseBtn.style, {
+  all: 'initial',
+  position: 'absolute',
+  top: '4px',
+  right: '4px',
+  cursor: 'pointer',
+  fontSize: '14px',
+});
+scrollUI.appendChild(scrollSCloseBtn);
+
+// 閉じるボタンで UI 非表示
+scrollSCloseBtn.addEventListener('click', () => {
+  scrollUI.style.display = 'none';
 });
   
   ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
@@ -280,7 +323,6 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     fontSize: '14px',
     cursor: 'pointer',
     zIndex: '10001',
-    borderRadius: '4px',
     display: 'none'
   });
   const decreaseBtn = document.createElement('button');
@@ -327,7 +369,6 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     opacity: '0.3',
     cursor: 'pointer',
     zIndex: '10001',
-    borderRadius: '4px',
     display: 'block'
   });
   closeBtn.addEventListener('click', () => {
