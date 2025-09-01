@@ -53,10 +53,10 @@ scrollSliderRight.max = 15;
 scrollSliderRight.value = 0;
 Object.assign(scrollSliderRight.style, {
   all: 'unset',
-  border: '1px solid',
+  // border: '1px solid',
   position: 'fixed',
-  height: '200vh',
-  bottom: '-98vh',
+  height: '210vh',
+  bottom: '-108vh',
   right: '30px',
   zIndex: '9999',
   width: '80px',
@@ -72,13 +72,13 @@ scrollSliderLeft.max = 15;
 scrollSliderLeft.value = 0;
 Object.assign(scrollSliderLeft.style, {
   all: 'unset',
-  border: '1px solid',
+  // border: '1px solid',
   position: 'fixed',
-  bottom: '-98vh',
+  height: '210vh',
+  bottom: '-108vh',
   left: '30px',
   zIndex: '9999',
   width: '80px',
-  height: '200vh',
   opacity: '1',
   direction: 'rtl', // 左用は増加方向反転
 });
@@ -129,14 +129,15 @@ Object.assign(scrollUI.style, {
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
-  <div style="margin-bottom:4px;">スクロールバー設定</div>
-  <label><input id="scrollB" type="checkbox" checked> 枠線を表示</label><br>
-  <label><input id="scrollBoth" type="checkbox"　checked> 両側に表示</label><br>
-  <label><input id="scrollRight" type="checkbox"> 右側のみ</label><br>
-  <label><input id="scrollLeft" type="checkbox"> 左側のみ</label><br>
-  <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
-  <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>X位置: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <div style="margin-bottom:4px;">Scrollbar Settings</div>
+  <label><input id="scrollB" type="checkbox"> Show borders</label><br>
+  <label><input id="scrollHide" type="checkbox" checked> Hide bulue ball</label><br>
+  <label><input id="scrollBoth" type="checkbox"　checked> Both sides</label><br>
+  <label><input id="scrollRight" type="checkbox"> Right Side only</label><br>
+  <label><input id="scrollLeft" type="checkbox"> Left Side only</label><br>
+  <label>X Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
 `;
 document.body.appendChild(scrollUI);
 
@@ -214,6 +215,21 @@ document.getElementById('scrollW').addEventListener('input', e => {
 document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
+});
+
+  // 「スライダー非表示」チェックボックスの処理
+document.getElementById('scrollHide').addEventListener('change', e => {
+  if (e.target.checked) {
+    scrollSliderRight.style.height = '210vh';
+    scrollSliderRight.style.bottom = '-108vh';
+    scrollSliderLeft.style.height = '210vh';
+    scrollSliderLeft.style.bottom = '-108vh';
+  } else {
+    scrollSliderRight.style.height = '200vh';
+    scrollSliderRight.style.bottom = '-98vh';
+    scrollSliderLeft.style.height = '200vh';
+    scrollSliderLeft.style.bottom = '-98vh';
+  }
 });
   
   ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
