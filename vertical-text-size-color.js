@@ -55,16 +55,16 @@ Object.assign(scrollSliderRight.style, {
   all: 'unset',
   border: '1px solid',
   position: 'fixed',
+  height: '200vh',
   bottom: '-98vh',
   right: '30px',
   zIndex: '9999',
   width: '80px',
-  height: '200vh',
-  opacity: '0.05',
+  opacity: '1',
 });
 document.body.appendChild(scrollSliderRight);
 
-// === 左スライダー（初期非表示） ===
+// === 左スライダー（初期表示） ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
 scrollSliderLeft.min = 0;
@@ -79,8 +79,7 @@ Object.assign(scrollSliderLeft.style, {
   zIndex: '9999',
   width: '80px',
   height: '200vh',
-  opacity: '0.05',
-  display: 'none', // 非表示
+  opacity: '1',
   direction: 'rtl', // 左用は増加方向反転
 });
 document.body.appendChild(scrollSliderLeft);
@@ -130,43 +129,58 @@ Object.assign(scrollUI.style, {
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
-  <div style="margin-bottom:4px;">📐 スクロールバー設定</div>
-  <label>X位置: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"></label><br>
-  <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="0.05" style="all:initial;width:60px;border:1px solid;"></label><br>
+  <div style="margin-bottom:4px;">スクロールバー設定</div>
   <label><input id="scrollB" type="checkbox" checked> 枠線を表示</label><br>
-  <label><input id="scrollRight" type="checkbox" checked> 右側に表示</label><br>
-  <label><input id="scrollLeft" type="checkbox"> 左側に表示</label><br>
-  <label><input id="scrollBoth" type="checkbox"> 両側に表示</label><br>
+  <label><input id="scrollBoth" type="checkbox"　checked> 両側に表示</label><br>
+  <label><input id="scrollRight" type="checkbox"> 右側のみ</label><br>
+  <label><input id="scrollLeft" type="checkbox"> 左側のみ</label><br>
+  <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"></label><br>
+  <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>X位置: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
 document.body.appendChild(scrollUI);
 
 // === UIイベント ===
-document.getElementById('scrollX').addEventListener('input', e => {
-  const val = parseInt(e.target.value, 10);
-  scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
-});
-
-document.getElementById('scrollW').addEventListener('input', e => {
-  const val = parseInt(e.target.value, 10);
-  scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
-});
-
-document.getElementById('scrollO').addEventListener('input', e => {
-  const val = parseFloat(e.target.value);
-  scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
-});
-
+// 枠線
 document.getElementById('scrollB').addEventListener('change', e => {
   const border = e.target.checked ? '1px solid' : 'none';
   scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
 });
-
+// 右側、左側、両側
+const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
+const bothbox = document.getElementById('scrollBoth');
+bothbox.checked = true;
+// 最初に「両側に表示」にチェック
+scrollSliderLeft.style.display = 'block';
+scrollSliderRight.style.display = 'block';
+// 右側に表示チェックイベント
+rightbox.addEventListener('change', e => {
+  if (e.target.checked) {
+    if (bothbox.checked) {
+      bothbox.checked = false;
+    }
+    if (leftbox.checked) {
+        leftbox.checked = false;
+      }
+    scrollSliderRight.style.display = 'block';
+    scrollSliderLeft.style.display = 'none';
+  } else {
+    // 左がチェックされていなければ右を非表示
+    if (!leftbox.checked && !bothbox.checked) {
+      scrollSliderRight.style.display = 'none';
+    } else {
+      scrollSliderRight.style.display = 'block';
+    }
+  }
+});
 leftbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (bothbox.checked) {
       bothbox.checked = false;
+    }
+    if (rightbox.checked) {
+      rightbox.checked = false;
     }
     scrollSliderRight.style.display = 'none';
     scrollSliderLeft.style.display = 'block';
@@ -175,10 +189,11 @@ leftbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'none';
   }
 });
-
-const bothbox = document.getElementById('scrollBoth');
 bothbox.addEventListener('change', e => {
   if (e.target.checked) {
+    if (rightbox.checked) {
+      rightbox.checked = false;
+    }
     if (leftbox.checked) {
       leftbox.checked = false;
     }
@@ -191,6 +206,21 @@ bothbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'block';
     scrollSliderRight.style.display = 'none';
   }
+});
+  // 位置、長さ、透明度
+  document.getElementById('scrollX').addEventListener('input', e => {
+  const val = parseInt(e.target.value, 10);
+  scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
+});
+
+document.getElementById('scrollW').addEventListener('input', e => {
+  const val = parseInt(e.target.value, 10);
+  scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
+});
+
+document.getElementById('scrollO').addEventListener('input', e => {
+  const val = parseFloat(e.target.value);
+  scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
 });
   
   ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
