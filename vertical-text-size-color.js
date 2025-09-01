@@ -45,39 +45,76 @@
   padding: 0;
   overflow-x: hidden;
 `;
-  const scrollSlider = document.createElement('input');
-  scrollSlider.type = 'range';
-  scrollSlider.min = 0;
-  scrollSlider.max = 15;
-  scrollSlider.value = 0;
-  scrollSlider.style.all = 'unset';
-  scrollSlider.style.border = '1px solid';
-  scrollSlider.style.position = 'fixed';
-  scrollSlider.style.bottom = '-98vh';
-  scrollSlider.style.right = '30px';
-  scrollSlider.style.zIndex = '9999';
-  scrollSlider.style.width = '80px';
-  scrollSlider.style.opacity = '0.05';
-  scrollSlider.style.height = '200vh';
-  document.body.appendChild(scrollSlider);
-  const scroller = document.scrollingElement || document.documentElement;
-  let scrollSpeed = 0;
-  let lastTimestamp = null;
+// === 右スライダー（初期表示） ===
+const scrollSliderRight = document.createElement('input');
+scrollSliderRight.type = 'range';
+scrollSliderRight.min = 0;
+scrollSliderRight.max = 15;
+scrollSliderRight.value = 0;
+Object.assign(scrollSliderRight.style, {
+  all: 'unset',
+  border: '1px solid',
+  position: 'fixed',
+  bottom: '-98vh',
+  right: '30px',
+  zIndex: '9999',
+  width: '80px',
+  height: '200vh',
+  opacity: '0.05',
+});
+document.body.appendChild(scrollSliderRight);
 
-  function forceScroll(timestamp) {
-    if (lastTimestamp !== null) {
-      const elapsed = timestamp - lastTimestamp;
-      scroller.scrollTop += (scrollSpeed * elapsed) / 1000
-    }
-    lastTimestamp = timestamp;
-    requestAnimationFrame(forceScroll)
+// === 左スライダー（初期非表示） ===
+const scrollSliderLeft = document.createElement('input');
+scrollSliderLeft.type = 'range';
+scrollSliderLeft.min = 0;
+scrollSliderLeft.max = 15;
+scrollSliderLeft.value = 0;
+Object.assign(scrollSliderLeft.style, {
+  all: 'unset',
+  border: '1px solid',
+  position: 'fixed',
+  bottom: '-98vh',
+  left: '30px',
+  zIndex: '9999',
+  width: '80px',
+  height: '200vh',
+  opacity: '0.05',
+  display: 'none', // 非表示
+  direction: 'rtl', // 左用は増加方向反転
+});
+document.body.appendChild(scrollSliderLeft);
+
+// === スクロール処理 ===
+const scroller = document.scrollingElement || document.documentElement;
+let scrollSpeed = 0;
+let lastTimestamp = null;
+
+function forceScroll(timestamp) {
+  if (lastTimestamp !== null) {
+    const elapsed = timestamp - lastTimestamp;
+    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
   }
-  scrollSlider.addEventListener('input', () => {
-    scrollSpeed = parseFloat(scrollSlider.value) * 15
-  });
+  lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
-  
-// === スクロールバー位置・サイズ・透明度・ボーダー調整 UI ===
+}
+
+// スライダー入力に応じてスクロール速度を変更
+function syncScrollSpeed(value) {
+  scrollSpeed = parseFloat(value) * 15;
+}
+scrollSliderRight.addEventListener('input', () => {
+  syncScrollSpeed(scrollSliderRight.value);
+  scrollSliderLeft.value = scrollSliderRight.value;
+});
+scrollSliderLeft.addEventListener('input', () => {
+  syncScrollSpeed(scrollSliderLeft.value);
+  scrollSliderRight.value = scrollSliderLeft.value;
+});
+
+requestAnimationFrame(forceScroll);
+
+// === UI ===
 const scrollUI = document.createElement('div');
 Object.assign(scrollUI.style, {
   all: 'initial',
@@ -90,60 +127,64 @@ Object.assign(scrollUI.style, {
   borderRadius: '6px',
   fontSize: '14px',
   zIndex: '10002',
-  fontFamily: 'sans-serif'
+  fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">📐 スクロールバー設定</div>
   <label>X位置: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"></label><br>
   <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="0.05" style="all:initial;width:60px;border:1px solid;"></label><br>
   <label><input id="scrollB" type="checkbox" checked> 枠線を表示</label><br>
   <label><input id="scrollSide" type="checkbox"> 左側に表示</label><br>
+  <label><input id="scrollBoth" type="checkbox"> 両側に表示</label><br>
 `;
 document.body.appendChild(scrollUI);
 
-// チェックボックスのサイズ調整
-const checkbox = document.getElementById('scrollB');
-checkbox.style.width = '15px';
-checkbox.style.height = '15px';
-const sidebox = document.getElementById('scrollSide');
-sidebox.style.width = '15px';
-sidebox.style.height = '15px';
-
-// 入力が変わったら即時反映
+// === UIイベント ===
 document.getElementById('scrollX').addEventListener('input', e => {
   const val = parseInt(e.target.value, 10);
-  if (sidebox.checked) {
-    scrollSlider.style.left = `${val}px`;
-  } else {
-    scrollSlider.style.right = `${val}px`;
-  }
+  scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
 });
+
 document.getElementById('scrollW').addEventListener('input', e => {
-  scrollSlider.style.width = `${parseInt(e.target.value, 10)}px`;
+  const val = parseInt(e.target.value, 10);
+  scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
 });
+
 document.getElementById('scrollO').addEventListener('input', e => {
-  scrollSlider.style.opacity = parseFloat(e.target.value);
+  const val = parseFloat(e.target.value);
+  scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
 });
+
 document.getElementById('scrollB').addEventListener('change', e => {
-  scrollSlider.style.border = e.target.checked ? '1px solid' : 'none';
+  const border = e.target.checked ? '1px solid' : 'none';
+  scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
 });
-document.getElementById('scrollSide').addEventListener('change', e => {
-  const val = parseInt(document.getElementById('scrollX').value, 10);
+
+const sidebox = document.getElementById('scrollSide');
+sidebox.addEventListener('change', e => {
   if (e.target.checked) {
-    scrollSlider.style.right = '';         // right を解除
-    scrollSlider.style.left = `${val}px`;  // left を適用
-    scrollSlider.style.direction = 'rtl';  // 増加方向を左に反転
+    scrollSliderRight.style.display = 'none';
+    scrollSliderLeft.style.display = 'block';
   } else {
-    scrollSlider.style.left = '';          // left を解除
-    scrollSlider.style.right = `${val}px`; // right を適用
-    scrollSlider.style.direction = 'ltr';  // 通常の右方向
+    scrollSliderRight.style.display = 'block';
+    scrollSliderLeft.style.display = 'none';
   }
 });
 
-
-
-
+const bothbox = document.getElementById('scrollBoth');
+bothbox.addEventListener('change', e => {
+  if (e.target.checked) {
+    scrollSliderLeft.style.display = 'block';
+    scrollSliderRight.style.display = 'block';
+  } else if (!sidebox.checked) {
+    scrollSliderLeft.style.display = 'none';
+    scrollSliderRight.style.display = 'block';
+  } else {
+    scrollSliderLeft.style.display = 'block';
+    scrollSliderRight.style.display = 'none';
+  }
+});
   
   ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
     const el = document.getElementById(id);
