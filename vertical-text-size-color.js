@@ -135,7 +135,8 @@ scrollUI.innerHTML = `
   <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"></label><br>
   <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="0.05" style="all:initial;width:60px;border:1px solid;"></label><br>
   <label><input id="scrollB" type="checkbox" checked> 枠線を表示</label><br>
-  <label><input id="scrollSide" type="checkbox"> 左側に表示</label><br>
+  <label><input id="scrollRight" type="checkbox" checked> 右側に表示</label><br>
+  <label><input id="scrollLeft" type="checkbox"> 左側に表示</label><br>
   <label><input id="scrollBoth" type="checkbox"> 両側に表示</label><br>
 `;
 document.body.appendChild(scrollUI);
@@ -161,9 +162,12 @@ document.getElementById('scrollB').addEventListener('change', e => {
   scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
 });
 
-const sidebox = document.getElementById('scrollSide');
-sidebox.addEventListener('change', e => {
+const leftbox = document.getElementById('scrollLeft');
+leftbox.addEventListener('change', e => {
   if (e.target.checked) {
+    if (bothbox.checked) {
+      bothbox.checked = false;
+    }
     scrollSliderRight.style.display = 'none';
     scrollSliderLeft.style.display = 'block';
   } else {
@@ -175,9 +179,12 @@ sidebox.addEventListener('change', e => {
 const bothbox = document.getElementById('scrollBoth');
 bothbox.addEventListener('change', e => {
   if (e.target.checked) {
+    if (leftbox.checked) {
+      leftbox.checked = false;
+    }
     scrollSliderLeft.style.display = 'block';
     scrollSliderRight.style.display = 'block';
-  } else if (!sidebox.checked) {
+  } else if (!leftbox.checked) {
     scrollSliderLeft.style.display = 'none';
     scrollSliderRight.style.display = 'block';
   } else {
