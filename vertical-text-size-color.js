@@ -133,9 +133,11 @@ document.getElementById('scrollSide').addEventListener('change', e => {
   if (e.target.checked) {
     scrollSlider.style.right = '';         // right を解除
     scrollSlider.style.left = `${val}px`;  // left を適用
+    scrollSlider.style.direction = 'rtl';  // 増加方向を左に反転
   } else {
     scrollSlider.style.left = '';          // left を解除
     scrollSlider.style.right = `${val}px`; // right を適用
+    scrollSlider.style.direction = 'ltr';  // 通常の右方向
   }
 });
 
