@@ -134,7 +134,7 @@ scrollUI.innerHTML = `
   <label><input id="scrollBoth" type="checkbox"　checked> 両側に表示</label><br>
   <label><input id="scrollRight" type="checkbox"> 右側のみ</label><br>
   <label><input id="scrollLeft" type="checkbox"> 左側のみ</label><br>
-  <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"></label><br>
+  <label>透明度: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>長さ(width): <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>X位置: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
@@ -165,13 +165,6 @@ rightbox.addEventListener('change', e => {
       }
     scrollSliderRight.style.display = 'block';
     scrollSliderLeft.style.display = 'none';
-  } else {
-    // 左がチェックされていなければ右を非表示
-    if (!leftbox.checked && !bothbox.checked) {
-      scrollSliderRight.style.display = 'none';
-    } else {
-      scrollSliderRight.style.display = 'block';
-    }
   }
 });
 leftbox.addEventListener('change', e => {
