@@ -129,16 +129,16 @@ Object.assign(scrollUI.style, {
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
-  <div style="margin-bottom:4px;">Scrollbar Settings</div>
+  <div style="margin-bottom:4px;">Slider Settings</div>
   <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Show borders</label><br>
-  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox" checked> Hide bulue ball</label><br>
+  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Show bulue ball</label><br>
   <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"　checked> Both sides</label><br>
-  <label><input id="scrollRight" class="scrollCheckbox" type="checkbox"> Right Side only</label><br>
-  <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left Side only</label><br>
+  <label><input id="scrollRight" class="scrollCheckbox" type="checkbox"> Right side only</label><br>
+  <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left side only</label><br>
   <label>X Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
-  <label>Speed Scale: <input id="scrollSpeedScale" type="number" min="1" max="16" step="1" value="8" style="all:initial;width:60px;border:1px solid;"> (1~16)</label><br>
+  <label>Speed scale: <input id="scrollSpeedScale" type="number" min="1" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (1~20)</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.scrollCheckbox').forEach(cb => {
@@ -175,6 +175,9 @@ rightbox.addEventListener('change', e => {
         leftbox.checked = false;
       }
     scrollSliderRight.style.display = 'block';
+    scrollSliderLeft.style.display = 'none';
+  }else {
+    scrollSliderRight.style.display = 'none';
     scrollSliderLeft.style.display = 'none';
   }
 });
@@ -241,15 +244,15 @@ speedScaleInput.addEventListener('input', e => {
   // 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
-    scrollSliderRight.style.height = '210vh';
-    scrollSliderRight.style.bottom = '-108vh';
-    scrollSliderLeft.style.height = '210vh';
-    scrollSliderLeft.style.bottom = '-108vh';
-  } else {
     scrollSliderRight.style.height = '200vh';
     scrollSliderRight.style.bottom = '-98vh';
     scrollSliderLeft.style.height = '200vh';
     scrollSliderLeft.style.bottom = '-98vh';
+  } else {
+    scrollSliderRight.style.height = '210vh';
+    scrollSliderRight.style.bottom = '-108vh';
+    scrollSliderLeft.style.height = '210vh';
+    scrollSliderLeft.style.bottom = '-108vh';
   }
 });
 
