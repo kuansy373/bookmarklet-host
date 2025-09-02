@@ -137,7 +137,9 @@ scrollUI.innerHTML = `
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
+  <!--
   <label>Touch sensitivity: <input id="scrollTouchSensitivity" type="number" min="-20" max="20" step="1" value="1" style="all:initial;width:60px;border:1px solid;"> ~|20|</label><br>
+  -->
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.scrollCheckbox').forEach(cb => {
@@ -257,6 +259,7 @@ opacityInput.addEventListener('blur', e => {
     scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
   }
 });
+  
 // スピードスケール  
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
@@ -268,7 +271,8 @@ speedScaleInput.addEventListener('input', e => {
     syncScrollSpeed(scrollSliderRight.value);
   }
 });
-  // タッチ感度調整
+  
+/* タッチ感度調整
 let touchScrollSensitivity = 1;
 let lastTouchY = null;
 
@@ -336,7 +340,8 @@ document.addEventListener('touchend', () => {
   };
   momentumId = requestAnimationFrame(step);
 });
-
+*/
+  
   // 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
