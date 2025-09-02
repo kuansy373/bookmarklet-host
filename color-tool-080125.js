@@ -175,6 +175,7 @@
       }
 
       #bgLockIcon, #fgLockIcon {
+        all: unset;
         font-size: 14px;
         margin: 0px 0px;
         display: inline-block;
@@ -292,7 +293,6 @@
       </div>
     
       <div class="row">
-        <button id="randomColorBtn">🎨Random</button>
         <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">BG:</div>
         <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
           <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
@@ -303,6 +303,7 @@
           <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
           <span id="fgLockIcon">🔓</span>
         </label>
+        <button id="randomColorBtn">🎨Random</button>
       </div>
     
       <div class="row contrast-row" style="align-items: center;">
