@@ -53,7 +53,6 @@ scrollSliderRight.max = 25;
 scrollSliderRight.value = 0;
 Object.assign(scrollSliderRight.style, {
   all: 'unset',
-  // border: '1px solid',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
@@ -72,7 +71,6 @@ scrollSliderLeft.max = 25;
 scrollSliderLeft.value = 0;
 Object.assign(scrollSliderLeft.style, {
   all: 'unset',
-  // border: '1px solid',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
@@ -137,7 +135,7 @@ scrollUI.innerHTML = `
   <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left side only</label><br>
   <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
+  <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
   <label>Touch sensitivity: <input id="scrollTouchSensitivity" type="number" min="-20" max="20" step="1" value="1" style="all:initial;width:60px;border:1px solid;"> ~|20|</label><br>
 `;
@@ -152,7 +150,7 @@ document.querySelectorAll('.scrollCheckbox').forEach(cb => {
     cursor: 'pointer',
   });
 });
-// === UIイベント ===
+// === イベント ===
 // 枠線
 document.getElementById('scrollB').addEventListener('change', e => {
   const border = e.target.checked ? '1px solid' : 'none';
@@ -162,8 +160,8 @@ document.getElementById('scrollB').addEventListener('change', e => {
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
 const bothbox = document.getElementById('scrollBoth');
-bothbox.checked = true;
 // 最初に「両側に表示」にチェック
+bothbox.checked = true;
 scrollSliderLeft.style.display = 'block';
 scrollSliderRight.style.display = 'block';
 // 右側に表示チェックイベント
@@ -182,6 +180,7 @@ rightbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'none';
   }
 });
+// 左側に表示チェックイベント
 leftbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (bothbox.checked) {
@@ -197,6 +196,7 @@ leftbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'none';
   }
 });
+// 両側に表示チェックイベント
 bothbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (rightbox.checked) {
@@ -230,6 +230,33 @@ document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
 });
+const opacityInput = document.getElementById('scrollO');
+let lastValue = opacityInput.value; // 直前の値を保持
+opacityInput.addEventListener('input', e => {
+  const currentValue = e.target.value;
+  // 一瞬だけ「0」→「0.」に補完
+  if (currentValue === '0' && lastValue !== '0.') {
+    e.target.value = '0.';
+  }
+  const num = parseFloat(e.target.value);
+  if (!isNaN(num) && num >= 0 && num <= 1) {
+    scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = num;
+  }
+  lastValue = e.target.value; // 今の値を保存
+});
+// フォーカス時に 0 → 0. に補完（あれば）
+opacityInput.addEventListener('focus', e => {
+  if (e.target.value === '0') {
+    e.target.value = '0.';
+  }
+});
+// フォーカスが外れたときに 0. → 0
+opacityInput.addEventListener('blur', e => {
+  if (e.target.value === '0.' || e.target.value === '') {
+    e.target.value = '0';
+    scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
+  }
+});
 // スピードスケール  
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
@@ -242,11 +269,7 @@ speedScaleInput.addEventListener('input', e => {
   }
 });
   // タッチ感度調整
-// === タッチスクロール感度対応 ===
-// === まず変数を定義して初期値を設定 ===
-let touchScrollSensitivity = 1;  // 初期値を 1 にしておく
-
-// === タッチスクロール感度対応 ===
+let touchScrollSensitivity = 1;
 let lastTouchY = null;
 
 document.addEventListener('touchstart', e => {
@@ -268,15 +291,12 @@ document.addEventListener('touchmove', e => {
 document.addEventListener('touchend', () => {
   lastTouchY = null;
 });
-
 // === タッチパッド / マウスホイール感度調整 ===
 document.addEventListener('wheel', e => {
   e.preventDefault();
   const deltaY = e.deltaY * touchScrollSensitivity;
   window.scrollBy(0, deltaY);
 }, { passive: false });
-
-// === UI入力イベント（あなたの元コードをそのまま使う） ===
 const touchScrollInput = document.getElementById('scrollTouchSensitivity');
 touchScrollSensitivity = parseFloat(touchScrollInput.value);
 
@@ -286,7 +306,6 @@ touchScrollInput.addEventListener('input', e => {
     touchScrollSensitivity = num;
   }
 });
-
   // 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
@@ -301,7 +320,6 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     scrollSliderLeft.style.bottom = '-108vh';
   }
 });
-
 // === UIトグルボタン ===
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.textContent = '△';
@@ -319,15 +337,10 @@ Object.assign(scrollUIToggle.style, {
 });
 document.body.appendChild(scrollUIToggle);
 
-// === scrollUI の初期状態は非表示 ===
 scrollUI.style.display = 'none';
-  
-// トグルボタン押下で UI 表示
-scrollUIToggle.addEventListener('click', () => {
+  scrollUIToggle.addEventListener('click', () => {
   scrollUI.style.display = 'block';
 });
-
-// scrollUI 内に閉じるボタンを追加
 const scrollSCloseBtn = document.createElement('button');
 scrollSCloseBtn.textContent = '✕';
 Object.assign(scrollSCloseBtn.style, {
@@ -340,7 +353,6 @@ Object.assign(scrollSCloseBtn.style, {
 });
 scrollUI.appendChild(scrollSCloseBtn);
 
-// 閉じるボタンで UI 非表示
 scrollSCloseBtn.addEventListener('click', () => {
   scrollUI.style.display = 'none';
 });
@@ -1109,10 +1121,8 @@ scrollSCloseBtn.addEventListener('click', () => {
               top: 132px;
               text-align: center;
             `;
-    
             // .pcr-result の右隣に追加
             resultInput.insertAdjacentElement('afterend', copyBtn);
-    
             // クリック時にクリップボードへコピー
           document.querySelectorAll(".pcr-copy").forEach(function(button){
             button.addEventListener("click", function(){
@@ -1133,7 +1143,6 @@ scrollSCloseBtn.addEventListener('click', () => {
         });
       });
     });
-
 
       pickr.on('change', (color) => {
         const hex = color.toHEXA().toString();
@@ -1192,10 +1201,8 @@ scrollSCloseBtn.addEventListener('click', () => {
         destroyAndRemove: () => {},
       }
     }
-
     // --- イベントハンドラ・UI操作 ---
     updateColorHexDisplays();
-
     // --- ロックアイコン制御 ---
     function updateLockIcons() {
       const bgLocked = document.getElementById('color-toggle-bg-lock').checked;
@@ -1339,12 +1346,10 @@ scrollSCloseBtn.addEventListener('click', () => {
       window.__fgHSL = hexToHSL(currentFg);
       updateLockIcons();
     };
-
     // Pickr UI コンテナとスタイルを初期非表示にする
     container.style.display = 'none';
     style.disabled = true;
     window.__pickrLoaded = false;
-    
     // □ ボタンを作成して表示
     const pickrOpen = document.createElement('div');
     pickrOpen.id = 'pickrOpen';
@@ -1359,7 +1364,6 @@ scrollSCloseBtn.addEventListener('click', () => {
       zIndex: '999999'
     });
     document.body.appendChild(pickrOpen);
-    
     // □ をクリックしたら Pickr UI を表示
     pickrOpen.onclick = () => {
       container.style.display = 'block';
@@ -1367,7 +1371,6 @@ scrollSCloseBtn.addEventListener('click', () => {
       pickrOpen.remove();
       window.__pickrLoaded = true;
     };
-    
     // Pickr の閉じるボタンの処理
     document.getElementById('pickrClose').onclick = () => {
       // □ ボタンを再生成
@@ -1384,12 +1387,10 @@ scrollSCloseBtn.addEventListener('click', () => {
         zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
-    
       // Pickr UI を非表示
       container.style.display = 'none';
       style.disabled = true;
       window.__pickrLoaded = false;
-    
       // □ をクリックしたら Pickr UI を復元
       pickrOpen.onclick = () => {
         container.style.display = 'block';
@@ -1398,7 +1399,6 @@ scrollSCloseBtn.addEventListener('click', () => {
         window.__pickrLoaded = true;
       };
     };
-
   document.querySelectorAll(".copy-btn").forEach(function(button){
     button.addEventListener("click", function(){
       var targetId = button.getAttribute("data-target");
