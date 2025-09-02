@@ -79,6 +79,11 @@
         padding-bottom: 2px;
         padding-left: 0.3px;
         margin-right: 20px;
+        background: #F4F4F4;
+      }
+
+      #dragHandle:active {
+        transform: none;
       }
 
       /* ---- .color-swatch 関連 ---- */
@@ -134,8 +139,12 @@
         font-size: 1em;
         font-weight: bolder;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #dddddd;
         border-radius: 4px;
+      }
+
+      .hex-load-btn:active {
+        transform: translateY(1px);
       }
 
       .switch-bgfg {
@@ -143,7 +152,7 @@
         font-family: monospace;
         font-size: 18px;
         border: 1px solid #aaa;
-        background: #e0e0e0;
+        background: #dddddd;
         border-radius: 4px;
         width: 19px;
         height: 25px;
@@ -151,27 +160,35 @@
         margin-left: 3px;
       }
 
+      .switch-bgfg:active {
+        transform: translateY(1px);
+      }
+
       input.contrast-display {
         all: initial;
         font-family: monospace;
         font-size: 14px;
         font-weight: normal;
-        width: 40px;
+        width: 35px;
         padding: 1px;
         background: #ffffff;
-        border: 1px solid #999;
+        border: 2px solid #999;
         border-radius: 4px;
         text-align: center;
       }
 
       #randomColorBtn {
         all: initial;
-        background: #e0e0e0;
+        background: #E6FDFF;
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: 2px 6px;
         font-size: 15px;
         font-family: monospace;
+      }
+
+      #randomColorBtn:active {
+        transform: translateY(1px);
       }
 
       #bgLockIcon, #fgLockIcon {
@@ -256,8 +273,13 @@
         width: 40px !important;
         margin-top: 10px !important;
         padding: 0px !important;
-        border: 0px !important;
-        border-radius: 2px !important;
+        border: 1px solid #999 !important;
+        border-radius: 4px !important;
+        background: #97DDC8!important
+      }
+
+      .pcr-save:active {
+        transform: translateY(1px);
       }
     `;
 
@@ -327,7 +349,7 @@
           min="1"
           max="21"
           step="0.1"
-          value="21"
+          value="18"
           title="Maximum contrast ratio"
         >
       </div>
@@ -415,7 +437,7 @@
     const updateColorHexDisplays = () => {
       document.getElementById("bgHex").value = currentBg;
       document.getElementById("fgHex").value = currentFg;
-      updateLockIcons(); // 追加: hex-display更新時にLockIconの色も更新
+      updateLockIcons();
     };
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
@@ -426,7 +448,6 @@
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
     };
     function hexToHSL(hex) {
-      // hexが不正な場合は黒を返す
       if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
         return { h: 0, s: 0, l: 0 };
       }
@@ -436,7 +457,7 @@
       let max = Math.max(r,g,b), min = Math.min(r,g,b);
       let h, s, l = (max + min)/2;
       if(max == min){
-        h = s = 0; // 無彩色
+        h = s = 0;
       } else {
         let d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -449,7 +470,6 @@
       }
       return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
     }
-
     // --- Pickr関連・状態変数 ---
     const contrastEl = document.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
@@ -503,7 +523,7 @@
                 display: inline-block;
                 padding: 0px 4px 3px 4px;
                 border-radius: 4px;
-                background: #e0e0e0;
+                background: #F4F4F4;
                 border: 1px solid #aaa;
                 height: 22px;
                 width: 28px;
@@ -720,7 +740,7 @@
         bgPickr.setColor(val, !0)
       }
       bgPickr.show();
-      updateLockIcons(); // 追加
+      updateLockIcons();
     };
     document.getElementById('fgHexLoad').onclick = () => {
       const val = document.getElementById('fgHex').value.trim();
@@ -728,7 +748,7 @@
         fgPickr.setColor(val, !0)
       }
       fgPickr.show();
-      updateLockIcons(); // 追加
+      updateLockIcons();
     };
 
     function hslToHex(h, s, l) {
@@ -770,12 +790,12 @@
       b = Math.round((b + m) * 255);
       return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
     }
-
+    // ランダムに生成される色のhsl範囲
     function getRandomHSL() {
       return {
         h: Math.floor(Math.random() * 360),
-        s: Math.floor(Math.random() * 80) + 20,
-        l: Math.floor(Math.random() * 80) + 10
+        s: Math.floor(Math.random() * 101) ,
+        l: Math.floor(Math.random() * 101)
       }
     }
 
@@ -813,7 +833,7 @@
           updateSwatch(document.getElementById("fgSwatch"), savedFg, savedFg);
           updateContrast();
           updateColorHexDisplays();
-          updateLockIcons(); // 追加: ランダム色変更時にLockIconの色も更新
+          updateLockIcons();
           return
         }
       }
@@ -832,7 +852,7 @@
       updateContrast();
       window.__bgHSL = hexToHSL(currentBg);
       window.__fgHSL = hexToHSL(currentFg);
-      updateLockIcons(); // 追加: swap時にもLockIconの色を更新
+      updateLockIcons();
     };
 
     document.getElementById('pickrClose').onclick = () => {
@@ -853,7 +873,7 @@
       
       // Pickr を非表示にする
       container.style.display = 'none';
-      style.disabled = true; // style を無効化
+      style.disabled = true;
       window.__pickrLoaded = false;
     
       // pickrOpen クリック時に復元
