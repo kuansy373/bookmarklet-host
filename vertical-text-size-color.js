@@ -306,6 +306,37 @@ touchScrollInput.addEventListener('input', e => {
     touchScrollSensitivity = num;
   }
 });
+let velocityY = 0;
+let momentumId;
+
+document.addEventListener('touchstart', e => {
+  if (momentumId) cancelAnimationFrame(momentumId); // 慣性スクロール停止
+  if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && lastTouchY !== null) {
+    const currentY = e.touches[0].clientY;
+    const deltaY = (lastTouchY - currentY) * touchScrollSensitivity;
+    window.scrollBy(0, deltaY);
+    velocityY = deltaY; // 移動量を速度として保持
+    lastTouchY = currentY;
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('touchend', () => {
+  lastTouchY = null;
+  // 慣性アニメーション開始
+  const step = () => {
+    if (Math.abs(velocityY) < 0.1) return;
+    window.scrollBy(0, velocityY);
+    velocityY *= 0.95; // 減衰
+    momentumId = requestAnimationFrame(step);
+  };
+  momentumId = requestAnimationFrame(step);
+});
+
   // 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
