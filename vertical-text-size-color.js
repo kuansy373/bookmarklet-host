@@ -130,18 +130,27 @@ Object.assign(scrollUI.style, {
 });
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">Scrollbar Settings</div>
-  <label><input id="scrollB" type="checkbox"> Show borders</label><br>
-  <label><input id="scrollHide" type="checkbox" checked> Hide bulue ball</label><br>
-  <label><input id="scrollBoth" type="checkbox"　checked> Both sides</label><br>
-  <label><input id="scrollRight" type="checkbox"> Right Side only</label><br>
-  <label><input id="scrollLeft" type="checkbox"> Left Side only</label><br>
+  <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Show borders</label><br>
+  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox" checked> Hide bulue ball</label><br>
+  <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"　checked> Both sides</label><br>
+  <label><input id="scrollRight" class="scrollCheckbox" type="checkbox"> Right Side only</label><br>
+  <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left Side only</label><br>
   <label>X Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
-  <label>Speed Scale: <input id="scrollSpeedScale" type="number" min="1" max="16" step="1" value="8" style="all:initial;width:60px;border:1px solid;"> px/s per step</label><br>
+  <label>Speed Scale: <input id="scrollSpeedScale" type="number" min="1" max="16" step="1" value="8" style="all:initial;width:60px;border:1px solid;"> (1~16)</label><br>
 `;
 document.body.appendChild(scrollUI);
-
+document.querySelectorAll('.scrollCheckbox').forEach(cb => {
+  Object.assign(cb.style, {
+    display: 'inline-block',
+    boxSizing: 'border-box',
+    webkitAppearance: 'auto',
+    height: '15px',
+    width: '15px',
+    cursor: 'pointer',
+  });
+});
 // === UIイベント ===
 // 枠線
 document.getElementById('scrollB').addEventListener('change', e => {
