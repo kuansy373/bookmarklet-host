@@ -131,14 +131,15 @@ Object.assign(scrollUI.style, {
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">Slider Settings</div>
   <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Show borders</label><br>
-  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Show bulue ball</label><br>
+  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Show blue ball</label><br>
   <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"　checked> Both sides</label><br>
   <label><input id="scrollRight" class="scrollCheckbox" type="checkbox"> Right side only</label><br>
   <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left side only</label><br>
-  <label>X Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
-  <label>Speed scale: <input id="scrollSpeedScale" type="number" min="1" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (1~20)</label><br>
+  <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
+  <label>Touch sensitivity: <input id="scrollTouchSensitivity" type="number" min="-20" max="20" step="1" value="1" style="all:initial;width:60px;border:1px solid;"> ~|20|</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.scrollCheckbox').forEach(cb => {
@@ -229,7 +230,7 @@ document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
 });
-  
+// スピードスケール  
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
 
@@ -238,6 +239,51 @@ speedScaleInput.addEventListener('input', e => {
   if (!isNaN(num)) {
     speedScale = num;
     syncScrollSpeed(scrollSliderRight.value);
+  }
+});
+  // タッチ感度調整
+// === タッチスクロール感度対応 ===
+// === まず変数を定義して初期値を設定 ===
+let touchScrollSensitivity = 1;  // 初期値を 1 にしておく
+
+// === タッチスクロール感度対応 ===
+let lastTouchY = null;
+
+document.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    lastTouchY = e.touches[0].clientY;
+  }
+}, { passive: false });
+
+document.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && lastTouchY !== null) {
+    const currentY = e.touches[0].clientY;
+    const deltaY = (lastTouchY - currentY) * touchScrollSensitivity;
+    window.scrollBy(0, deltaY);
+    lastTouchY = currentY;
+    e.preventDefault();
+  }
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
+  lastTouchY = null;
+});
+
+// === タッチパッド / マウスホイール感度調整 ===
+document.addEventListener('wheel', e => {
+  e.preventDefault();
+  const deltaY = e.deltaY * touchScrollSensitivity;
+  window.scrollBy(0, deltaY);
+}, { passive: false });
+
+// === UI入力イベント（あなたの元コードをそのまま使う） ===
+const touchScrollInput = document.getElementById('scrollTouchSensitivity');
+touchScrollSensitivity = parseFloat(touchScrollInput.value);
+
+touchScrollInput.addEventListener('input', e => {
+  const num = parseFloat(e.target.value);
+  if (!isNaN(num)) {
+    touchScrollSensitivity = num;
   }
 });
 
