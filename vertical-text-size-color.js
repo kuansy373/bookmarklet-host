@@ -49,7 +49,7 @@
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
 scrollSliderRight.min = 0;
-scrollSliderRight.max = 15;
+scrollSliderRight.max = 25;
 scrollSliderRight.value = 0;
 Object.assign(scrollSliderRight.style, {
   all: 'unset',
@@ -68,7 +68,7 @@ document.body.appendChild(scrollSliderRight);
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
 scrollSliderLeft.min = 0;
-scrollSliderLeft.max = 15;
+scrollSliderLeft.max = 25;
 scrollSliderLeft.value = 0;
 Object.assign(scrollSliderLeft.style, {
   all: 'unset',
@@ -100,7 +100,7 @@ function forceScroll(timestamp) {
 
 // スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
-  scrollSpeed = parseFloat(value) * 15;
+  scrollSpeed = parseInt(value, 10) * speedScale;
 }
 scrollSliderRight.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderRight.value);
@@ -138,6 +138,7 @@ scrollUI.innerHTML = `
   <label>X Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="number" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
+  <label>Speed Scale: <input id="scrollSpeedScale" type="number" min="1" max="16" step="1" value="8" style="all:initial;width:60px;border:1px solid;"> px/s per step</label><br>
 `;
 document.body.appendChild(scrollUI);
 
@@ -215,6 +216,17 @@ document.getElementById('scrollW').addEventListener('input', e => {
 document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
+});
+  
+const speedScaleInput = document.getElementById('scrollSpeedScale');
+let speedScale = parseFloat(speedScaleInput.value);
+
+speedScaleInput.addEventListener('input', e => {
+  const num = parseFloat(e.target.value);
+  if (!isNaN(num)) {
+    speedScale = num;
+    syncScrollSpeed(scrollSliderRight.value);
+  }
 });
 
   // 「スライダー非表示」チェックボックスの処理
