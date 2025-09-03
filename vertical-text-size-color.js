@@ -139,9 +139,6 @@ scrollUI.innerHTML = `
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
-  <!--
-  <label>Touch sensitivity: <input id="scrollTouchSensitivity" type="number" min="-20" max="20" step="1" value="1" style="all:initial;width:60px;border:1px solid;"> ~|20|</label><br>
-  -->
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.scrollCheckbox').forEach(cb => {
@@ -320,78 +317,7 @@ speedScaleInput.addEventListener('input', e => {
     syncScrollSpeed(scrollSliderRight.value);
   }
 });
-  
-/* タッチ感度調整
-let touchScrollSensitivity = 1;
-let lastTouchY = null;
-
-document.addEventListener('touchstart', e => {
-  if (e.touches.length === 1) {
-    lastTouchY = e.touches[0].clientY;
-  }
-}, { passive: false });
-
-document.addEventListener('touchmove', e => {
-  if (e.touches.length === 1 && lastTouchY !== null) {
-    const currentY = e.touches[0].clientY;
-    const deltaY = (lastTouchY - currentY) * touchScrollSensitivity;
-    window.scrollBy(0, deltaY);
-    lastTouchY = currentY;
-    e.preventDefault();
-  }
-}, { passive: false });
-
-document.addEventListener('touchend', () => {
-  lastTouchY = null;
-});
-// === タッチパッド / マウスホイール感度調整 ===
-document.addEventListener('wheel', e => {
-  e.preventDefault();
-  const deltaY = e.deltaY * touchScrollSensitivity;
-  window.scrollBy(0, deltaY);
-}, { passive: false });
-const touchScrollInput = document.getElementById('scrollTouchSensitivity');
-touchScrollSensitivity = parseFloat(touchScrollInput.value);
-
-touchScrollInput.addEventListener('input', e => {
-  const num = parseFloat(e.target.value);
-  if (!isNaN(num)) {
-    touchScrollSensitivity = num;
-  }
-});
-let velocityY = 0;
-let momentumId;
-
-document.addEventListener('touchstart', e => {
-  if (momentumId) cancelAnimationFrame(momentumId); // 慣性スクロール停止
-  if (e.touches.length === 1) lastTouchY = e.touches[0].clientY;
-});
-
-document.addEventListener('touchmove', e => {
-  if (e.touches.length === 1 && lastTouchY !== null) {
-    const currentY = e.touches[0].clientY;
-    const deltaY = (lastTouchY - currentY) * touchScrollSensitivity;
-    window.scrollBy(0, deltaY);
-    velocityY = deltaY; // 移動量を速度として保持
-    lastTouchY = currentY;
-    e.preventDefault();
-  }
-});
-
-document.addEventListener('touchend', () => {
-  lastTouchY = null;
-  // 慣性アニメーション開始
-  const step = () => {
-    if (Math.abs(velocityY) < 0.1) return;
-    window.scrollBy(0, velocityY);
-    velocityY *= 0.95; // 減衰
-    momentumId = requestAnimationFrame(step);
-  };
-  momentumId = requestAnimationFrame(step);
-});
-*/
-  
-  // 「スライダー非表示」チェックボックスの処理
+// 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
     scrollSliderRight.style.height = '200vh';
