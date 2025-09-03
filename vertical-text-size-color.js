@@ -129,6 +129,8 @@ Object.assign(scrollUI.style, {
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">Slider Settings</div>
   <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Show borders</label><br>
+  <label><input id="scrollBC" class="scrollCheckbox" type="checkbox"> Background</label><br>
+  <label><input id="scrollBgHex" type="text" value="#ffffff" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"</label><br>
   <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Show blue ball</label><br>
   <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"> Both sides</label><br>
   <label><input id="scrollRight" class="scrollCheckbox" type="checkbox" checked> Right side only</label><br>
@@ -158,6 +160,53 @@ document.getElementById('scrollB').addEventListener('change', e => {
   const border = e.target.checked ? '1px solid' : 'none';
   scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
 });
+// === 背景チェックボックスとHex入力欄の取得 ===
+const scrollBC = document.getElementById("scrollBC");
+const scrollBgHex = document.getElementById("scrollBgHex");
+
+// ページの文字色を取得
+const bodyColor = getComputedStyle(document.body).color;
+
+// RGB → HEX 変換関数
+function rgbToHex(rgb) {
+  const result = rgb.match(/\d+/g);
+  if (!result) return '#ffffff';
+  return '#' + result.slice(0,3).map(x => parseInt(x).toString(16).padStart(2,'0')).join('');
+}
+
+// 初期背景色をページ文字色に
+scrollBgHex.value = rgbToHex(bodyColor);
+
+// スライダー背景初期値は透明
+scrollSliderRight.style.setProperty("background", "transparent", "important");
+scrollSliderLeft.style.setProperty("background", "transparent", "important");
+
+// --- ヘルパー関数: Hexをスライダーに反映 ---
+function updateSliderBackground() {
+  const val = scrollBgHex.value.trim();
+  if (/^#([0-9A-Fa-f]{6})$/.test(val)) {
+    scrollSliderRight.style.setProperty("background", val, "important");
+    scrollSliderLeft.style.setProperty("background", val, "important");
+  }
+}
+
+// チェックボックス変更時
+scrollBC.addEventListener("change", () => {
+  if (scrollBC.checked) {
+    updateSliderBackground(); // Hex値を反映
+  } else {
+    scrollSliderRight.style.setProperty("background", "transparent", "important");
+    scrollSliderLeft.style.setProperty("background", "transparent", "important");
+  }
+});
+
+// Hex入力欄の変更時
+scrollBgHex.addEventListener("input", () => {
+  if (scrollBC.checked) { // チェックONの場合のみ反映
+    updateSliderBackground();
+  }
+});
+
 // 右側、左側、両側
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
@@ -964,7 +1013,10 @@ scrollSCloseBtn.addEventListener('click', () => {
         el.id = id;
         document.head.appendChild(el)
       }
-      el.textContent = `*:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {       ${prop}: ${value} !important;     }`
+      el.textContent = `
+  *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+    ${prop}: ${value} !important;
+  }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
