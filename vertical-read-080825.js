@@ -130,6 +130,7 @@ scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
+  <label><input id="scrollS" class="settingCheckbox" type="checkbox"><span style="padding-top:5.5px;position:fixed;"> Shadow:</span><input id="bWidth" type="number" style="all:initial;width:60px;border:1px solid;margin-left:60px;"> px</label><br>
   <label><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span></label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side only</span></label><br>
