@@ -338,6 +338,21 @@ speedScaleInput.addEventListener('input', e => {
     syncScrollSpeed(scrollSliderRight.value);
   }
 });
+// 入力値を 0 ～ 20 に制限
+speedScaleInput.addEventListener('input', e => {
+  let num = parseFloat(e.target.value);
+  if (isNaN(num)) return;
+  if (num > 20) {
+    num = 20;
+    e.target.value = 20;
+  } else if (num < 0) {
+    num = 0;
+    e.target.value = 0;
+  }
+  speedScale = num;
+  syncScrollSpeed(scrollSliderRight.value);
+});
+
 // 「スライダー非表示」チェックボックスの処理
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
@@ -399,8 +414,8 @@ scrollSCloseBtn.addEventListener('click', () => {
   const fontSlider = document.createElement('input');
   fontSlider.type = 'range';
   fontSlider.id = 'fontSizeSlider';
-  fontSlider.min = 12;
-  fontSlider.max = 48;
+  fontSlider.min = 10;
+  fontSlider.max = 50;
   fontSlider.value = currentSize;
   fontSlider.style.webkitAppearance = 'auto';
   Object.assign(fontSlider.style, {
