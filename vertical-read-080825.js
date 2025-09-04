@@ -128,36 +128,37 @@ Object.assign(scrollUI.style, {
 });
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">-Slider Settings-</div>
-  <label><input id="scrollB" class="settingCheckbox" type="checkbox"> Border</label><br>
-  <label><input id="scrollC" class="settingCheckbox" type="checkbox"> Color</label><br>
-  <label>
-  <input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"> 
-  <input id="scrollCLock" class="settingCheckbox" type="checkbox"> Lock
-  </label><br>
-  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"> Both sides</label><br>
-  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked> Right side only</label><br>
-  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"> Left side only</label><br>
+  <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
+  <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
+  <label><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span></label><br>
+  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
+  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side only</span></label><br>
+  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side only</span></label><br>
   <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
-  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"> Blue ball</label><br>
+  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
   
   <div style="margin-top:8px;margin-bottom:4px;">-Text Settings-</div>
   <label>Font shadow: <input id="fShadow" type="number" value="none" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Font weight: <input id="fWeight" type="text" value="normal" style="all:initial;width:60px;border:1px solid;font-size:unset;"></label><br>
-  <label><input id="tBorder" class="settingCheckbox" type="checkbox"> Text Border</label><br>
+  <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span class="labelText"> Text Border</label><br>
   <label>Text shadow: <input id="Tshadow" type="number" value="none" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
   Object.assign(cb.style, {
-    display: 'inline-block',
-    boxSizing: 'border-box',
-    webkitAppearance: 'auto',
+    all: 'revert',
     height: '15px',
     width: '15px',
-    cursor: 'pointer',
+    verticalAlign: 'middle',
+  });
+});
+document.querySelectorAll('.labelText').forEach(span => {
+  Object.assign(span.style, {
+    position: 'fixed',
+    paddingTop: '1.5px',
   });
 });
 // === イベント ===
