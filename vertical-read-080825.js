@@ -142,8 +142,9 @@ scrollUI.innerHTML = `
   
   <div style="margin-top:8px;font-weight: bold;">< Text Settings ></div>
   <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span style="padding-top:5.5px;position:fixed;"> Border:</span><input id="bWidth" type="number" style="all:initial;width:60px;border:1px solid;margin-left:52px;"> px</label><br>
-  <label>Shadow: <input id="fShadow" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Width: <input id="sWidth" type="number" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label><input id="tColor" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
+  <label>Shadow: <input id="tShadow" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Width: <input id="tWidth" type="number" value="60" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
