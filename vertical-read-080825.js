@@ -60,6 +60,7 @@ Object.assign(scrollSliderRight.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
+  boxShadow: '0 0 0px',
 });
 document.body.appendChild(scrollSliderRight);
 
@@ -78,6 +79,7 @@ Object.assign(scrollSliderLeft.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
+  boxShadow: '0 0 0px',
   direction: 'rtl', // 左用は増加方向反転
 });
 document.body.appendChild(scrollSliderLeft);
@@ -130,8 +132,8 @@ scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
-  <label><input id="scrollS" class="settingCheckbox" type="checkbox"><span style="padding-top:5.5px;position:fixed;"> Shadow:</span><input id="scrollSW" type="number" style="all:initial;width:60px;border:1px solid;margin-left:60px;"> px</label><br>
   <label><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span></label><br>
+  <label>Shadow:<input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side only</span></label><br>
   <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side only</span></label><br>
@@ -211,7 +213,6 @@ function rgbToHex(rgb) {
 
 // 初期背景色をページ文字色に
 scrollBgHex.value = rgbToHex(bodyColor);
-
 // スライダー背景初期値は透明
 scrollSliderRight.style.setProperty("background", "transparent", "important");
 scrollSliderLeft.style.setProperty("background", "transparent", "important");
@@ -241,7 +242,20 @@ scrollBgHex.addEventListener("input", () => {
     updateSliderBackground();
   }
 });
-
+// 影
+const scrollS = document.getElementById('scrollS');
+scrollS.addEventListener('input', () => {
+  let val = Number(scrollS.value) || 0;
+  if (val < 0) {
+    // マイナス値のときは inset にして、値は絶対値に直す
+    scrollSliderRight.style.boxShadow = `inset 0 0 ${Math.abs(val)}px`;
+    scrollSliderLeft.style.boxShadow  = `inset 0 0 ${Math.abs(val)}px`;
+  } else {
+    // プラス値のときは通常
+    scrollSliderRight.style.boxShadow = `0 0 ${val}px`;
+    scrollSliderLeft.style.boxShadow  = `0 0 ${val}px`;
+  }
+});
 // 右側、左側、両側
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
