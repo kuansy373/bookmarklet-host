@@ -557,13 +557,14 @@ scrollSCloseBtn.addEventListener('click', () => {
         top: 10px;
         right: 10px;
         z-index: 999999;
-        background: #C4EFF5 !important;
+        color: unset;
+        background: unset;
         padding: 7px;
         padding-bottom: 0;
-        border: 1px solid #ccc;
+        border: 1px solid;
         border-radius: 8px;
         font-family: sans-serif;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        box-shadow: 0 0 4px;
       }
 
       #pickrContainer,
@@ -571,7 +572,6 @@ scrollSCloseBtn.addEventListener('click', () => {
       .pcr-app,
       .pcr-app * {
         line-height: initial !important;
-        color: #000000 !important;
       }
 
       #pickrContainer .row {
@@ -591,6 +591,7 @@ scrollSCloseBtn.addEventListener('click', () => {
         all: initial;
         font-size: 15px;
         font-weight: bolder;
+        color: unset;
         cursor: pointer;
         position: absolute;
         top: 5px;
@@ -729,6 +730,7 @@ scrollSCloseBtn.addEventListener('click', () => {
         all: unset;
         font-size: 14px;
         margin: 0px 0px;
+        border: 1px solid;
         display: inline-block;
       }
 
@@ -744,7 +746,8 @@ scrollSCloseBtn.addEventListener('click', () => {
         width: 310px !important;
         height: 150px !important;
         z-index: 1000000 !important;
-        background: #C4EFF5 !important;
+        background: unset !important;
+        border: 1px solid !important;
       }
 
       .pcr-selection {
@@ -753,6 +756,7 @@ scrollSCloseBtn.addEventListener('click', () => {
 
       .pcr-color-palette {
         height: auto !important;
+        border: 1px solid !important;
       }
 
       .pickr .pcr-button {
@@ -764,6 +768,7 @@ scrollSCloseBtn.addEventListener('click', () => {
         padding: .5em;
         cursor: pointer;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        border: 1px solid;
         border-radius: 2px;
         background-size: 0;
         transition: all .3s;
@@ -772,6 +777,7 @@ scrollSCloseBtn.addEventListener('click', () => {
       .pcr-color-preview {
         width: 22px !important;
         margin-right: 10px !important;
+        border: 1px solid; !important;
       }
 
       .pcr-color-chooser{
@@ -793,6 +799,7 @@ scrollSCloseBtn.addEventListener('click', () => {
         font-family: monospace !important;
         font-size: 15px !important;
         background: #fff !important;
+        color: #000000 !important;
         box-shadow: initial !important;
         border: 1px solid #ccc !important;
         border-radius: 4px !important;
@@ -809,7 +816,8 @@ scrollSCloseBtn.addEventListener('click', () => {
         padding: 0px !important;
         border: 1px solid #999 !important;
         border-radius: 4px !important;
-        background: #97DDC8!important
+        background: #97DDC8! important;
+        color: #000000 !important;
       }
 
       .pcr-save:active {
@@ -1150,6 +1158,7 @@ scrollSCloseBtn.addEventListener('click', () => {
               cursor: pointer;
               border: 1px solid #999;
               border-radius: 4px;
+              color: #000000;
               background: #F0FFEC;
               padding: initial;
               margin-top: 5px;
