@@ -164,8 +164,14 @@ document.querySelectorAll('.labelText').forEach(span => {
 // === イベント ===
 // 枠線
 document.getElementById('scrollB').addEventListener('change', e => {
-  const border = e.target.checked ? '1px solid' : 'none';
-  scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
+if (e.target.checked) {
+    if (scrollC.checked) scrollC.checked = false;
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = '1px solid';
+    scrollSliderRight.style.setProperty("background", "transparent", "important");
+    scrollSliderLeft.style.setProperty("background", "transparent", "important");
+  } else {
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
+  }
 });
   
 // 色
@@ -217,14 +223,17 @@ function updateSliderBackground() {
   }
 }
 // チェックボックス変更時
-scrollC.addEventListener("change", () => {
-  if (scrollC.checked) {
-    updateSliderBackground(); // Hex値を反映
+scrollC.addEventListener('change', e => {
+  if (e.target.checked) {
+    if (scrollB.checked) scrollB.checked = false;
+    updateSliderBackground();
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
   } else {
     scrollSliderRight.style.setProperty("background", "transparent", "important");
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
+
 // Hex入力欄の変更時
 scrollBgHex.addEventListener("input", () => {
   if (scrollC.checked) { // チェックONの場合のみ反映
