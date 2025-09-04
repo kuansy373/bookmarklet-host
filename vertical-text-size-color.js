@@ -114,7 +114,7 @@ requestAnimationFrame(forceScroll);
 // === UI ===
 const scrollUI = document.createElement('div');
 Object.assign(scrollUI.style, {
-  all: 'initial',
+  all: 'unset',
   position: 'fixed',
   top: '10px',
   left: '10px',
@@ -128,10 +128,12 @@ Object.assign(scrollUI.style, {
 });
 scrollUI.innerHTML = `
   <div style="margin-bottom:4px;">Slider Settings</div>
-  <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Show borders</label><br>
+  <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Border</label><br>
   <label><input id="scrollC" class="scrollCheckbox" type="checkbox"> Color</label><br>
-  <label><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"></label><br>
-  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Show blue ball</label><br>
+  <label>
+  <input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"> 
+  <input id="scrollCLock" class="scrollCheckbox" type="checkbox"> Lock
+  </label><br>
   <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"> Both sides</label><br>
   <label><input id="scrollRight" class="scrollCheckbox" type="checkbox" checked> Right side only</label><br>
   <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left side only</label><br>
@@ -139,6 +141,7 @@ scrollUI.innerHTML = `
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
+  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Blue ball</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.scrollCheckbox').forEach(cb => {
@@ -157,20 +160,33 @@ document.getElementById('scrollB').addEventListener('change', e => {
   const border = e.target.checked ? '1px solid' : 'none';
   scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
 });
-// === 背景チェックボックスとHex入力欄の取得 ===
+  
+// 色
 const scrollC = document.getElementById("scrollC");
 const scrollBgHex = document.getElementById("scrollBgHex");
-
 // ページの文字色を取得
 const bodyColor = getComputedStyle(document.body).color; 
 const fgHex = document.getElementById("fgHex"); // 動的に文字色を変えるinput
 // bodyのスタイル変化を監視
+let lastBodyColor = getComputedStyle(document.body).color;
 const observer = new MutationObserver(() => {
   const color = getComputedStyle(document.body).color;
-  scrollBgHex.value = rgbToHex(color);
-  if (scrollC.checked) updateSliderBackground();
+  if (color !== lastBodyColor) {
+    lastBodyColor = color;
+    scrollBgHex.value = rgbToHex(color);
+    if (scrollC.checked) updateSliderBackground();
+  }
 });
 observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+// Lock
+const scrollCLock = document.getElementById("scrollCLock");
+scrollCLock.addEventListener("change", () => {
+  if (scrollCLock.checked) {
+    observer.disconnect();
+  } else {
+    observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+  }
+});
   
 // RGB → HEX 変換関数
 function rgbToHex(rgb) {
@@ -185,7 +201,6 @@ scrollBgHex.value = rgbToHex(bodyColor);
 // スライダー背景初期値は透明
 scrollSliderRight.style.setProperty("background", "transparent", "important");
 scrollSliderLeft.style.setProperty("background", "transparent", "important");
-
 // --- ヘルパー関数: Hexをスライダーに反映 ---
 function updateSliderBackground() {
   const val = scrollBgHex.value.trim();
@@ -194,7 +209,6 @@ function updateSliderBackground() {
     scrollSliderLeft.style.setProperty("background", val, "important");
   }
 }
-
 // チェックボックス変更時
 scrollC.addEventListener("change", () => {
   if (scrollC.checked) {
@@ -204,7 +218,6 @@ scrollC.addEventListener("change", () => {
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
-
 // Hex入力欄の変更時
 scrollBgHex.addEventListener("input", () => {
   if (scrollC.checked) { // チェックONの場合のみ反映
