@@ -571,6 +571,60 @@ scrollSCloseBtn.addEventListener('click', () => {
     target.style.fontSize = `${fontSlider.value}px`;
     label.textContent = `Font size: ${fontSlider.value}px`
   });
+  // --- Accordion container ---
+const accordion = document.createElement('div');
+accordion.id = 'fontAccordion';
+Object.assign(accordion.style, {
+  position: 'fixed',
+  top: '10px',
+  right: '160px', // label の左に展開する位置
+  height: '15px',
+  display: 'flex',
+  gap: '8px',
+  alignItems: 'center',
+  border: '1px solid #ccc',
+  borderRadius: '4px',
+  padding: '4px 8px',
+  fontSize: '14px',
+  fontFamily: 'serif',
+  zIndex: '10000',
+  transform: 'scaleX(0)',
+  transformOrigin: 'right center',
+  transition: 'transform 0.3s ease',
+});
+
+// --- Accordion items ---
+const shadowOption = document.createElement('div');
+shadowOption.textContent = 'Font shadow';
+const weightOption = document.createElement('div');
+weightOption.textContent = 'Font weight';
+
+accordion.appendChild(shadowOption);
+accordion.appendChild(weightOption);
+
+// 初期は非表示
+accordion.style.display = 'none';
+
+document.body.appendChild(accordion);
+
+// --- Toggle accordion on label click ---
+let accordionOpen = false;
+label.style.cursor = 'pointer';
+label.addEventListener('click', () => {
+  if (!accordionOpen) {
+    accordion.style.display = 'flex';
+    requestAnimationFrame(() => {
+      accordion.style.transform = 'scaleX(1)';
+    });
+  } else {
+    accordion.style.transform = 'scaleX(0)';
+    accordion.addEventListener('transitionend', () => {
+      if (!accordionOpen) accordion.style.display = 'none';
+    }, { once: true });
+  }
+  accordionOpen = !accordionOpen;
+});
+
   document.body.appendChild(fontSlider);
   document.body.appendChild(label);
   document.body.appendChild(closeBtn);
