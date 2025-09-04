@@ -435,149 +435,189 @@ scrollSCloseBtn.addEventListener('click', () => {
   scrollUI.style.display = 'none';
 });
 
-  // フォントサイズ
-  ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
-  const target = container;
-  const currentSize = parseInt(getComputedStyle(target).fontSize) || 23;
-  const fontSlider = document.createElement('input');
-  fontSlider.type = 'range';
-  fontSlider.id = 'fontSizeSlider';
-  fontSlider.min = 10;
-  fontSlider.max = 50;
-  fontSlider.value = currentSize;
-  fontSlider.style.webkitAppearance = 'auto';
-  Object.assign(fontSlider.style, {
-    border: 'initial',
-    padding: 'initial',
-    position: 'fixed',
-    top: '40px',
-    right: '50px',
-    width: '100px',
-    margin: '4px',
-    zIndex: '9999',
-    display: 'none'
-  });
-  const label = document.createElement('div');
-  label.id = 'fontSizeLabel';
-  label.textContent = `Font size: ${fontSlider.value}px`;
-  Object.assign(label.style, {
-    all: 'initial',
-    position: 'fixed',
-    top: '10px',
-    right: '47px',
-    padding: '2px 6px',
-    fontSize: '14px',
-    fontFamily: 'serif',
-    zIndex: '10000',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    display: 'none'
-  });
-  const closeBtn = document.createElement('div');
-  closeBtn.id = 'fontSizeClose';
-  closeBtn.textContent = '×';
-  Object.assign(closeBtn.style, {
-    position: 'fixed',
-    top: '10px',
-    right: '10px',
-    padding: '0 8px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    zIndex: '10001',
-    display: 'none'
-  });
-  const decreaseBtn = document.createElement('button');
-  decreaseBtn.id = 'fontSizeDecrease';
-  decreaseBtn.textContent = '◀';
-  Object.assign(decreaseBtn.style, {
-    position: 'fixed',
-    top: '40px',
-    right: '170px',
-    zIndex: '9999',
-    fontSize: '16px',
-    padding: '0 6px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    background: '#eee',
-    cursor: 'pointer',
-    display: 'none'
-  });
-  const increaseBtn = document.createElement('button');
-  increaseBtn.id = 'fontSizeIncrease';
-  increaseBtn.textContent = '▶';
-  Object.assign(increaseBtn.style, {
-    position: 'fixed',
-    top: '40px',
-    right: '10px',
-    zIndex: '9999',
-    fontSize: '16px',
-    padding: '0 6px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    background: '#eee',
-    cursor: 'pointer',
-    display: 'none'
-  });
-  const openBtn = document.createElement('div');
-  openBtn.id = 'fontSizeOpen';
-  openBtn.textContent = '○';
-  Object.assign(openBtn.style, {
-    position: 'fixed',
-    top: '10px',
-    right: '10px',
-    padding: '0 8px',
-    fontSize: '14px',
-    opacity: '0.3',
-    cursor: 'pointer',
-    zIndex: '10001',
-    display: 'block'
-  });
-  closeBtn.addEventListener('click', () => {
-    fontSlider.style.display = 'none';
-    label.style.display = 'none';
-    closeBtn.style.display = 'none';
-    decreaseBtn.style.display = 'none';
-    increaseBtn.style.display = 'none';
-    openBtn.style.display = 'block'
-  });
-  openBtn.addEventListener('click', () => {
-    fontSlider.style.display = 'block';
-    label.style.display = 'block';
-    closeBtn.style.display = 'block';
-    decreaseBtn.style.display = 'block';
-    increaseBtn.style.display = 'block';
-    openBtn.style.display = 'none'
-  });
-  decreaseBtn.addEventListener('click', () => {
-    let size = parseInt(fontSlider.value) - 1;
-    if (size >= parseInt(fontSlider.min)) {
-      fontSlider.value = size;
-      target.style.fontSize = `${size}px`;
-      label.textContent = `Font size: ${size}px`
-    }
-  });
-  increaseBtn.addEventListener('click', () => {
-    let size = parseInt(fontSlider.value) + 1;
-    if (size <= parseInt(fontSlider.max)) {
-      fontSlider.value = size;
-      target.style.fontSize = `${size}px`;
-      label.textContent = `Font size: ${size}px`
-    }
-  });
-  fontSlider.addEventListener('input', () => {
-    target.style.fontSize = `${fontSlider.value}px`;
-    label.textContent = `Font size: ${fontSlider.value}px`
-  });
+// ==============================
+// Font Control Panel 修正版
+// ==============================
 
-  document.body.appendChild(fontSlider);
-  document.body.appendChild(label);
-  document.body.appendChild(closeBtn);
-  document.body.appendChild(decreaseBtn);
-  document.body.appendChild(increaseBtn);
-  document.body.appendChild(openBtn);
+// 古い要素を削除
+['fontPanel', 'fontOpenBtn'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+});
+
+// 操作対象は #novelDisplay
+const target = document.getElementById('novelDisplay');
+if (!target) {
+  console.error('#novelDisplay が見つかりません');
+}
+
+// パネルコンテナ
+const panel = document.createElement('div');
+panel.id = 'fontPanel';
+Object.assign(panel.style, {
+  position: 'fixed',
+  top: '10px',
+  right: '10px',
+  padding: '8px',
+  background: '#fff',
+  border: '1px solid #ccc',
+  borderRadius: '8px',
+  zIndex: '10000',
+  display: 'none',
+  boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+  fontFamily: 'sans-serif'
+});
+
+// モードボタン
+const modes = ['Font size', 'Font weight', 'Font shadow'];
+let currentMode = 'Font size';
+
+const modeContainer = document.createElement('div');
+Object.assign(modeContainer.style, {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+  marginBottom: '8px'
+});
+
+modes.forEach(mode => {
+  const btn = document.createElement('button');
+  btn.textContent = mode;
+  Object.assign(btn.style, {
+    padding: '2px 6px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    background: mode === currentMode ? '#ddd' : '#f9f9f9',
+    cursor: 'pointer',
+    textAlign: 'left'
+  });
+  btn.addEventListener('click', () => {
+    currentMode = mode;
+    [...modeContainer.children].forEach(c => c.style.background = '#f9f9f9');
+    btn.style.background = '#ddd';
+    updateControls();
+  });
+  modeContainer.appendChild(btn);
+});
+
+// コントロールエリア
+const controlArea = document.createElement('div');
+Object.assign(controlArea.style, {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px'
+});
+
+// ラベル
+const label = document.createElement('div');
+Object.assign(label.style, {
+  fontSize: '14px',
+  marginBottom: '4px'
+});
+
+// スライダー
+const slider = document.createElement('input');
+slider.type = 'range';
+Object.assign(slider.style, {
+  width: '120px'
+});
+
+// 更新処理
+function updateControls() {
+  if (!target) return;
+
+  if (currentMode === 'Font size') {
+    slider.min = 10;
+    slider.max = 50;
+    slider.step = 1;
+    slider.value = parseInt(getComputedStyle(target).fontSize) || 23;
+    label.textContent = `Font size: ${slider.value}px`;
+    slider.oninput = () => {
+      target.style.fontSize = `${slider.value}px`;
+      label.textContent = `Font size: ${slider.value}px`;
+    };
+  }
+  else if (currentMode === 'Font weight') {
+    slider.min = 100;
+    slider.max = 900;
+    slider.step = 100;
+    slider.value = parseInt(getComputedStyle(target).fontWeight) || 400;
+    label.textContent = `Font weight: ${slider.value}`;
+    slider.oninput = () => {
+      target.style.fontWeight = slider.value;
+      label.textContent = `Font weight: ${slider.value}`;
+    };
+  }
+else if (currentMode === 'Font shadow') {
+  slider.min = 0;
+  slider.max = 30;
+  slider.step = 1;
+
+  // 現在のスライダー値を保持（前回の設定を使う）
+  let blur = parseInt(target.dataset.fontShadow || 0);
+  slider.value = blur;
+  label.textContent = `Font shadow: ${slider.value}px`;
+
+  slider.oninput = () => {
+    const b = slider.value;
+    if (b > 0) {
+      target.style.textShadow = `0 0 ${b}px`;
+    } else {
+      target.style.textShadow = 'none';
+    }
+    label.textContent = `Font shadow: ${b}px`;
+
+    // blur 値を保持しておく
+    target.dataset.fontShadow = b;
+  };
+}
+
+}
+
+controlArea.appendChild(label);
+controlArea.appendChild(slider);
+
+panel.appendChild(modeContainer);
+panel.appendChild(controlArea);
+document.body.appendChild(panel);
+
+// 開閉ボタン
+const openBtn = document.createElement('div');
+openBtn.id = 'fontOpenBtn';
+openBtn.textContent = '○';
+Object.assign(openBtn.style, {
+  position: 'fixed',
+  top: '10px',
+  right: '10px',
+  padding: '0 8px',
+  fontSize: '14px',
+  opacity: '0.3',
+  cursor: 'pointer',
+  zIndex: '10001'
+});
+openBtn.addEventListener('click', () => {
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
+});
+document.body.appendChild(openBtn);
+  // 閉じるボタン ✕
+const closeBtn = document.createElement('div');
+closeBtn.textContent = '×';
+Object.assign(closeBtn.style, {
+  position: 'absolute',
+  top: '4px',
+  right: '4px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  color: '#333'
+});
+closeBtn.addEventListener('click', () => {
+  panel.style.display = 'none';
+  openBtn.style.display = 'block';
+});
+panel.appendChild(closeBtn);
+// 初期化
+updateControls();
   
 // ここからPickr
   if (window.__pickrLoaded) return;
