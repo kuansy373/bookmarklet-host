@@ -127,7 +127,7 @@ Object.assign(scrollUI.style, {
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
-  <div style="margin-bottom:4px;">-Slider Settings-</div>
+  <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
   <label><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span></label><br>
@@ -140,7 +140,7 @@ scrollUI.innerHTML = `
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
   <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
   
-  <div style="margin-top:8px;margin-bottom:4px;">-Text Settings-</div>
+  <div style="margin-top:8px;font-weight: bold;">< Text Settings ></div>
   <label>Font shadow: <input id="fShadow" type="number" value="none" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Font weight: <input id="fWeight" type="text" value="normal" style="all:initial;width:60px;border:1px solid;font-size:unset;"></label><br>
   <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span class="labelText"> Text Border</label><br>
