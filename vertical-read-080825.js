@@ -141,10 +141,9 @@ scrollUI.innerHTML = `
   <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
   
   <div style="margin-top:8px;font-weight: bold;">< Text Settings ></div>
-  <label>Font shadow: <input id="fShadow" type="number" value="none" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Font weight: <input id="fWeight" type="text" value="normal" style="all:initial;width:60px;border:1px solid;font-size:unset;"></label><br>
-  <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span class="labelText"> Text Border</label><br>
-  <label>Text shadow: <input id="Tshadow" type="number" value="none" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span style="padding-top:5.5px;position:fixed;"> Border:</span><input id="bWidth" type="number" style="all:initial;width:60px;border:1px solid;margin-left:52px;"> px</label><br>
+  <label>Shadow: <input id="fShadow" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Width: <input id="sWidth" type="number" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
