@@ -45,7 +45,7 @@
   padding: 0;
   overflow-x: hidden;
 `;
-// === 右スライダー（初期表示） ===
+// === 右スライダー ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
 scrollSliderRight.min = 0;
@@ -63,7 +63,7 @@ Object.assign(scrollSliderRight.style, {
 });
 document.body.appendChild(scrollSliderRight);
 
-// === 左スライダー（初期表示） ===
+// === 左スライダー ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
 scrollSliderLeft.min = 0;
@@ -388,7 +388,8 @@ scrollUI.appendChild(scrollSCloseBtn);
 scrollSCloseBtn.addEventListener('click', () => {
   scrollUI.style.display = 'none';
 });
-  
+
+  // フォントサイズ
   ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.remove();
@@ -887,7 +888,6 @@ scrollSCloseBtn.addEventListener('click', () => {
         >
       </div>
     `;
-
     document.body.appendChild(container);
 
     // --- ドラッグ処理 ---
