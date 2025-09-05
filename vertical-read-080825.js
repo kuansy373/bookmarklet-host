@@ -470,7 +470,7 @@ Object.assign(panel.style, {
   right: '10px',
   padding: '0 8px',
   paddingBottom: '8px',
-  width: '260px',
+  width: '270px',
   height: '55px',
   heighr: '50px', 
   background: '#fff',
@@ -482,7 +482,7 @@ Object.assign(panel.style, {
 });
 
 // モードボタン
-const modes = ['Font size', 'Font weight', 'Font shadow'];
+const modes = ['Font shadow','Font weight','Font size'];
 let currentMode = 'Font size';
 
 const modeContainer = document.createElement('div');
@@ -532,7 +532,9 @@ Object.assign(label.style, {
 const slider = document.createElement('input');
 slider.type = 'range';
 Object.assign(slider.style, {
-  width: '120px'
+  position: 'absolute',
+  width: '100px',
+  marginLeft: '150px',
 });
 
 // 更新処理
