@@ -529,7 +529,49 @@ Object.assign(label.style, {
   fontSize: '14px',
   marginBottom: '4px'
 });
-
+  
+// 増減ボタン
+const decreaseBtn = document.createElement('button');
+decreaseBtn.id = 'fontSizeDecrease';
+decreaseBtn.textContent = '◀';
+Object.assign(decreaseBtn.style, {
+  position: 'absolute',
+  left: '135px',
+  fontSize: '15px',
+  padding: '0 6px',
+  borderRadius: '4px',
+  border: '1px solid #ccc',
+  background: '#eee',
+  cursor: 'pointer'
+});
+const increaseBtn = document.createElement('button');
+increaseBtn.id = 'fontSizeIncrease';
+increaseBtn.textContent = '▶';
+Object.assign(increaseBtn.style, {
+  position: 'absolute',
+  left: '257px',
+  fontSize: '15px',
+  padding: '0 6px',
+  borderRadius: '4px',
+  border: '1px solid #ccc',
+  background: '#eee',
+  cursor: 'pointer'
+});
+decreaseBtn.addEventListener('click', () => {
+  let size = parseInt(slider.value) - 1;
+  if (size >= parseInt(slider.min)) {
+    slider.value = size;
+    slider.dispatchEvent(new Event('input')); // スライダーと同じ処理を実行
+  }
+});
+increaseBtn.addEventListener('click', () => {
+  let size = parseInt(slider.value) + 1;
+  if (size <= parseInt(slider.max)) {
+    slider.value = size;
+    slider.dispatchEvent(new Event('input')); // スライダーと同じ処理を実行
+  }
+});
+  
 // スライダー
 const slider = document.createElement('input');
 slider.type = 'range';
@@ -602,6 +644,8 @@ controlArea.appendChild(sliderContainer);
 // ラベルとスライダーを横並びコンテナに追加
 sliderContainer.appendChild(label);        
 sliderContainer.appendChild(slider);
+sliderContainer.appendChild(decreaseBtn);
+sliderContainer.appendChild(increaseBtn);
 
 panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
