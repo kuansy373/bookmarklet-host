@@ -539,6 +539,7 @@ Object.assign(decreaseBtn.style, {
   left: '135px',
   fontSize: '15px',
   padding: '0 6px',
+  marginBottom:'3px',
   borderRadius: '4px',
   border: '1px solid #ccc',
   background: '#eee',
@@ -549,9 +550,10 @@ increaseBtn.id = 'fontSizeIncrease';
 increaseBtn.textContent = '▶';
 Object.assign(increaseBtn.style, {
   position: 'absolute',
-  left: '257px',
+  left: '255px',
   fontSize: '15px',
   padding: '0 6px',
+  marginBottom:'3px',
   borderRadius: '4px',
   border: '1px solid #ccc',
   background: '#eee',
@@ -578,7 +580,9 @@ slider.type = 'range';
 Object.assign(slider.style, {
   position: 'absolute',
   width: '100px',
-  marginLeft: '150px',
+  marginLeft: '151px',
+  marginBottom:'4px',
+  blockSize: '5px',
 });
 
 // 更新処理
