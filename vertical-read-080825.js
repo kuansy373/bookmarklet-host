@@ -502,16 +502,20 @@ modes.forEach(mode => {
     cursor: 'pointer',
     textAlign: 'left'
   });
-btn.addEventListener('click', () => {
-  currentMode = mode;
-  [...modeContainer.children].forEach(c => {
-    c.style.border = '1px solid';
-    c.style.boxShadow = 'none';   // 他のボタンは影を消す
+  if (mode === currentMode) {
+    btn.style.border = 'none';
+    btn.style.boxShadow = 'inset 0 0 5px';
+  }
+  btn.addEventListener('click', () => {
+    currentMode = mode;
+    [...modeContainer.children].forEach(c => {
+      c.style.border = '1px solid';
+      c.style.boxShadow = 'none';   // 他のボタンは影を消す
+    });
+    btn.style.border = 'none';
+    btn.style.boxShadow = 'inset 0 0 5px'; // 選択中に影を付ける
+    updateControls();
   });
-  btn.style.border = 'none';
-  btn.style.boxShadow = 'inset 0 0 5px'; // 選択中に影を付ける
-  updateControls();
-});
   modeContainer.appendChild(btn);
 });
 
@@ -532,7 +536,7 @@ Object.assign(label.style, {
   
 // 増減ボタン
 const decreaseBtn = document.createElement('button');
-decreaseBtn.id = 'fontSizeDecrease';
+decreaseBtn.id = 'sliderDecrease';
 decreaseBtn.textContent = '◀';
 Object.assign(decreaseBtn.style, {
   position: 'absolute',
@@ -546,7 +550,7 @@ Object.assign(decreaseBtn.style, {
   cursor: 'pointer'
 });
 const increaseBtn = document.createElement('button');
-increaseBtn.id = 'fontSizeIncrease';
+increaseBtn.id = 'sliderIncrease';
 increaseBtn.textContent = '▶';
 Object.assign(increaseBtn.style, {
   position: 'absolute',
@@ -560,17 +564,18 @@ Object.assign(increaseBtn.style, {
   cursor: 'pointer'
 });
 decreaseBtn.addEventListener('click', () => {
-  let size = parseInt(slider.value) - 1;
-  if (size >= parseInt(slider.min)) {
-    slider.value = size;
-    slider.dispatchEvent(new Event('input')); // スライダーと同じ処理を実行
+  let value = parseInt(slider.value) - parseInt(slider.step || 1);
+  if (value >= parseInt(slider.min)) {
+    slider.value = value;
+    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
   }
 });
+
 increaseBtn.addEventListener('click', () => {
-  let size = parseInt(slider.value) + 1;
-  if (size <= parseInt(slider.max)) {
-    slider.value = size;
-    slider.dispatchEvent(new Event('input')); // スライダーと同じ処理を実行
+  let value = parseInt(slider.value) + parseInt(slider.step || 1);
+  if (value <= parseInt(slider.max)) {
+    slider.value = value;
+    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
   }
 });
   
