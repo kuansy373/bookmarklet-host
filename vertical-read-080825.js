@@ -142,12 +142,6 @@ scrollUI.innerHTML = `
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
   <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
-  
-  <div style="margin-top:8px;font-weight: bold;">< Text Settings ></div>
-  <label><input id="tBorder" class="settingCheckbox" type="checkbox"><span style="padding-top:5.5px;position:fixed;"> Border:</span><input id="bWidth" type="number" style="all:initial;width:60px;border:1px solid;margin-left:52px;"> px</label><br>
-  <label><input id="tColor" class="settingCheckbox" type="checkbox"><span class="labelText"> Color</span></label><br>
-  <label>Shadow: <input id="tShadow" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Width: <input id="tWidth" type="number" value="60" style="all:initial;width:60px;border:1px solid;"> px</label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
@@ -456,7 +450,10 @@ Object.assign(panel.style, {
   position: 'fixed',
   top: '10px',
   right: '10px',
-  padding: '8px',
+  padding: '0 8px',
+  paddingBottom: '8px',
+  width: '260px',
+  height: '55px',
   heighr: '50px', 
   background: '#fff',
   border: '1px solid #ccc',
@@ -571,8 +568,19 @@ else if (currentMode === 'Font shadow') {
 }
 
 }
-controlArea.appendChild(label);
-controlArea.appendChild(slider);
+// 横並び用コンテナを作る
+const sliderContainer = document.createElement('div');
+Object.assign(sliderContainer.style, {
+  display: 'flex',
+  alignItems: 'center', // ラベルとスライダーを中央揃え
+  gap: '8px'           // ラベルとスライダーの間の余白
+});
+// controlArea に横並びコンテナを追加
+controlArea.appendChild(sliderContainer);
+// ラベルとスライダーを横並びコンテナに追加
+sliderContainer.appendChild(label);        
+sliderContainer.appendChild(slider);
+
 panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
 document.body.appendChild(panel);
@@ -598,13 +606,14 @@ openBtn.addEventListener('click', () => {
 document.body.appendChild(openBtn);
   // 閉じるボタン ✕
 const closeBtn = document.createElement('div');
-closeBtn.textContent = '×';
+closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
   position: 'absolute',
-  top: '4px',
-  right: '4px',
+  top: '0px',
+  right: '10px',
   cursor: 'pointer',
   fontSize: '14px',
+  opacity: '0.3',
   color: '#333'
 });
 closeBtn.addEventListener('click', () => {
