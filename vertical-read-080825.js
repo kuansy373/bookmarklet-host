@@ -497,9 +497,8 @@ modes.forEach(mode => {
   btn.textContent = mode;
   Object.assign(btn.style, {
     padding: '2px 6px',
-    border: '1px solid #ccc',
+    border: '1px solid',
     borderRadius: '4px',
-    background: mode === currentMode ? '#ddd' : '#f9f9f9',
     cursor: 'pointer',
     textAlign: 'left'
   });
