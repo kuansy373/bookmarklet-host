@@ -123,7 +123,7 @@ Object.assign(scrollUI.style, {
   background: '#fff',
   padding: '8px',
   border: '1px solid',
-  borderRadius: '6px',
+  borderRadius: '4px',
   fontSize: '14px',
   zIndex: '10002',
   fontFamily: 'sans-serif',
@@ -473,9 +473,8 @@ Object.assign(panel.style, {
   width: '270px',
   height: '55px',
   heighr: '50px', 
-  background: '#fff',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
+  border: '1px solid',
+  borderRadius: '4px',
   zIndex: '10000',
   display: 'none',
   fontFamily: 'sans-serif'
@@ -504,12 +503,16 @@ modes.forEach(mode => {
     cursor: 'pointer',
     textAlign: 'left'
   });
-  btn.addEventListener('click', () => {
-    currentMode = mode;
-    [...modeContainer.children].forEach(c => c.style.background = '#f9f9f9');
-    btn.style.background = '#ddd';
-    updateControls();
+btn.addEventListener('click', () => {
+  currentMode = mode;
+  [...modeContainer.children].forEach(c => {
+    c.style.border = '1px solid';
+    c.style.boxShadow = 'none';   // 他のボタンは影を消す
   });
+  btn.style.border = 'none';
+  btn.style.boxShadow = 'inset 0 0 5px'; // 選択中に影を付ける
+  updateControls();
+});
   modeContainer.appendChild(btn);
 });
 
