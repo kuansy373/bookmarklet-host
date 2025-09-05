@@ -499,21 +499,28 @@ modes.forEach(mode => {
     padding: '2px 6px',
     border: '1px solid',
     borderRadius: '4px',
+    opacity: '0.5',
     cursor: 'pointer',
-    textAlign: 'left'
+    textAlign: 'left',
   });
+  if (mode === 'Font weight') {
+    btn.style.margin = '0 4px';
+  }
   if (mode === currentMode) {
-    btn.style.border = 'none';
-    btn.style.boxShadow = 'inset 0 0 5px';
+    btn.style.border = '1px solid';   // 初期選択のスタイル
+    btn.style.opacity = '1';
+    btn.style.boxShadow = 'inset 0 0 3px';
   }
   btn.addEventListener('click', () => {
     currentMode = mode;
     [...modeContainer.children].forEach(c => {
-      c.style.border = '1px solid';
-      c.style.boxShadow = 'none';   // 他のボタンは影を消す
+      c.style.border = '1px solid';   // 他のボタンに付ける
+      c.style.opacity = '0.6';
+      c.style.boxShadow = 'none';
     });
-    btn.style.border = 'none';
-    btn.style.boxShadow = 'inset 0 0 5px'; // 選択中に影を付ける
+    btn.style.border = ' 1px solid';
+    btn.style.opacity = '1';
+    btn.style.boxShadow = 'inset 0 0 3px'; // 選択中に付ける
     updateControls();
   });
   modeContainer.appendChild(btn);
@@ -545,8 +552,7 @@ Object.assign(decreaseBtn.style, {
   padding: '0 6px',
   marginBottom:'3px',
   borderRadius: '4px',
-  border: '1px solid #ccc',
-  background: '#eee',
+  border: '1px solid',
   cursor: 'pointer'
 });
 const increaseBtn = document.createElement('button');
@@ -559,8 +565,7 @@ Object.assign(increaseBtn.style, {
   padding: '0 6px',
   marginBottom:'3px',
   borderRadius: '4px',
-  border: '1px solid #ccc',
-  background: '#eee',
+  border: '1px solid',
   cursor: 'pointer'
 });
 decreaseBtn.addEventListener('click', () => {
