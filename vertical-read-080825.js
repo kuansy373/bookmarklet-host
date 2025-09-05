@@ -172,8 +172,22 @@ if (e.target.checked) {
     scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
   }
 });
-  
+
 // 色
+document.getElementById('scrollC').addEventListener('change', e => {
+  if (e.target.checked) {
+    if (scrollB.checked) scrollB.checked = false;
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
+    const borderColor = 'currentColor'; // border と同じ色
+    scrollSliderRight.style.setProperty("background", borderColor, "important");
+    scrollSliderLeft.style.setProperty("background", borderColor, "important");
+  } else {
+    scrollSliderRight.style.setProperty("background", "transparent", "important");
+    scrollSliderLeft.style.setProperty("background", "transparent", "important");
+  }
+});
+  
+/*
 const scrollC = document.getElementById("scrollC");
 const scrollBgHex = document.getElementById("scrollBgHex");
 // ページの文字色を取得
@@ -238,6 +252,8 @@ scrollBgHex.addEventListener("input", () => {
     updateSliderBackground();
   }
 });
+*/
+  
 // 影
 const scrollS = document.getElementById('scrollS');
 scrollS.addEventListener('input', () => {
