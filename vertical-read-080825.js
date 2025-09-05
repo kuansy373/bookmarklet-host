@@ -438,8 +438,6 @@ scrollSCloseBtn.addEventListener('click', () => {
 // ==============================
 // Font Control Panel 修正版
 // ==============================
-
-// 古い要素を削除
 ['fontPanel', 'fontOpenBtn'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.remove();
@@ -459,12 +457,12 @@ Object.assign(panel.style, {
   top: '10px',
   right: '10px',
   padding: '8px',
+  heighr: '50px', 
   background: '#fff',
   border: '1px solid #ccc',
   borderRadius: '8px',
   zIndex: '10000',
   display: 'none',
-  boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
   fontFamily: 'sans-serif'
 });
 
@@ -474,7 +472,7 @@ let currentMode = 'Font size';
 
 const modeContainer = document.createElement('div');
 Object.assign(modeContainer.style, {
-  display: 'flex',
+  display: 'block',
   flexDirection: 'column',
   gap: '4px',
   marginBottom: '8px'
@@ -573,10 +571,8 @@ else if (currentMode === 'Font shadow') {
 }
 
 }
-
 controlArea.appendChild(label);
 controlArea.appendChild(slider);
-
 panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
 document.body.appendChild(panel);
