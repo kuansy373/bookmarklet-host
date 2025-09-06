@@ -1,26 +1,16 @@
 (() => {
-  let text = '';
-  document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
-    text += node.innerHTML.replace(/<(\/?ruby|\/?rb|\/?rp|\/?rt)>/g, '___$1___').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/___([^_]+)___/g, '<$1>') + '　'
-  });
-  text = text.trim().replace(/(\r\n|\r)+/g, '\n').replace(/\n{2,}/g, '\n').replace(/\n/g, '　').replace(/　{2,}/g, '　');
-  document.querySelectorAll('body > *').forEach(node => {
-    node.style.display = 'none'
-  });
-  let vp = document.querySelector('meta[name="viewport"]');
-  if (!vp) {
-    vp = document.createElement('meta');
-    vp.name = 'viewport';
-    document.head.appendChild(vp)
-  }
-  vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-  const hideStyle = document.createElement('style');
-  hideStyle.textContent = `#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer { display: none !important; }`;
-  document.head.appendChild(hideStyle);
-  const container = document.createElement('div');
-  container.id = 'novelDisplay';
-  container.innerHTML = text;
-  container.style.cssText = `
+// ① 必要な本文を抽出
+let text = '';
+document.querySelectorAll(
+  'body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody'
+).forEach(node => {
+  text += node.innerHTML + '　';
+});
+
+// ② コンテナ化
+const container = document.createElement('div');
+container.id = 'novelDisplay';
+container.style.cssText = `
   writing-mode: vertical-rl;
   white-space: nowrap;
   letter-spacing: 0.25em;
@@ -28,13 +18,66 @@
   font-size: 23px;
   display: block;
   padding: 2em;
-  contain: none;
-  content-visibility: visible;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px;
   will-change: transform;
   transform: translateZ(0);
 `;
-  document.body.appendChild(container);
-  document.body.style.cssText = `
+
+// ③ スパンで分割（※ルビ避難はまだ）
+const chunkSize = 500;
+for (let i = 0; i < text.length; i += chunkSize) {
+  const chunk = text.slice(i, i + chunkSize);
+  const span = document.createElement('span');
+  span.innerHTML = chunk;
+  container.appendChild(span);
+}
+document.body.appendChild(container);
+
+// ④ ルビ避難
+text = container.innerHTML
+  .replace(/<rp>.*?<\/rp>/g, '')
+  .replace(/<(\/?ruby|\/?rb|\/?rt)>/g, '___$1___');
+
+// ⑤ 縦書き一行に変換
+text = text
+  .replace(/<br\s*\/?>/gi, '\n')
+  .replace(/<[^>]+>/g, '')
+  .trim()
+  .replace(/(\r\n|\r)+/g, '\n')
+  .replace(/\n{2,}/g, '\n')
+  .replace(/\n/g, '　')
+  .replace(/　{2,}/g, '　');
+
+// ⑥ ルビ復活
+text = text.replace(/___([^_]+)___/g, '<$1>');
+
+// コンテナに反映
+container.innerHTML = '';
+for (let i = 0; i < text.length; i += chunkSize) {
+  const chunk = text.slice(i, i + chunkSize);
+  const span = document.createElement('span');
+  span.innerHTML = chunk;
+  container.appendChild(span);
+}
+
+// ページの不要要素非表示
+document.querySelectorAll('body > *').forEach(node => {
+  if (node.id !== 'novelDisplay') {
+    node.style.display = 'none';
+  }
+});
+let vp = document.querySelector('meta[name="viewport"]');
+if (!vp) {
+  vp = document.createElement('meta');
+  vp.name = 'viewport';
+  document.head.appendChild(vp);
+}
+vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+const hideStyle = document.createElement('style');
+hideStyle.textContent = `#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer { display: none !important; }`;
+document.head.appendChild(hideStyle);
+document.body.style.cssText = `
   display: flex;
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
