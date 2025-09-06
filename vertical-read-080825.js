@@ -68,14 +68,27 @@ function chunkHTMLSafe(html, chunkSize) {
   return chunks;
 }
 // ここまでで text は「<ruby>は残し、他タグは削除」「改行は全角スペース化」済みとする
-const chunkSize = 500;
-const chunks = chunkHTMLSafe(text, chunkSize);
-
-for (const c of chunks) {
+// === 本文を分割 ===
+const chunks = chunkHTMLSafe(text, 300);
+let index = 0;
+// === Lazy Rendering 用関数 ===
+function renderNextChunk() {
+  if (index >= chunks.length) return;
   const span = document.createElement('span');
-  span.innerHTML = c;         // ← ルビを正しく解釈させる
+  span.innerHTML = chunks[index++];
   container.appendChild(span);
 }
+// === 監視用の sentinel を配置 ===
+const sentinel = document.createElement('div');
+container.appendChild(sentinel);
+const observer = new IntersectionObserver(entries => {
+  if (entries.some(e => e.isIntersecting)) {
+    renderNextChunk();
+  }
+});
+observer.observe(sentinel);
+// === 最初に少しだけ描画 ===
+for (let i = 0; i < 5; i++) renderNextChunk();
 
   // スタイル
   container.style.cssText = `
