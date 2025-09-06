@@ -88,11 +88,15 @@ document.body.appendChild(scrollSliderLeft);
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
+let scrollPos = scroller.scrollTop;  // ← 小数を保持する変数を追加
 
 function forceScroll(timestamp) {
   if (lastTimestamp !== null) {
     const elapsed = timestamp - lastTimestamp;
-    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
+    scrollPos += (scrollSpeed * elapsed) / 1000; // 小数保持
+    scroller.scrollTop = scrollPos;              // ブラウザに渡すときに丸められる
+  } else {
+    scrollPos = scroller.scrollTop; // 初期化
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
@@ -102,6 +106,7 @@ function forceScroll(timestamp) {
 function syncScrollSpeed(value) {
   scrollSpeed = parseInt(value, 10) * speedScale;
 }
+
 scrollSliderRight.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderRight.value);
   scrollSliderLeft.value = scrollSliderRight.value;
