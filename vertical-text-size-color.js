@@ -9,7 +9,8 @@ text = text.trim()
   .replace(/(\r\n|\r)+/g, '\n')
   .replace(/\n{2,}/g, '\n')
   .replace(/\n/g, '　')          // 改行→全角スペース
-  .replace(/　{2,}/g, '　');  document.querySelectorAll('body > *').forEach(node => {
+  .replace(/　{2,}/g, '　');
+  document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
   let vp = document.querySelector('meta[name="viewport"]');
@@ -92,7 +93,7 @@ container.style.cssText = `
   display: block;
   padding: 2em;
   content-visibility: auto;
-  contain-intrinsic-size: 3000px;
+  contain-intrinsic-size: 1000px;
   will-change: transform;
   transform: translateZ(0);
 `;
