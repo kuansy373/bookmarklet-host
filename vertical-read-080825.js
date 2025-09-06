@@ -1,12 +1,18 @@
 (() => {
-  let text = '';
-  document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
-    text += node.innerHTML.replace(/<(\/?ruby|\/?rb|\/?rp|\/?rt)>/g, '___$1___').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/___([^_]+)___/g, '<$1>') + '　'
-  });
-  text = text.trim().replace(/(\r\n|\r)+/g, '\n').replace(/\n{2,}/g, '\n').replace(/\n/g, '　').replace(/　{2,}/g, '　');
+  const nodes = Array.from(document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody'));
+let text = nodes.map(node => {
+  return node.innerHTML
+    .replace(/<(\/?ruby|\/?rb|\/?rp|\/?rt)>/g, '___$1___')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/___([^_]+)___/g, '<$1>')
+}).join('　');
+
+text = text.replace(/\s+/g, '　');
+
   document.querySelectorAll('body > *').forEach(node => {
-    node.style.display = 'none'
-  });
+  node.style.display = 'none'
+});
   let vp = document.querySelector('meta[name="viewport"]');
   if (!vp) {
     vp = document.createElement('meta');
