@@ -27,8 +27,8 @@
   font-size: 23px;
   display: block;
   padding: 2em;
-  contain: none;
-  content-visibility: visible;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px;
   will-change: transform;
   transform: translateZ(0);
 `;
