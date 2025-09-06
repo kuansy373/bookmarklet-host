@@ -1,15 +1,15 @@
 (() => {
   let text = '';
   document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
-text += node.innerHTML
-  .replace(/<br\s*\/?>/gi, '\n')                        // <br> → 改行
-  .replace(/<(?!\/?(ruby|rb|rp|rt)\b)[^>]+>/gi, '');
-  });
-text = text.trim()
-  .replace(/(\r\n|\r)+/g, '\n')
-  .replace(/\n{2,}/g, '\n')
-  .replace(/\n/g, '　')          // 改行→全角スペース
-  .replace(/　{2,}/g, '　');
+  text += node.innerHTML
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<(?!\/?(ruby|rb|rp|rt)\b)[^>]+>/gi, '');
+    });
+  text = text.trim()
+    .replace(/(\r\n|\r)+/g, '\n')
+    .replace(/\n{2,}/g, '\n')
+    .replace(/\n/g, '　')
+    .replace(/　{2,}/g, '　');
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
@@ -25,7 +25,8 @@ text = text.trim()
   document.head.appendChild(hideStyle);
   const container = document.createElement('div');
   container.id = 'novelDisplay';
-  // 「タグの中はカウントしない」「<ruby>の外でのみ分割」して安全に分割する
+  
+//　<ruby>の外でspan分割する
 function chunkHTMLSafe(html, chunkSize) {
   const chunks = [];
   const len = html.length;
@@ -43,22 +44,18 @@ function chunkHTMLSafe(html, chunkSize) {
       const isClosing = /^\s*\//.test(tagContent);
       const nameMatch = tagContent.replace(/^\s*\//, '').match(/^([a-zA-Z0-9-]+)/);
       const name = nameMatch ? nameMatch[1].toLowerCase() : '';
-
       // <ruby> の入れ子深さを管理（<rb>/<rt>/<rp>は ruby の内側なので深さは変えない）
       if (name === 'ruby') {
         rubyDepth += isClosing ? -1 : 1;
         if (rubyDepth < 0) rubyDepth = 0; // 念のため
       }
-
       // タグ本体はそのままスキップ（文字数カウントしない）
       i = end + 1;
       continue;
     }
-
     // タグの外の実文字をカウント
     count++;
     i++;
-
     // 分割：ruby の外にいるときだけ
     if (count >= chunkSize && rubyDepth === 0) {
       chunks.push(html.slice(last, i));
@@ -66,16 +63,13 @@ function chunkHTMLSafe(html, chunkSize) {
       count = 0;
     }
   }
-
   // 端数を追加
   if (last < len) chunks.push(html.slice(last));
   return chunks;
 }
-
 // ここまでで text は「<ruby>は残し、他タグは削除」「改行は全角スペース化」済みとする
 const chunkSize = 500;
 const chunks = chunkHTMLSafe(text, chunkSize);
-
 
 for (const c of chunks) {
   const span = document.createElement('span');
@@ -83,22 +77,21 @@ for (const c of chunks) {
   container.appendChild(span);
 }
 
-// スタイル（content-visibility は auto 推奨）
-container.style.cssText = `
-  writing-mode: vertical-rl;
-  white-space: nowrap;
-  letter-spacing: 0.25em;
-  line-height: 1.8;
-  font-size: 23px;
-  display: block;
-  padding: 2em;
-  content-visibility: auto;
-  contain-intrinsic-size: 1000px;
-  will-change: transform;
-  transform: translateZ(0);
-`;
-document.body.appendChild(container);
-
+  // スタイル
+  container.style.cssText = `
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    letter-spacing: 0.25em;
+    line-height: 1.8;
+    font-size: 23px;
+    display: block;
+    padding: 2em;
+    content-visibility: auto;
+    contain-intrinsic-size: 1000px;
+    will-change: transform;
+    transform: translateZ(0);
+  `;
+  document.body.appendChild(container);
   document.body.style.cssText = `
   display: flex;
   justify-content: center;
@@ -110,8 +103,7 @@ document.body.appendChild(container);
   padding: 0;
   overflow-x: hidden;
 `;
-
-// === 右スライダー（初期表示） ===
+// === 右スライダー ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
 scrollSliderRight.min = 0;
@@ -129,7 +121,7 @@ Object.assign(scrollSliderRight.style, {
 });
 document.body.appendChild(scrollSliderRight);
 
-// === 左スライダー（初期表示） ===
+// === 左スライダー ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
 scrollSliderLeft.min = 0;
