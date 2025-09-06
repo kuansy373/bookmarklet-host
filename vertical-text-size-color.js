@@ -60,6 +60,7 @@ Object.assign(scrollSliderRight.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
+  boxShadow: '0 0 0px',
 });
 document.body.appendChild(scrollSliderRight);
 
@@ -78,6 +79,7 @@ Object.assign(scrollSliderLeft.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
+  boxShadow: '0 0 0px',
   direction: 'rtl', // 左用は増加方向反転
 });
 document.body.appendChild(scrollSliderLeft);
@@ -121,47 +123,71 @@ Object.assign(scrollUI.style, {
   background: '#fff',
   padding: '8px',
   border: '1px solid',
-  borderRadius: '6px',
+  borderRadius: '4px',
   fontSize: '14px',
   zIndex: '10002',
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
-  <div style="margin-bottom:4px;">Slider Settings</div>
-  <label><input id="scrollB" class="scrollCheckbox" type="checkbox"> Border</label><br>
-  <label><input id="scrollC" class="scrollCheckbox" type="checkbox"> Color</label><br>
-  <label>
-  <input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:4px;vertical-align:middle;font-family:monospace"> 
-  <input id="scrollCLock" class="scrollCheckbox" type="checkbox"> Lock
-  </label><br>
-  <label><input id="scrollBoth" class="scrollCheckbox" type="checkbox"> Both sides</label><br>
-  <label><input id="scrollRight" class="scrollCheckbox" type="checkbox" checked> Right side only</label><br>
-  <label><input id="scrollLeft" class="scrollCheckbox" type="checkbox"> Left side only</label><br>
+  <div style="font-weight:bold;">< Slider Settings ></div>
+  <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
+  <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
+  <!--
+  <label><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:34.5px;vertical-align:middle;font-family:monospace"></label><br>
+  -->
+  <label>Shadow:<input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
+  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side only</span></label><br>
+  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side only</span></label><br>
   <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
-  <label><input id="scrollHide" class="scrollCheckbox" type="checkbox"> Blue ball</label><br>
+  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
 `;
 document.body.appendChild(scrollUI);
-document.querySelectorAll('.scrollCheckbox').forEach(cb => {
+document.querySelectorAll('.settingCheckbox').forEach(cb => {
   Object.assign(cb.style, {
-    display: 'inline-block',
-    boxSizing: 'border-box',
-    webkitAppearance: 'auto',
+    all: 'revert',
     height: '15px',
     width: '15px',
-    cursor: 'pointer',
+    verticalAlign: 'middle',
+  });
+});
+document.querySelectorAll('.labelText').forEach(span => {
+  Object.assign(span.style, {
+    position: 'fixed',
+    paddingTop: '1.5px',
   });
 });
 // === イベント ===
 // 枠線
 document.getElementById('scrollB').addEventListener('change', e => {
-  const border = e.target.checked ? '1px solid' : 'none';
-  scrollSliderRight.style.border = scrollSliderLeft.style.border = border;
+if (e.target.checked) {
+    if (scrollC.checked) scrollC.checked = false;
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = '1px solid';
+    scrollSliderRight.style.setProperty("background", "transparent", "important");
+    scrollSliderLeft.style.setProperty("background", "transparent", "important");
+  } else {
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
+  }
+});
+
+// 色
+document.getElementById('scrollC').addEventListener('change', e => {
+  if (e.target.checked) {
+    if (scrollB.checked) scrollB.checked = false;
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
+    const borderColor = 'currentColor'; // border と同じ色
+    scrollSliderRight.style.setProperty("background", borderColor, "important");
+    scrollSliderLeft.style.setProperty("background", borderColor, "important");
+  } else {
+    scrollSliderRight.style.setProperty("background", "transparent", "important");
+    scrollSliderLeft.style.setProperty("background", "transparent", "important");
+  }
 });
   
-// 色
+/*
 const scrollC = document.getElementById("scrollC");
 const scrollBgHex = document.getElementById("scrollBgHex");
 // ページの文字色を取得
@@ -197,7 +223,6 @@ function rgbToHex(rgb) {
 
 // 初期背景色をページ文字色に
 scrollBgHex.value = rgbToHex(bodyColor);
-
 // スライダー背景初期値は透明
 scrollSliderRight.style.setProperty("background", "transparent", "important");
 scrollSliderLeft.style.setProperty("background", "transparent", "important");
@@ -210,21 +235,39 @@ function updateSliderBackground() {
   }
 }
 // チェックボックス変更時
-scrollC.addEventListener("change", () => {
-  if (scrollC.checked) {
-    updateSliderBackground(); // Hex値を反映
+scrollC.addEventListener('change', e => {
+  if (e.target.checked) {
+    if (scrollB.checked) scrollB.checked = false;
+    updateSliderBackground();
+    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
   } else {
     scrollSliderRight.style.setProperty("background", "transparent", "important");
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
+
 // Hex入力欄の変更時
 scrollBgHex.addEventListener("input", () => {
   if (scrollC.checked) { // チェックONの場合のみ反映
     updateSliderBackground();
   }
 });
-
+*/
+  
+// 影
+const scrollS = document.getElementById('scrollS');
+scrollS.addEventListener('input', () => {
+  let val = Number(scrollS.value) || 0;
+  if (val < 0) {
+    // マイナス値のときは inset にして、値は絶対値に直す
+    scrollSliderRight.style.boxShadow = `inset 0 0 ${Math.abs(val)}px`;
+    scrollSliderLeft.style.boxShadow  = `inset 0 0 ${Math.abs(val)}px`;
+  } else {
+    // プラス値のときは通常
+    scrollSliderRight.style.boxShadow = `0 0 ${val}px`;
+    scrollSliderLeft.style.boxShadow  = `0 0 ${val}px`;
+  }
+});
 // 右側、左側、両側
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
@@ -404,148 +447,262 @@ scrollSCloseBtn.addEventListener('click', () => {
   scrollUI.style.display = 'none';
 });
 
-  // フォントサイズ
-  ['fontSizeSlider', 'fontSizeLabel', 'fontSizeClose', 'fontSizeDecrease', 'fontSizeIncrease', 'fontSizeOpen'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
-  const target = container;
-  const currentSize = parseInt(getComputedStyle(target).fontSize) || 23;
-  const fontSlider = document.createElement('input');
-  fontSlider.type = 'range';
-  fontSlider.id = 'fontSizeSlider';
-  fontSlider.min = 10;
-  fontSlider.max = 50;
-  fontSlider.value = currentSize;
-  fontSlider.style.webkitAppearance = 'auto';
-  Object.assign(fontSlider.style, {
-    border: 'initial',
-    padding: 'initial',
-    position: 'fixed',
-    top: '40px',
-    right: '50px',
-    width: '100px',
-    margin: '4px',
-    zIndex: '9999',
-    display: 'none'
-  });
-  const label = document.createElement('div');
-  label.id = 'fontSizeLabel';
-  label.textContent = `Font size: ${fontSlider.value}px`;
-  Object.assign(label.style, {
-    all: 'initial',
-    position: 'fixed',
-    top: '10px',
-    right: '47px',
+// ==============================
+// Font Control Panel
+// ==============================
+['fontPanel', 'fontOpenBtn'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+});
+
+// 操作対象は #novelDisplay
+const target = document.getElementById('novelDisplay');
+if (!target) {
+  console.error('#novelDisplay が見つかりません');
+}
+
+// パネルコンテナ
+const panel = document.createElement('div');
+panel.id = 'fontPanel';
+Object.assign(panel.style, {
+  position: 'fixed',
+  top: '10px',
+  right: '10px',
+  padding: '0 8px',
+  paddingBottom: '8px',
+  width: '270px',
+  height: '55px',
+  heighr: '50px', 
+  border: '1px solid',
+  borderRadius: '4px',
+  zIndex: '10000',
+  display: 'none',
+  fontFamily: 'sans-serif'
+});
+
+// モードボタン
+const modes = ['Font shadow','Font weight','Font size'];
+let currentMode = 'Font size';
+
+const modeContainer = document.createElement('div');
+Object.assign(modeContainer.style, {
+  display: 'block',
+  flexDirection: 'column',
+  gap: '4px',
+  marginBottom: '8px'
+});
+
+modes.forEach(mode => {
+  const btn = document.createElement('button');
+  btn.textContent = mode;
+  Object.assign(btn.style, {
     padding: '2px 6px',
-    fontSize: '14px',
-    fontFamily: 'serif',
-    zIndex: '10000',
-    border: '1px solid #ccc',
+    border: '1px solid',
     borderRadius: '4px',
-    display: 'none'
-  });
-  const closeBtn = document.createElement('div');
-  closeBtn.id = 'fontSizeClose';
-  closeBtn.textContent = '×';
-  Object.assign(closeBtn.style, {
-    position: 'fixed',
-    top: '10px',
-    right: '10px',
-    padding: '0 8px',
-    fontSize: '14px',
+    opacity: '0.5',
     cursor: 'pointer',
-    zIndex: '10001',
-    display: 'none'
+    textAlign: 'left',
   });
-  const decreaseBtn = document.createElement('button');
-  decreaseBtn.id = 'fontSizeDecrease';
-  decreaseBtn.textContent = '◀';
-  Object.assign(decreaseBtn.style, {
-    position: 'fixed',
-    top: '40px',
-    right: '170px',
-    zIndex: '9999',
-    fontSize: '16px',
-    padding: '0 6px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    background: '#eee',
-    cursor: 'pointer',
-    display: 'none'
+  if (mode === 'Font weight') {
+    btn.style.margin = '0 4px';
+  }
+  if (mode === currentMode) {
+    btn.style.border = '1px solid';   // 初期選択のスタイル
+    btn.style.opacity = '1';
+    btn.style.boxShadow = 'inset 0 0 3px';
+  }
+  btn.addEventListener('click', () => {
+    currentMode = mode;
+    [...modeContainer.children].forEach(c => {
+      c.style.border = '1px solid';   // 他のボタンに付ける
+      c.style.opacity = '0.6';
+      c.style.boxShadow = 'none';
+    });
+    btn.style.border = ' 1px solid';
+    btn.style.opacity = '1';
+    btn.style.boxShadow = 'inset 0 0 3px'; // 選択中に付ける
+    updateControls();
   });
-  const increaseBtn = document.createElement('button');
-  increaseBtn.id = 'fontSizeIncrease';
-  increaseBtn.textContent = '▶';
-  Object.assign(increaseBtn.style, {
-    position: 'fixed',
-    top: '40px',
-    right: '10px',
-    zIndex: '9999',
-    fontSize: '16px',
-    padding: '0 6px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    background: '#eee',
-    cursor: 'pointer',
-    display: 'none'
-  });
-  const openBtn = document.createElement('div');
-  openBtn.id = 'fontSizeOpen';
-  openBtn.textContent = '○';
-  Object.assign(openBtn.style, {
-    position: 'fixed',
-    top: '10px',
-    right: '10px',
-    padding: '0 8px',
-    fontSize: '14px',
-    opacity: '0.3',
-    cursor: 'pointer',
-    zIndex: '10001',
-    display: 'block'
-  });
-  closeBtn.addEventListener('click', () => {
-    fontSlider.style.display = 'none';
-    label.style.display = 'none';
-    closeBtn.style.display = 'none';
-    decreaseBtn.style.display = 'none';
-    increaseBtn.style.display = 'none';
-    openBtn.style.display = 'block'
-  });
-  openBtn.addEventListener('click', () => {
-    fontSlider.style.display = 'block';
-    label.style.display = 'block';
-    closeBtn.style.display = 'block';
-    decreaseBtn.style.display = 'block';
-    increaseBtn.style.display = 'block';
-    openBtn.style.display = 'none'
-  });
-  decreaseBtn.addEventListener('click', () => {
-    let size = parseInt(fontSlider.value) - 1;
-    if (size >= parseInt(fontSlider.min)) {
-      fontSlider.value = size;
-      target.style.fontSize = `${size}px`;
-      label.textContent = `Font size: ${size}px`
+  modeContainer.appendChild(btn);
+});
+
+// コントロールエリア
+const controlArea = document.createElement('div');
+Object.assign(controlArea.style, {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px'
+});
+
+// ラベル
+const label = document.createElement('div');
+Object.assign(label.style, {
+  fontSize: '14px',
+  marginBottom: '4px'
+});
+  
+// 増減ボタン
+const decreaseBtn = document.createElement('button');
+decreaseBtn.id = 'sliderDecrease';
+decreaseBtn.textContent = '◀';
+Object.assign(decreaseBtn.style, {
+  position: 'absolute',
+  left: '135px',
+  fontSize: '15px',
+  padding: '0 6px',
+  marginBottom:'3px',
+  borderRadius: '4px',
+  border: '1px solid',
+  cursor: 'pointer'
+});
+const increaseBtn = document.createElement('button');
+increaseBtn.id = 'sliderIncrease';
+increaseBtn.textContent = '▶';
+Object.assign(increaseBtn.style, {
+  position: 'absolute',
+  left: '255px',
+  fontSize: '15px',
+  padding: '0 6px',
+  marginBottom:'3px',
+  borderRadius: '4px',
+  border: '1px solid',
+  cursor: 'pointer'
+});
+decreaseBtn.addEventListener('click', () => {
+  let value = parseInt(slider.value) - parseInt(slider.step || 1);
+  if (value >= parseInt(slider.min)) {
+    slider.value = value;
+    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
+  }
+});
+
+increaseBtn.addEventListener('click', () => {
+  let value = parseInt(slider.value) + parseInt(slider.step || 1);
+  if (value <= parseInt(slider.max)) {
+    slider.value = value;
+    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
+  }
+});
+  
+// スライダー
+const slider = document.createElement('input');
+slider.type = 'range';
+Object.assign(slider.style, {
+  position: 'absolute',
+  width: '100px',
+  marginLeft: '151px',
+  marginBottom:'4px',
+  blockSize: '5px',
+});
+
+// 更新処理
+function updateControls() {
+  if (!target) return;
+
+  if (currentMode === 'Font size') {
+    slider.min = 10;
+    slider.max = 50;
+    slider.step = 1;
+    slider.value = parseInt(getComputedStyle(target).fontSize) || 23;
+    label.textContent = `Font size: ${slider.value}px`;
+    slider.oninput = () => {
+      target.style.fontSize = `${slider.value}px`;
+      label.textContent = `Font size: ${slider.value}px`;
+    };
+  }
+  else if (currentMode === 'Font weight') {
+    slider.min = 100;
+    slider.max = 900;
+    slider.step = 100;
+    slider.value = parseInt(getComputedStyle(target).fontWeight) || 400;
+    label.textContent = `Font weight: ${slider.value}`;
+    slider.oninput = () => {
+      target.style.fontWeight = slider.value;
+      label.textContent = `Font weight: ${slider.value}`;
+    };
+  }
+else if (currentMode === 'Font shadow') {
+  slider.min = 0;
+  slider.max = 30;
+  slider.step = 1;
+
+  // 現在のスライダー値を保持（前回の設定を使う）
+  let blur = parseInt(target.dataset.fontShadow || 0);
+  slider.value = blur;
+  label.textContent = `Font shadow: ${slider.value}px`;
+
+  slider.oninput = () => {
+    const b = slider.value;
+    if (b > 0) {
+      target.style.textShadow = `0 0 ${b}px`;
+    } else {
+      target.style.textShadow = 'none';
     }
-  });
-  increaseBtn.addEventListener('click', () => {
-    let size = parseInt(fontSlider.value) + 1;
-    if (size <= parseInt(fontSlider.max)) {
-      fontSlider.value = size;
-      target.style.fontSize = `${size}px`;
-      label.textContent = `Font size: ${size}px`
-    }
-  });
-  fontSlider.addEventListener('input', () => {
-    target.style.fontSize = `${fontSlider.value}px`;
-    label.textContent = `Font size: ${fontSlider.value}px`
-  });
-  document.body.appendChild(fontSlider);
-  document.body.appendChild(label);
-  document.body.appendChild(closeBtn);
-  document.body.appendChild(decreaseBtn);
-  document.body.appendChild(increaseBtn);
-  document.body.appendChild(openBtn);
+    label.textContent = `Font shadow: ${b}px`;
+
+    // blur 値を保持しておく
+    target.dataset.fontShadow = b;
+  };
+}
+
+}
+// 横並び用コンテナを作る
+const sliderContainer = document.createElement('div');
+Object.assign(sliderContainer.style, {
+  display: 'flex',
+  alignItems: 'center', // ラベルとスライダーを中央揃え
+  gap: '8px'           // ラベルとスライダーの間の余白
+});
+// controlArea に横並びコンテナを追加
+controlArea.appendChild(sliderContainer);
+// ラベルとスライダーを横並びコンテナに追加
+sliderContainer.appendChild(label);        
+sliderContainer.appendChild(slider);
+sliderContainer.appendChild(decreaseBtn);
+sliderContainer.appendChild(increaseBtn);
+
+panel.appendChild(modeContainer);
+panel.appendChild(controlArea);
+document.body.appendChild(panel);
+
+// 開閉ボタン
+const openBtn = document.createElement('div');
+openBtn.id = 'fontOpenBtn';
+openBtn.textContent = '○';
+Object.assign(openBtn.style, {
+  position: 'fixed',
+  top: '10px',
+  right: '10px',
+  padding: '0 8px',
+  fontSize: '14px',
+  opacity: '0.3',
+  cursor: 'pointer',
+  zIndex: '10001'
+});
+openBtn.addEventListener('click', () => {
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
+});
+document.body.appendChild(openBtn);
+  // 閉じるボタン ✕
+const closeBtn = document.createElement('div');
+closeBtn.textContent = '✕';
+Object.assign(closeBtn.style, {
+  position: 'absolute',
+  top: '0px',
+  right: '10px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  opacity: '0.3',
+  color: '#333'
+});
+closeBtn.addEventListener('click', () => {
+  panel.style.display = 'none';
+  openBtn.style.display = 'block';
+});
+panel.appendChild(closeBtn);
+// 初期化
+updateControls();
   
 // ここからPickr
   if (window.__pickrLoaded) return;
