@@ -19,6 +19,7 @@
   document.head.appendChild(hideStyle);
   const container = document.createElement('div');
   container.id = 'novelDisplay';
+  container.innerHTML = text;
   container.style.cssText = `
   writing-mode: vertical-rl;
   white-space: nowrap;
@@ -27,19 +28,11 @@
   font-size: 23px;
   display: block;
   padding: 2em;
-  content-visibility: auto;
-  contain-intrinsic-size: 1000px;
+  contain: none;
+  content-visibility: visible;
   will-change: transform;
   transform: translateZ(0);
 `;
-// spanで500文字間隔で分割
-const chunkSize = 500;
-for (let i = 0; i < text.length; i += chunkSize) {
-  const chunk = text.slice(i, i + chunkSize);
-  const span = document.createElement('span');
-  span.innerHTML = chunk;
-  container.appendChild(span);
-}
   document.body.appendChild(container);
   document.body.style.cssText = `
   display: flex;
@@ -52,7 +45,7 @@ for (let i = 0; i < text.length; i += chunkSize) {
   padding: 0;
   overflow-x: hidden;
 `;
-// === 右スライダー ===
+// === 右スライダー（初期表示） ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
 scrollSliderRight.min = 0;
@@ -67,11 +60,10 @@ Object.assign(scrollSliderRight.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
-  boxShadow: '0 0 0px',
 });
 document.body.appendChild(scrollSliderRight);
 
-// === 左スライダー ===
+// === 左スライダー（初期表示） ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
 scrollSliderLeft.min = 0;
@@ -86,7 +78,6 @@ Object.assign(scrollSliderLeft.style, {
   zIndex: '9999',
   width: '80px',
   opacity: '1',
-  boxShadow: '0 0 0px',
   direction: 'rtl', // 左用は増加方向反転
 });
 document.body.appendChild(scrollSliderLeft);
@@ -95,34 +86,20 @@ document.body.appendChild(scrollSliderLeft);
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
-let scrollOffset = 0; // 自動スクロールによる追加オフセット
 
 function forceScroll(timestamp) {
   if (lastTimestamp !== null) {
-    const elapsed = (timestamp - lastTimestamp) / 1000; // 秒
-    scrollOffset += scrollSpeed * elapsed; // 自動スクロール分だけ増加
-    scroller.scrollTop += scrollOffset;   // 現在のスクロール位置に加算
-    scrollOffset = 0;                     // 加算後はリセット
+    const elapsed = timestamp - lastTimestamp;
+    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
 }
 
-// スライダー入力で速度を設定
-function syncScrollSpeed(value) {
-  scrollSpeed = parseInt(value, 10);
-}
-
-scrollSliderRight.addEventListener('input', () => syncScrollSpeed(scrollSliderRight.value));
-scrollSliderLeft.addEventListener('input', () => syncScrollSpeed(scrollSliderLeft.value));
-
-requestAnimationFrame(forceScroll);
-  
 // スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
   scrollSpeed = parseInt(value, 10) * speedScale;
 }
-
 scrollSliderRight.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderRight.value);
   scrollSliderLeft.value = scrollSliderRight.value;
