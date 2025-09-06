@@ -95,20 +95,29 @@ document.body.appendChild(scrollSliderLeft);
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
-let scrollPos = scroller.scrollTop;  // ← 小数を保持する変数を追加
+let scrollOffset = 0; // 自動スクロールによる追加オフセット
 
 function forceScroll(timestamp) {
   if (lastTimestamp !== null) {
-    const elapsed = timestamp - lastTimestamp;
-    scrollPos += (scrollSpeed * elapsed) / 1000; // 小数保持
-    scroller.scrollTop = scrollPos;              // ブラウザに渡すときに丸められる
-  } else {
-    scrollPos = scroller.scrollTop; // 初期化
+    const elapsed = (timestamp - lastTimestamp) / 1000; // 秒
+    scrollOffset += scrollSpeed * elapsed; // 自動スクロール分だけ増加
+    scroller.scrollTop += scrollOffset;   // 現在のスクロール位置に加算
+    scrollOffset = 0;                     // 加算後はリセット
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
 }
 
+// スライダー入力で速度を設定
+function syncScrollSpeed(value) {
+  scrollSpeed = parseInt(value, 10);
+}
+
+scrollSliderRight.addEventListener('input', () => syncScrollSpeed(scrollSliderRight.value));
+scrollSliderLeft.addEventListener('input', () => syncScrollSpeed(scrollSliderLeft.value));
+
+requestAnimationFrame(forceScroll);
+  
 // スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
   scrollSpeed = parseInt(value, 10) * speedScale;
