@@ -19,7 +19,6 @@
   document.head.appendChild(hideStyle);
   const container = document.createElement('div');
   container.id = 'novelDisplay';
-  container.innerHTML = text;
   container.style.cssText = `
   writing-mode: vertical-rl;
   white-space: nowrap;
@@ -33,6 +32,14 @@
   will-change: transform;
   transform: translateZ(0);
 `;
+// spanで500文字間隔で分割
+const chunkSize = 500;
+for (let i = 0; i < text.length; i += chunkSize) {
+  const chunk = text.slice(i, i + chunkSize);
+  const span = document.createElement('span');
+  span.innerHTML = chunk;
+  container.appendChild(span);
+}
   document.body.appendChild(container);
   document.body.style.cssText = `
   display: flex;
