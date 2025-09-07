@@ -1,4 +1,5 @@
 (() => {
+  
 // ==============================
 // Vertical text
 // ==============================
@@ -508,7 +509,6 @@ scrollSCloseBtn.addEventListener('click', () => {
 // ==============================
 // Font Control Panel
 // ==============================
-  
 ['fontPanel', 'fontOpenBtn'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.remove();
@@ -766,7 +766,6 @@ updateControls();
 // ==============================
 // Color Pickr
 // ============================== 
-  
   if (window.__pickrLoaded) return;
   window.__pickrLoaded = !0;
   const load = (tag, attrs) => new Promise((res, rej) => {
