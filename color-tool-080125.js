@@ -863,31 +863,7 @@
       window.__fgHSL = hexToHSL(currentFg);
       updateLockIcons();
     };
-    // Pickr UI コンテナとスタイルを初期非表示にする
-    container.style.display = 'none';
-    style.disabled = true;
-    window.__pickrLoaded = false;
-    // □ ボタンを作成して表示
-    const pickrOpen = document.createElement('div');
-    pickrOpen.id = 'pickrOpen';
-    pickrOpen.textContent = '□';
-    Object.assign(pickrOpen.style, {
-      all: 'initial',
-      cursor: 'pointer',
-      position: 'fixed',
-      top: '80px',
-      right: '17.5px',
-      opacity: '0.3',
-      zIndex: '999999'
-    });
-    document.body.appendChild(pickrOpen);
-    // □ をクリックしたら Pickr UI を表示
-    pickrOpen.onclick = () => {
-      container.style.display = 'block';
-      style.disabled = false;
-      pickrOpen.remove();
-      window.__pickrLoaded = true;
-    };
+
     // Pickr の閉じるボタンの処理
     document.getElementById('pickrClose').onclick = () => {
       // □ ボタンを再生成
