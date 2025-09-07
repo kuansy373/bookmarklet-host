@@ -89,6 +89,8 @@
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
+    will-change: transform;
+    transform: translateZ(0);
   `;
   document.body.appendChild(container);
   document.body.style.cssText = `
@@ -145,7 +147,7 @@ let scrollSpeed = 0;
 let lastTimestamp = null;
 
 function forceScroll(timestamp) {
-  if (lastTimestamp !== null) {
+  if (lastTimestamp !== null && scrollSpeed !== 0) {
     const elapsed = timestamp - lastTimestamp;
     scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
   }
