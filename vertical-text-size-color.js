@@ -455,7 +455,7 @@ speedScaleInput.addEventListener('input', e => {
   syncScrollSpeed(scrollSliderRight.value);
 });
 
-// 「スライダー非表示」チェックボックスの処理
+// Slider ball 
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
     scrollSliderRight.style.height = '200vh';
@@ -469,7 +469,7 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     scrollSliderLeft.style.bottom = '-108vh';
   }
 });
-// === UIトグルボタン ===
+// ===開閉ボタン ===
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.textContent = '△';
 Object.assign(scrollUIToggle.style, {
