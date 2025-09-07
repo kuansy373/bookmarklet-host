@@ -1,4 +1,7 @@
 (() => {
+// ==============================
+// Vertical text
+// ==============================
   let text = '';
   document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
   text += node.innerHTML
@@ -26,70 +29,55 @@
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   
-//　<ruby>の外でspan分割する
-function chunkHTMLSafe(html, chunkSize) {
-  const chunks = [];
-  const len = html.length;
-  let i = 0, last = 0, count = 0, rubyDepth = 0;
-
-  while (i < len) {
-    const ch = html[i];
-
-    if (ch === '<') {
-      // タグ終端を探す
-      const end = html.indexOf('>', i + 1);
-      if (end === -1) break; // 壊れたHTMLは打ち切り
-
-      const tagContent = html.slice(i + 1, end); // 例: "ruby", "/ruby", "ruby class=..."
-      const isClosing = /^\s*\//.test(tagContent);
-      const nameMatch = tagContent.replace(/^\s*\//, '').match(/^([a-zA-Z0-9-]+)/);
-      const name = nameMatch ? nameMatch[1].toLowerCase() : '';
-      // <ruby> の入れ子深さを管理（<rb>/<rt>/<rp>は ruby の内側なので深さは変えない）
-      if (name === 'ruby') {
-        rubyDepth += isClosing ? -1 : 1;
-        if (rubyDepth < 0) rubyDepth = 0; // 念のため
+  //　<ruby>の外でspan分割する
+  function chunkHTMLSafe(html, chunkSize) {
+    const chunks = [];
+    const len = html.length;
+    let i = 0, last = 0, count = 0, rubyDepth = 0;
+  
+    while (i < len) {
+      const ch = html[i];
+  
+      if (ch === '<') {
+        // タグ終端を探す
+        const end = html.indexOf('>', i + 1);
+        if (end === -1) break; // 壊れたHTMLは打ち切り
+  
+        const tagContent = html.slice(i + 1, end); // 例: "ruby", "/ruby", "ruby class=..."
+        const isClosing = /^\s*\//.test(tagContent);
+        const nameMatch = tagContent.replace(/^\s*\//, '').match(/^([a-zA-Z0-9-]+)/);
+        const name = nameMatch ? nameMatch[1].toLowerCase() : '';
+        // <ruby> の入れ子深さを管理（<rb>/<rt>/<rp>は ruby の内側なので深さは変えない）
+        if (name === 'ruby') {
+          rubyDepth += isClosing ? -1 : 1;
+          if (rubyDepth < 0) rubyDepth = 0; // 念のため
+        }
+        // タグ本体はそのままスキップ（文字数カウントしない）
+        i = end + 1;
+        continue;
       }
-      // タグ本体はそのままスキップ（文字数カウントしない）
-      i = end + 1;
-      continue;
+      // タグの外の実文字をカウント
+      count++;
+      i++;
+      // 分割：ruby の外にいるときだけ
+      if (count >= chunkSize && rubyDepth === 0) {
+        chunks.push(html.slice(last, i));
+        last = i;
+        count = 0;
+      }
     }
-    // タグの外の実文字をカウント
-    count++;
-    i++;
-    // 分割：ruby の外にいるときだけ
-    if (count >= chunkSize && rubyDepth === 0) {
-      chunks.push(html.slice(last, i));
-      last = i;
-      count = 0;
-    }
+    // 端数を追加
+    if (last < len) chunks.push(html.slice(last));
+    return chunks;
   }
-  // 端数を追加
-  if (last < len) chunks.push(html.slice(last));
-  return chunks;
-}
-// ここまでで text は「<ruby>は残し、他タグは削除」「改行は全角スペース化」済みとする
-// === 本文を分割 ===
-const chunks = chunkHTMLSafe(text, 300);
-let index = 0;
-// === Lazy Rendering 用関数 ===
-function renderNextChunk() {
-  if (index >= chunks.length) return;
-  const span = document.createElement('span');
-  span.innerHTML = chunks[index++];
-  container.appendChild(span);
-}
-// === 監視用の sentinel を配置 ===
-const sentinel = document.createElement('div');
-container.appendChild(sentinel);
-const observer = new IntersectionObserver(entries => {
-  if (entries.some(e => e.isIntersecting)) {
-    renderNextChunk();
+  // ここまでで text は「<ruby>は残し、他タグは削除」「改行は全角スペース化」済みとする
+  const chunkSize = 500;
+  const chunks = chunkHTMLSafe(text, chunkSize);
+  for (const c of chunks) {
+    const span = document.createElement('span');
+    span.innerHTML = c;         // ← ルビを正しく解釈させる
+    container.appendChild(span);
   }
-});
-observer.observe(sentinel);
-// === 最初に少しだけ描画 ===
-for (let i = 0; i < 5; i++) renderNextChunk();
-
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
@@ -101,8 +89,6 @@ for (let i = 0; i < 5; i++) renderNextChunk();
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
-    will-change: transform;
-    transform: translateZ(0);
   `;
   document.body.appendChild(container);
   document.body.style.cssText = `
@@ -133,7 +119,7 @@ Object.assign(scrollSliderRight.style, {
   opacity: '1',
 });
 document.body.appendChild(scrollSliderRight);
-
+  
 // === 左スライダー ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
@@ -179,10 +165,11 @@ scrollSliderLeft.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderLeft.value);
   scrollSliderRight.value = scrollSliderLeft.value;
 });
-
 requestAnimationFrame(forceScroll);
-
-// === UI ===
+  
+// ==============================
+// Slider Settings
+// ==============================
 const scrollUI = document.createElement('div');
 Object.assign(scrollUI.style, {
   all: 'unset',
@@ -206,13 +193,13 @@ scrollUI.innerHTML = `
   -->
   <label>Shadow:<input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
-  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side only</span></label><br>
-  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side only</span></label><br>
+  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
+  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
   <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Opacity: <input id="scrollO" type="text" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
+  <label>Opacity: <input id="scrollO" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
   <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
-  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Blue ball</span></label><br>
+  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
 `;
 document.body.appendChild(scrollUI);
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
@@ -230,7 +217,7 @@ document.querySelectorAll('.labelText').forEach(span => {
   });
 });
 // === イベント ===
-// 枠線
+// Border
 document.getElementById('scrollB').addEventListener('change', e => {
 if (e.target.checked) {
     if (scrollC.checked) scrollC.checked = false;
@@ -242,7 +229,7 @@ if (e.target.checked) {
   }
 });
 
-// 色
+// Color in
 document.getElementById('scrollC').addEventListener('change', e => {
   if (e.target.checked) {
     if (scrollB.checked) scrollB.checked = false;
@@ -323,7 +310,7 @@ scrollBgHex.addEventListener("input", () => {
 });
 */
   
-// 影
+// Shadow
 const scrollS = document.getElementById('scrollS');
 scrollS.addEventListener('input', () => {
   let val = Number(scrollS.value) || 0;
@@ -341,11 +328,11 @@ scrollS.addEventListener('input', () => {
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
 const bothbox = document.getElementById('scrollBoth');
-// 最初に「右側に表示」にチェック
+// 最初に「Right side」にチェック
 rightbox.checked = true;
 scrollSliderRight.style.display = 'block';
 scrollSliderLeft.style.display = 'none';
-// 右側に表示チェックイベント
+// Rightチェックイベント
 rightbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (bothbox.checked) {
@@ -361,7 +348,7 @@ rightbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'none';
   }
 });
-// 左側に表示チェックイベント
+// Leftチェックイベント
 leftbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (bothbox.checked) {
@@ -377,7 +364,7 @@ leftbox.addEventListener('change', e => {
     scrollSliderLeft.style.display = 'none';
   }
 });
-// 両側に表示チェックイベント
+// Bothチェックイベント
 bothbox.addEventListener('change', e => {
   if (e.target.checked) {
     if (rightbox.checked) {
@@ -465,7 +452,7 @@ speedScaleInput.addEventListener('input', e => {
   syncScrollSpeed(scrollSliderRight.value);
 });
 
-// 「スライダー非表示」チェックボックスの処理
+// Slider ball 
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
     scrollSliderRight.style.height = '200vh';
@@ -479,7 +466,7 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     scrollSliderLeft.style.bottom = '-108vh';
   }
 });
-// === UIトグルボタン ===
+// ===開閉ボタン ===
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.textContent = '△';
 Object.assign(scrollUIToggle.style, {
@@ -773,7 +760,9 @@ panel.appendChild(closeBtn);
 // 初期化
 updateControls();
   
-// ここからPickr
+// ==============================
+// Color Pickr
+// ============================== 
   if (window.__pickrLoaded) return;
   window.__pickrLoaded = !0;
   const load = (tag, attrs) => new Promise((res, rej) => {
