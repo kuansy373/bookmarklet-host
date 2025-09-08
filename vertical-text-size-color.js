@@ -89,8 +89,7 @@
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
-    will-change: scroll-position, transform;
-    transform: translateZ(0);
+    will-change: scroll-position;
   `;
   document.body.appendChild(container);
   document.body.style.cssText = `
