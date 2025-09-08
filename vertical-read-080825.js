@@ -147,7 +147,7 @@ let scrollSpeed = 0;
 let lastTimestamp = null;
 
 function forceScroll(timestamp) {
-  if (lastTimestamp !== null && scrollSpeed !== 0) {
+  if (lastTimestamp !== null) {
     const elapsed = timestamp - lastTimestamp;
     scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
   }
