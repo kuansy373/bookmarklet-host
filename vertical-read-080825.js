@@ -8,7 +8,7 @@
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
     });
-  // カクヨムのemphasisDots
+  // カクヨムの傍点
   text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
