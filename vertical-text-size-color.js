@@ -6,8 +6,14 @@
   document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
   text += node.innerHTML
     .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<(?!\/?(ruby|rb|rp|rt)\b)[^>]+>/gi, '');
+    .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
     });
+  // カクヨムのemphasisDots
+  text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
+  const chars = content.replace(/<\/?span>/gi, '');
+  return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
+});
+
   text = text.trim()
     .replace(/(\r\n|\r)+/g, '\n')
     .replace(/\n{2,}/g, '\n')
@@ -89,7 +95,8 @@
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
-    will-change: scroll-position;
+    will-change: transform;
+    transform: translateZ(0);
   `;
   document.body.appendChild(container);
   document.body.style.cssText = `
