@@ -150,15 +150,20 @@ document.body.appendChild(scrollSliderLeft);
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
+let accumulatedScroll = 0;
 
 function forceScroll(timestamp) {
   if (lastTimestamp !== null && scrollSpeed !== 0) {
     const elapsed = timestamp - lastTimestamp;
-    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
+    accumulatedScroll += (scrollSpeed * elapsed) / 1000;
+    const scrollInt = Math.floor(accumulatedScroll);
+    scroller.scrollTop += scrollInt;
+    accumulatedScroll -= scrollInt; // 残りの小数を保持
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
 }
+
 
 // スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
