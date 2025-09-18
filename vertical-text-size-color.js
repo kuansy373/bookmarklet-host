@@ -32,6 +32,27 @@
   const hideStyle = document.createElement('style');
   hideStyle.textContent = `#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer { display: none !important; }`;
   document.head.appendChild(hideStyle);
+
+  
+  // === ラッパー要素を作成 ===
+let wrapper = document.createElement('div');
+wrapper.id = 'scrollWrapper';
+wrapper.style.cssText = `
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;   /* ← スクロールバー表示 */
+  overflow-x: hidden;
+  position: relative;
+  display: flex;          /* ← 追加 */
+  justify-content: center; /* ← 横方向中央 */
+`;
+
+let content = document.createElement('div');
+content.id = 'scrollContent';
+content.style.cssText = `
+  will-change: transform;
+`;
+  
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   
@@ -97,7 +118,12 @@
     contain-intrinsic-size: 1000px;
     will-change: scroll-position;
   `;
-  document.body.appendChild(container);
+  
+// DOM構造を組み立て
+content.appendChild(container);
+wrapper.appendChild(content);
+document.body.appendChild(wrapper);
+  
   document.body.style.cssText = `
   display: flex;
   justify-content: center;
@@ -147,32 +173,30 @@ Object.assign(scrollSliderLeft.style, {
 document.body.appendChild(scrollSliderLeft);
 
 // === スクロール処理 ===
-const scroller = document.scrollingElement || document.documentElement;
-let scrollSpeed = 0;
-let lastTimestamp = null;
+wrapper = document.getElementById("scrollWrapper");
+content = document.getElementById("scrollContent");
 
-function forceScroll(timestamp) {
+let virtualOffset = 0;   // transform で動かす量
+let lastTimestamp = null;
+let scrollSpeed = 0;
+
+// 自動スクロール
+function autoScroll(timestamp) {
   if (lastTimestamp !== null && scrollSpeed !== 0) {
     const elapsed = timestamp - lastTimestamp;
-    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
+    virtualOffset += (scrollSpeed * elapsed) / 1000;
   }
   lastTimestamp = timestamp;
-  requestAnimationFrame(forceScroll);
-}
 
-// スライダー入力に応じてスクロール速度を変更
-function syncScrollSpeed(value) {
-  scrollSpeed = parseInt(value, 10) * speedScale;
+  // scrollTop と transform の合成位置
+  const userOffset = wrapper.scrollTop;
+  content.style.transform = `translateY(${-virtualOffset - userOffset}px)`;
+
+  requestAnimationFrame(autoScroll);
 }
-scrollSliderRight.addEventListener('input', () => {
-  syncScrollSpeed(scrollSliderRight.value);
-  scrollSliderLeft.value = scrollSliderRight.value;
-});
-scrollSliderLeft.addEventListener('input', () => {
-  syncScrollSpeed(scrollSliderLeft.value);
-  scrollSliderRight.value = scrollSliderLeft.value;
-});
-requestAnimationFrame(forceScroll);
+requestAnimationFrame(autoScroll);
+
+
   
 // ==============================
 // Slider Settings
@@ -432,10 +456,26 @@ opacityInput.addEventListener('blur', e => {
     scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
   }
 });
+
+  // スライダー入力に応じてスクロール速度を変更
+const speedScaleInput = document.getElementById('scrollSpeedScale'); // 先に取得
+let speedScale = parseFloat(speedScaleInput.value) || 1;             // そのあと初期化
+
+
+function syncScrollSpeed(value) {
+  scrollSpeed = parseInt(value, 10) * speedScale;
+}
+scrollSliderRight.addEventListener('input', () => {
+  syncScrollSpeed(scrollSliderRight.value);
+  scrollSliderLeft.value = scrollSliderRight.value;
+});
+scrollSliderLeft.addEventListener('input', () => {
+  syncScrollSpeed(scrollSliderLeft.value);
+  scrollSliderRight.value = scrollSliderLeft.value;
+});
   
 // スピードスケール  
-const speedScaleInput = document.getElementById('scrollSpeedScale');
-let speedScale = parseFloat(speedScaleInput.value);
+
 
 speedScaleInput.addEventListener('input', e => {
   const num = parseFloat(e.target.value);
