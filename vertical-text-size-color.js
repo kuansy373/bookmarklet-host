@@ -145,27 +145,39 @@
   // 初回表示
   let currentIndex = 0;
   renderPart(currentIndex);
-  
+
+let promptShown = false; // アラートを出したかどうか
 // === スクロール監視 ===
 window.addEventListener('scroll', () => {
-  if (text.length > 10000 && currentIndex < parts.length - 1) {
-    // 現在のスクロール位置が "完全に最下部" かどうかを判定
-    if (scroller.scrollTop + window.innerHeight >= scroller.scrollHeight - 1) {
+  if (
+    text.length > 10000 &&
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
+  ) {
+    if (currentIndex < parts.length - 1 && !promptShown) {
       // ★ アラートを出す直前にスクロールを止める
       scrollSliderRight.value = 0;
       scrollSliderLeft.value = 0;
       scrollSpeed = 0;
+
+      promptShown = true; // これ以降は出さない
 
       const ok = window.confirm("続きを読み込みますか？");
       if (ok) {
         currentIndex++;
         renderPart(currentIndex);
         window.scrollTo(0, 0); // 読み替えたので上に戻す
+        promptShown = false;   // 読み替えたら次のパートでまた出せる
       }
+      // キャンセルの場合 → ここでは promptShown = true のまま
+      // → 上にスクロールしてから改めて最下部に来ないと出ない
+    }
+  } else {
+    // 最下部から少し上に動いたら再度アラート可能
+if (window.scrollY + window.innerHeight < document.body.offsetHeight * 999 / 1000) {
+  promptShown = false;
     }
   }
 });
-
 
   // スタイル
   container.style.cssText = `
