@@ -146,19 +146,27 @@
   let currentIndex = 0;
   renderPart(currentIndex);
   
-  // スクロールで次パートを読み込む（confirm）
-  window.addEventListener('scroll', () => {
-    if (currentIndex < parts.length - 1 &&
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 5) {
-      const ok = window.confirm('続きを読み込みますか？');
+  // === スクロール監視 ===
+window.addEventListener('scroll', () => {
+  if (
+    text.length > 10000 &&
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
+  ) {
+    if (currentIndex < parts.length - 1) {
+      // ★ アラートを出す直前にスクロールを止める
+      scrollSliderRight.value = 0;
+      scrollSliderLeft.value = 0;
+      scrollSpeed = 0;
+
+      const ok = window.confirm("続きを読み込みますか？");
       if (ok) {
         currentIndex++;
         renderPart(currentIndex);
-        // パート切替後は位置リセット（必要なければ削除可）
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0); // 読み替えたので上に戻す
       }
     }
-  });
+  }
+});
 
 
   // スタイル
