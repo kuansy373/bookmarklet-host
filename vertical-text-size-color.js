@@ -146,13 +146,11 @@
   let currentIndex = 0;
   renderPart(currentIndex);
   
-  // === スクロール監視 ===
+// === スクロール監視 ===
 window.addEventListener('scroll', () => {
-  if (
-    text.length > 10000 &&
-    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
-  ) {
-    if (currentIndex < parts.length - 1) {
+  if (text.length > 10000 && currentIndex < parts.length - 1) {
+    // 現在のスクロール位置が "完全に最下部" かどうかを判定
+    if (scroller.scrollTop + window.innerHeight >= scroller.scrollHeight - 1) {
       // ★ アラートを出す直前にスクロールを止める
       scrollSliderRight.value = 0;
       scrollSliderLeft.value = 0;
