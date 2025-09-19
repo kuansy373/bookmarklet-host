@@ -146,38 +146,68 @@
   let currentIndex = 0;
   renderPart(currentIndex);
 
-let promptShown = false; // アラートを出したかどうか
-// === スクロール監視 ===
+ //※ページ切り替え 
+let promptShownForward = false;  // 下方向アラート用
+let promptShownBackward = false; // 上方向アラート用
+
 window.addEventListener('scroll', () => {
+  const scrollBottom = window.scrollY + window.innerHeight;
+  const scrollTop = window.scrollY;
+  const bodyHeight = document.body.offsetHeight;
+
+  // --- 下方向: 最下部で次パート ---
   if (
     text.length > 10000 &&
-    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
+    scrollBottom >= bodyHeight - 5 &&
+    currentIndex < parts.length - 1 &&
+    !promptShownForward
   ) {
-    if (currentIndex < parts.length - 1 && !promptShown) {
-      // ★ アラートを出す直前にスクロールを止める
-      scrollSliderRight.value = 0;
-      scrollSliderLeft.value = 0;
-      scrollSpeed = 0;
+    // スクロール停止
+    scrollSliderRight.value = 0;
+    scrollSliderLeft.value = 0;
+    scrollSpeed = 0;
 
-      promptShown = true; // これ以降は出さない
+    promptShownForward = true;
+    const ok = window.confirm("続きを読み込みますか？");
+    if (ok) {
+      currentIndex++;
+      renderPart(currentIndex);
+      window.scrollTo(0, 0); // 次パートの最上部へ
+      promptShownForward = false;
+      promptShownBackward = false; // 前方向の警告もリセット
+    }
+  } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
+  // 少し上にスクロールしたら再度上方向アラート可能
+  promptShownForward = false;
+}
 
-      const ok = window.confirm("続きを読み込みますか？");
-      if (ok) {
-        currentIndex++;
-        renderPart(currentIndex);
-        window.scrollTo(0, 0); // 読み替えたので上に戻す
-        promptShown = false;   // 読み替えたら次のパートでまた出せる
-      }
-      // キャンセルの場合 → ここでは promptShown = true のまま
-      // → 上にスクロールしてから改めて最下部に来ないと出ない
+  // --- 上方向: 最上部で前パート ---
+  if (currentIndex > 0 &&
+      scrollTop <= 5 &&
+      !promptShownBackward
+  ) {
+    // スクロール停止
+    scrollSliderRight.value = 0;
+    scrollSliderLeft.value = 0;
+    scrollSpeed = 0;
+
+    promptShownBackward = true;
+    const ok = window.confirm("前の文章に戻りますか？");
+    if (ok) {
+      currentIndex--;
+      renderPart(currentIndex);
+      // 前パートの最下部にスクロール
+      const prevPartHeight = container.scrollHeight;
+      window.scrollTo(0, prevPartHeight - window.innerHeight);
+      promptShownForward = false;
+      promptShownBackward = false;
     }
-  } else {
-    // 最下部から少し上に動いたら再度アラート可能
-if (window.scrollY + window.innerHeight < document.body.offsetHeight * 999 / 1000) {
-  promptShown = false;
-    }
+  } else if (scrollTop > window.innerHeight / 100) {
+    // 少し下にスクロールしたら再度上方向アラート可能
+    promptShownBackward = false;
   }
 });
+
 
   // スタイル
   container.style.cssText = `
@@ -293,7 +323,7 @@ scrollUI.innerHTML = `
   <!--
   <label><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:34.5px;vertical-align:middle;font-family:monospace"></label><br>
   -->
-  <label>Shadow:<input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Shadow: <input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
   <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
