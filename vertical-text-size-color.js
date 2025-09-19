@@ -146,11 +146,17 @@
   let currentIndex = 0;
   renderPart(currentIndex);
 
- //※ページ切り替え 
-let promptShownForward = false;  // 下方向アラート用
-let promptShownBackward = false; // 上方向アラート用
+
+
+  
+//※ページ切り替え 
+let promptShownForward = false; // 次へ
+let promptShownBackward = false; // 前へ
+let isSwitching = false; // ← 切替中フラグ
 
 window.addEventListener('scroll', () => {
+  if (isSwitching) return; // ← 切替処理中は無視
+
   const scrollBottom = window.scrollY + window.innerHeight;
   const scrollTop = window.scrollY;
   const bodyHeight = document.body.offsetHeight;
@@ -162,7 +168,6 @@ window.addEventListener('scroll', () => {
     currentIndex < parts.length - 1 &&
     !promptShownForward
   ) {
-    // スクロール停止
     scrollSliderRight.value = 0;
     scrollSliderLeft.value = 0;
     scrollSpeed = 0;
@@ -170,23 +175,24 @@ window.addEventListener('scroll', () => {
     promptShownForward = true;
     const ok = window.confirm("続きを読み込みますか？");
     if (ok) {
+      isSwitching = true; // ← 切替開始
       currentIndex++;
       renderPart(currentIndex);
-      window.scrollTo(0, 0); // 次パートの最上部へ
+      window.scrollTo(0, 0);
+      setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
       promptShownForward = false;
-      promptShownBackward = false; // 前方向の警告もリセット
+      promptShownBackward = false;
     }
   } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
-  // 少し上にスクロールしたら再度上方向アラート可能
-  promptShownForward = false;
-}
+    promptShownForward = false;
+  }
 
   // --- 上方向: 最上部で前パート ---
-  if (currentIndex > 0 &&
-      scrollTop <= 5 &&
-      !promptShownBackward
+  if (
+    currentIndex > 0 &&
+    scrollTop <= 5 &&
+    !promptShownBackward
   ) {
-    // スクロール停止
     scrollSliderRight.value = 0;
     scrollSliderLeft.value = 0;
     scrollSpeed = 0;
@@ -194,20 +200,19 @@ window.addEventListener('scroll', () => {
     promptShownBackward = true;
     const ok = window.confirm("前の文章に戻りますか？");
     if (ok) {
+      isSwitching = true; // ← 切替開始
       currentIndex--;
       renderPart(currentIndex);
-      // 前パートの最下部にスクロール
       const prevPartHeight = container.scrollHeight;
       window.scrollTo(0, prevPartHeight - window.innerHeight);
+      setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
       promptShownForward = false;
       promptShownBackward = false;
     }
   } else if (scrollTop > window.innerHeight / 100) {
-    // 少し下にスクロールしたら再度上方向アラート可能
     promptShownBackward = false;
   }
 });
-
 
   // スタイル
   container.style.cssText = `
