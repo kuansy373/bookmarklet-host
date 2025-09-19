@@ -84,6 +84,51 @@
     span.innerHTML = c;         // ← ルビを正しく解釈させる
     container.appendChild(span);
   }
+  
+  const threshold = 10000;
+  const halfIndex = Math.floor(threshold / chunkSize);
+
+  // 「どの部分を描画するか」を切り替える関数
+function renderChunks(part) {
+  container.innerHTML = ''; // 既存をクリアして負荷を減らす
+  let renderList;
+
+  if (text.length <= threshold) {
+    // 1万文字以下 → 全部表示
+    renderList = chunks;
+  } else if (part === 'first') {
+    // 前半だけ
+    renderList = chunks.slice(0, halfIndex);
+  } else if (part === 'second') {
+    // 後半だけ
+    renderList = chunks.slice(halfIndex);
+  }
+
+  for (const c of renderList) {
+    const span = document.createElement('span');
+    span.innerHTML = c;
+    container.appendChild(span);
+  }
+}
+
+// 最初は前半だけ表示（1万以下なら全部）
+renderChunks('first');
+
+// === スクロール監視 ===
+let secondLoaded = false;
+window.addEventListener('scroll', () => {
+  if (
+    !secondLoaded &&
+    text.length > threshold &&
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
+  ) {
+    // 一番下に到達 → 後半読み込み
+    secondLoaded = true;
+    renderChunks('second');
+    window.scrollTo(0, 0); // ← 前半削除するので、位置を上に戻す
+  }
+});
+
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
