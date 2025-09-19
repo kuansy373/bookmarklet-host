@@ -76,58 +76,90 @@
     if (last < len) chunks.push(html.slice(last));
     return chunks;
   }
+  
   // ここまでで text は「<ruby>は残し、他タグは削除」「改行は全角スペース化」済みとする
   const chunkSize = 500;
   const chunks = chunkHTMLSafe(text, chunkSize);
-  for (const c of chunks) {
-    const span = document.createElement('span');
-    span.innerHTML = c;         // ← ルビを正しく解釈させる
-    container.appendChild(span);
+  
+  // container は既に作ってある想定（もし未定義なら作る）
+  if (typeof container === 'undefined' || !container) {
+    const container = document.createElement('div');
+    container.id = 'novelDisplay';
+    document.body.appendChild(container);
   }
   
-  const threshold = 10000;
-  const halfIndex = Math.floor(threshold / chunkSize);
-
-  // 「どの部分を描画するか」を切り替える関数
-function renderChunks(part) {
-  container.innerHTML = ''; // 既存をクリアして負荷を減らす
-  let renderList;
-
-  if (text.length <= threshold) {
-    // 1万文字以下 → 全部表示
-    renderList = chunks;
-  } else if (part === 'first') {
-    // 前半だけ
-    renderList = chunks.slice(0, halfIndex);
-  } else if (part === 'second') {
-    // 後半だけ
-    renderList = chunks.slice(halfIndex);
+  // 可視文字長を測るための要素（DOM に挿さない、一時的な測定用）
+  const measurer = document.createElement('div');
+  
+  function visibleLength(html) {
+    measurer.innerHTML = html;
+    // textContent はタグを取り除いた可視テキスト長を返す
+    return measurer.textContent.length;
   }
-
-  for (const c of renderList) {
-    const span = document.createElement('span');
-    span.innerHTML = c;
-    container.appendChild(span);
+  
+  // 1パートあたりの上限（可視文字）
+  const MAX_PER_PART = 10000;
+  
+  // chunks を走査して、可視文字で約 MAX_PER_PART ごとに parts に分割する
+  const parts = [];
+  let currentPart = [];
+  let currentLen = 0;
+  
+  for (const c of chunks) {
+    const vlen = visibleLength(c);
+  
+    // 既に currentPart に何か入っていて、これを加えると閾値を超えるなら新しいパートに切り替え
+    if (currentPart.length > 0 && currentLen + vlen > MAX_PER_PART) {
+      parts.push(currentPart);
+      currentPart = [];
+      currentLen = 0;
+    }
+  
+    currentPart.push(c);
+    currentLen += vlen;
   }
-}
-
-// 最初は前半だけ表示（1万以下なら全部）
-renderChunks('first');
-
-// === スクロール監視 ===
-let secondLoaded = false;
-window.addEventListener('scroll', () => {
-  if (
-    !secondLoaded &&
-    text.length > threshold &&
-    window.innerHeight + window.scrollY >= document.body.offsetHeight - 5
-  ) {
-    // 一番下に到達 → 後半読み込み
-    secondLoaded = true;
-    renderChunks('second');
-    window.scrollTo(0, 0); // ← 前半削除するので、位置を上に戻す
+  
+  // 余りを push
+  if (currentPart.length > 0) parts.push(currentPart);
+  
+  // デバッグ（必要ならコンソールで確認）
+  console.log('visibleTotalChars:', parts.reduce((acc, p) => {
+    return acc + p.map(html => (measurer.innerHTML = html, measurer.textContent.length)).reduce((a,b)=>a+b,0);
+  }, 0));
+  console.log('parts count:', parts.length);
+  
+  // レンダリング関数（DocumentFragment を使ってまとめて追加）
+  function renderPart(index) {
+    container.innerHTML = ''; // 前パートを全部消す（負荷軽減）
+    const frag = document.createDocumentFragment();
+    const list = parts[index] || [];
+  
+    for (const html of list) {
+      const span = document.createElement('span');
+      span.innerHTML = html; // ルビ等を正しく解釈させるため innerHTML
+      frag.appendChild(span);
+    }
+    container.appendChild(frag);
   }
-});
+  
+  // 初回表示
+  let currentIndex = 0;
+  renderPart(currentIndex);
+  
+  // スクロールで次パートを読み込む（confirm）
+  window.addEventListener('scroll', () => {
+    if (currentIndex < parts.length - 1 &&
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 5) {
+      const ok = window.confirm('続きを読み込みますか？');
+      if (ok) {
+        currentIndex++;
+        renderPart(currentIndex);
+        // パート切替後は位置リセット（必要なければ削除可）
+        window.scrollTo(0, 0);
+      }
+    }
+  });
+
 
   // スタイル
   container.style.cssText = `
