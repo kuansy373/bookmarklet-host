@@ -81,13 +81,6 @@
   const chunkSize = 500;
   const chunks = chunkHTMLSafe(text, chunkSize);
   
-  // container は既に作ってある想定（もし未定義なら作る）
-  if (typeof container === 'undefined' || !container) {
-    const container = document.createElement('div');
-    container.id = 'novelDisplay';
-    document.body.appendChild(container);
-  }
-  
   // 可視文字長を測るための要素（DOM に挿さない、一時的な測定用）
   const measurer = document.createElement('div');
   
@@ -146,73 +139,70 @@
   let currentIndex = 0;
   renderPart(currentIndex);
 
-
-
+  //※ページ切り替え 
+  let promptShownForward = false; // 次へ
+  let promptShownBackward = false; // 前へ
+  let isSwitching = false; // ← 切替中フラグ
   
-//※ページ切り替え 
-let promptShownForward = false; // 次へ
-let promptShownBackward = false; // 前へ
-let isSwitching = false; // ← 切替中フラグ
-
-window.addEventListener('scroll', () => {
-  if (isSwitching) return; // ← 切替処理中は無視
-
-  const scrollBottom = window.scrollY + window.innerHeight;
-  const scrollTop = window.scrollY;
-  const bodyHeight = document.body.offsetHeight;
-
-  // --- 下方向: 最下部で次パート ---
-  if (
-    text.length > 10000 &&
-    scrollBottom >= bodyHeight - 5 &&
-    currentIndex < parts.length - 1 &&
-    !promptShownForward
-  ) {
-    scrollSliderRight.value = 0;
-    scrollSliderLeft.value = 0;
-    scrollSpeed = 0;
-
-    promptShownForward = true;
-    const ok = window.confirm("続きを読み込みますか？");
-    if (ok) {
-      isSwitching = true; // ← 切替開始
-      currentIndex++;
-      renderPart(currentIndex);
-      window.scrollTo(0, 0);
-      setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
+  window.addEventListener('scroll', () => {
+    if (isSwitching) return; // ← 切替処理中は無視
+  
+    const scrollBottom = window.scrollY + window.innerHeight;
+    const scrollTop = window.scrollY;
+    const bodyHeight = document.body.offsetHeight;
+  
+    // --- 下方向: 最下部で次パート ---
+    if (
+      text.length > 10000 &&
+      scrollBottom >= bodyHeight - 5 &&
+      currentIndex < parts.length - 1 &&
+      !promptShownForward
+    ) {
+      scrollSliderRight.value = 0;
+      scrollSliderLeft.value = 0;
+      scrollSpeed = 0;
+  
+      promptShownForward = true;
+      const ok = window.confirm("続きを読み込みますか？");
+      if (ok) {
+        isSwitching = true; // ← 切替開始
+        currentIndex++;
+        renderPart(currentIndex);
+        window.scrollTo(0, 0);
+        setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
+        promptShownForward = false;
+        promptShownBackward = false;
+      }
+    } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
       promptShownForward = false;
+    }
+  
+    // --- 上方向: 最上部で前パート ---
+    if (
+      currentIndex > 0 &&
+      scrollTop <= 5 &&
+      !promptShownBackward
+    ) {
+      scrollSliderRight.value = 0;
+      scrollSliderLeft.value = 0;
+      scrollSpeed = 0;
+  
+      promptShownBackward = true;
+      const ok = window.confirm("前の文章に戻りますか？");
+      if (ok) {
+        isSwitching = true; // ← 切替開始
+        currentIndex--;
+        renderPart(currentIndex);
+        const prevPartHeight = container.scrollHeight;
+        window.scrollTo(0, prevPartHeight - window.innerHeight);
+        setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
+        promptShownForward = false;
+        promptShownBackward = false;
+      }
+    } else if (scrollTop > window.innerHeight / 100) {
       promptShownBackward = false;
     }
-  } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
-    promptShownForward = false;
-  }
-
-  // --- 上方向: 最上部で前パート ---
-  if (
-    currentIndex > 0 &&
-    scrollTop <= 5 &&
-    !promptShownBackward
-  ) {
-    scrollSliderRight.value = 0;
-    scrollSliderLeft.value = 0;
-    scrollSpeed = 0;
-
-    promptShownBackward = true;
-    const ok = window.confirm("前の文章に戻りますか？");
-    if (ok) {
-      isSwitching = true; // ← 切替開始
-      currentIndex--;
-      renderPart(currentIndex);
-      const prevPartHeight = container.scrollHeight;
-      window.scrollTo(0, prevPartHeight - window.innerHeight);
-      setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
-      promptShownForward = false;
-      promptShownBackward = false;
-    }
-  } else if (scrollTop > window.innerHeight / 100) {
-    promptShownBackward = false;
-  }
-});
+  });
 
   // スタイル
   container.style.cssText = `
