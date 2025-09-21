@@ -157,10 +157,10 @@
   //※ページ切り替え 
   let promptShownForward = false; // 次へ
   let promptShownBackward = false; // 前へ
-  let isSwitching = false; // ← 切替中フラグ
+  let isForwardSwitching = false; // ← 切替中フラグ
+  let isBackwardSwitching = false;
   
   window.addEventListener('scroll', () => {
-    if (isSwitching) return; // ← 切替処理中は無視
   
     const scrollBottom = window.scrollY + window.innerHeight;
     const scrollTop = window.scrollY;
@@ -168,6 +168,7 @@
   
     // --- 下方向: 最下部で次パート ---
     if (
+      !isBackwardSwitching &&
       text.length > 10000 &&
       scrollBottom >= bodyHeight - 5 &&
       currentIndex < parts.length - 1 &&
@@ -180,11 +181,11 @@
       promptShownForward = true;
       const ok = window.confirm("続きを読み込みますか？");
       if (ok) {
-        isSwitching = true; // ← 切替開始
+        isForwardSwitching = true; // ← 切替開始
         currentIndex++;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
+        setTimeout(() => { isForwardSwitching = false; }, 100); // 少し待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
@@ -194,6 +195,7 @@
   
     // --- 上方向: 最上部で前パート ---
     if (
+      !isForwardSwitching &&
       currentIndex > 0 &&
       scrollTop <= 5 &&
       !promptShownBackward
@@ -205,12 +207,12 @@
       promptShownBackward = true;
       const ok = window.confirm("前の文章に戻りますか？");
       if (ok) {
-        isSwitching = true; // ← 切替開始
+        isBackwardSwitching = true; // ← 切替開始
         currentIndex--;
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 100); // 少し待って解除
+        setTimeout(() => { isBackwardSwitching = false; }, 100); // 少し待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
