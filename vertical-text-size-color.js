@@ -94,26 +94,41 @@
   const MAX_PER_PART = 10000;
   
   // chunks を走査して、可視文字で約 MAX_PER_PART ごとに parts に分割する
-  const parts = [];
-  let currentPart = [];
-  let currentLen = 0;
-  
-  for (const c of chunks) {
-    const vlen = visibleLength(c);
-  
-    // 既に currentPart に何か入っていて、これを加えると閾値を超えるなら新しいパートに切り替え
-    if (currentPart.length > 0 && currentLen + vlen > MAX_PER_PART) {
+const parts = [];
+let currentPart = [];
+let currentLen = 0;
+
+for (const c of chunks) {
+  const vlen = visibleLength(c);
+
+  // 既に currentPart に何か入っていて、これを加えると閾値を超える場合
+  if (currentPart.length > 0 && currentLen + vlen > MAX_PER_PART) {
+    // currentPart 内で最後の改行を探す
+    const combinedHTML = currentPart.join('') + c;
+    let lastNewlineIndex = combinedHTML.lastIndexOf('　'); // 改行は全角スペースに変換済み
+
+    if (lastNewlineIndex !== -1 && lastNewlineIndex > 0) {
+      // 改行位置で分割
+      const partHTML = combinedHTML.slice(0, lastNewlineIndex);
+      const remainderHTML = combinedHTML.slice(lastNewlineIndex);
+      parts.push([partHTML]); // パートとして追加
+      currentPart = [remainderHTML]; // 残りは次のパートに
+      currentLen = visibleLength(remainderHTML);
+      continue; // 次の chunk はもう currentPart に入っているのでスキップ
+    } else {
+      // 改行がない場合は従来通り文字数ベースで分割
       parts.push(currentPart);
       currentPart = [];
       currentLen = 0;
     }
-  
-    currentPart.push(c);
-    currentLen += vlen;
   }
-  
-  // 余りを push
-  if (currentPart.length > 0) parts.push(currentPart);
+
+  currentPart.push(c);
+  currentLen += vlen;
+}
+
+// 余りを push
+if (currentPart.length > 0) parts.push(currentPart);
   
   // デバッグ（必要ならコンソールで確認）
   console.log('visibleTotalChars:', parts.reduce((acc, p) => {
