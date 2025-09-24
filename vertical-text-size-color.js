@@ -818,6 +818,7 @@ fontFamilyContainer.appendChild(fontFamilyLabel);
 const fontSelect = document.createElement('select');
   Object.assign(fontSelect.style, {
     all: 'initial',
+    alignItem: 'center',
     border: '1px solid',
     marginLeft: '10px',
     width: '155px',
@@ -832,7 +833,7 @@ const fontSelect = document.createElement('select');
   'Kaisei Decol',
   'Zen Kurenaido',
   'Hachi Maru Pop',
-  'WDXL Lubrifont JP N',
+  'Stick',
   'DotGothic16',
   'Rampart One',
 ].forEach(font => {
