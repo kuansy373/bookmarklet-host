@@ -596,6 +596,7 @@ if (!target) {
 const panel = document.createElement('div');
 panel.id = 'fontPanel';
 Object.assign(panel.style, {
+  all: 'initial',
   position: 'fixed',
   top: '10px',
   right: '10px',
