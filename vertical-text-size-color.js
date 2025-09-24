@@ -888,7 +888,7 @@ closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
   position: 'absolute',
   top: '0px',
-  right: '10px',
+  right: '8px',
   cursor: 'pointer',
   fontSize: '14px',
   color: '#333'
