@@ -815,17 +815,16 @@ const fontSelect = document.createElement('select');
   marginLeft: '17px'
 });
 [
-  'Noto Sans JP',
-  'Noto Serif JP',
-  'M PLUS Rounded 1c',
-  'Kosugi Maru',
-  'Kiwi Maru',
+  '游明朝',
+  'Noto Sans Japanese',
+  'Zen Kurenaido',
+  'Yuji Syuku',
+  'Kaisei Decol',
+  'New Tegomin',
+  'WDXL Lubrifont JP N',
+  'Hachi Maru Pop',
   'DotGothic16',
-  'RocknRoll One',
   'Rampart One',
-  'Reggae One',
-  'Sawarabi Gothic',
-  'Sawarabi Mincho'
 ].forEach(font => {
   const opt = document.createElement('option');
   opt.value = font;
@@ -836,6 +835,11 @@ const fontSelect = document.createElement('select');
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
+  if (font === '未設定') {
+    // 未設定ならフォントを初期状態に戻す
+    if (target) target.style.fontFamily = '';
+    return;
+  }
   const id = "gf-font-" + font.replace(/\s+/g, '-');
   if (!document.getElementById(id)) {
     const link = document.createElement('link');
