@@ -817,11 +817,12 @@ fontFamilyContainer.appendChild(fontFamilyLabel);
 // セレクトボックス
 const fontSelect = document.createElement('select');
   Object.assign(fontSelect.style, {
-    all: 'unset',
+    all: 'initial',
     border: '1px solid',
-    marginLeft: '20px',
-    width: '140px',
+    marginLeft: '10px',
+    width: '155px',
     paddingLeft: '5px',
+    fontSize: '14px',
 });
 [
   '游明朝',
