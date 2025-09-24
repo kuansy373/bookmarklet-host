@@ -670,7 +670,7 @@ Object.assign(panel.style, {
   padding: '0 8px',
   paddingBottom: '8px',
   width: '270px',
-  height: '55px',
+  height: '87px',
   heighr: '50px', 
   border: '1px solid',
   borderRadius: '4px',
@@ -730,7 +730,7 @@ const controlArea = document.createElement('div');
 Object.assign(controlArea.style, {
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px'
+  gap: '1px'
 });
 
 // ラベル
@@ -863,6 +863,67 @@ sliderContainer.appendChild(increaseBtn);
 panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
 document.body.appendChild(panel);
+
+// ==============================
+// Font Family セレクトボックス
+// ==============================
+const fontFamilyContainer = document.createElement('div');
+Object.assign(fontFamilyContainer.style, {
+  display: 'flex',
+});
+
+// ラベル
+const fontFamilyLabel = document.createElement('div');
+fontFamilyLabel.textContent = 'Font family:';
+Object.assign(fontFamilyLabel.style, {
+  fontSize: '14px',
+  marginBottom: '4px'
+});
+fontFamilyContainer.appendChild(fontFamilyLabel);
+
+// セレクトボックス
+const fontSelect = document.createElement('select');
+  Object.assign(fontSelect.style, {
+  marginLeft: '17px'
+});
+[
+  'Noto Sans JP',
+  'Noto Serif JP',
+  'M PLUS Rounded 1c',
+  'Kosugi Maru',
+  'Kiwi Maru',
+  'DotGothic16',
+  'RocknRoll One',
+  'Rampart One',
+  'Reggae One',
+  'Sawarabi Gothic',
+  'Sawarabi Mincho'
+].forEach(font => {
+  const opt = document.createElement('option');
+  opt.value = font;
+  opt.textContent = font;
+  fontSelect.appendChild(opt);
+});
+
+// セレクト切り替え時にフォント適用
+fontSelect.addEventListener('change', () => {
+  const font = fontSelect.value;
+  const id = "gf-font-" + font.replace(/\s+/g, '-');
+  if (!document.getElementById(id)) {
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
+    document.head.appendChild(link);
+  }
+  if (target) {
+    target.style.fontFamily = `'${font}', sans-serif`;
+  }
+});
+fontFamilyContainer.appendChild(fontSelect);
+
+// controlArea に追加
+controlArea.appendChild(fontFamilyContainer);
 
 // 開閉ボタン
 const openBtn = document.createElement('div');
