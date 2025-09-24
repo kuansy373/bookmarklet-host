@@ -817,12 +817,12 @@ const fontSelect = document.createElement('select');
 [
   '游明朝',
   'Noto Sans Japanese',
-  'Zen Kurenaido',
+  'New Tegomin',
   'Yuji Syuku',
   'Kaisei Decol',
-  'New Tegomin',
-  'WDXL Lubrifont JP N',
+  'Zen Kurenaido',
   'Hachi Maru Pop',
+  'WDXL Lubrifont JP N',
   'DotGothic16',
   'Rampart One',
 ].forEach(font => {
@@ -885,7 +885,6 @@ Object.assign(closeBtn.style, {
   right: '10px',
   cursor: 'pointer',
   fontSize: '14px',
-  opacity: '0.3',
   color: '#333'
 });
 closeBtn.addEventListener('click', () => {
