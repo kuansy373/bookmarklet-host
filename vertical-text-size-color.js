@@ -820,7 +820,7 @@ const fontSelect = document.createElement('select');
     all: 'unset',
     border: '1px solid',
     marginLeft: '20px',
-    width: '130px',
+    width: '140px',
     paddingLeft: '5px',
 });
 [
