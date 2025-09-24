@@ -234,7 +234,8 @@
     will-change: scroll-position;
   `;
   document.body.appendChild(container);
-  document.body.style.cssText = `
+  
+  const initialBodyStyle = `
   display: flex;
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
@@ -245,6 +246,7 @@
   padding: 0;
   overflow-x: hidden;
 `;
+document.body.style.cssText = initialBodyStyle;
 // === 右スライダー ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
@@ -837,6 +839,7 @@ fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
   if (font === '游明朝') {
     // 未設定ならフォントを初期状態に戻す
+    document.body.style.cssText = initialBodyStyle;
     if (target) target.style.fontFamily = '';
     return;
   }
