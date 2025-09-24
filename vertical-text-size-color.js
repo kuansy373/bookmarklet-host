@@ -835,7 +835,7 @@ const fontSelect = document.createElement('select');
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
-  if (font === '未設定') {
+  if (font === '游明朝') {
     // 未設定ならフォントを初期状態に戻す
     if (target) target.style.fontFamily = '';
     return;
