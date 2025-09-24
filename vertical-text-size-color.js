@@ -817,7 +817,11 @@ fontFamilyContainer.appendChild(fontFamilyLabel);
 // セレクトボックス
 const fontSelect = document.createElement('select');
   Object.assign(fontSelect.style, {
-  marginLeft: '17px'
+    all: 'unset',
+    border: '1px solid',
+    marginLeft: '20px',
+    width: '130px',
+    paddingLeft: '5px',
 });
 [
   '游明朝',
@@ -888,7 +892,7 @@ closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
   position: 'absolute',
   top: '0px',
-  right: '8px',
+  right: '7px',
   cursor: 'pointer',
   fontSize: '14px',
   color: '#333'
