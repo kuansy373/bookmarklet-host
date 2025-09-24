@@ -596,7 +596,7 @@ if (!target) {
 const panel = document.createElement('div');
 panel.id = 'fontPanel';
 Object.assign(panel.style, {
-  all: 'initial',
+  lineHeight: 'initial',
   position: 'fixed',
   top: '10px',
   right: '10px',
@@ -628,6 +628,8 @@ modes.forEach(mode => {
   const btn = document.createElement('button');
   btn.textContent = mode;
   Object.assign(btn.style, {
+    all: 'initial',
+    fontSize: '13px',
     padding: '2px 6px',
     border: '1px solid',
     borderRadius: '4px',
