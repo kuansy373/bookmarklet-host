@@ -331,9 +331,6 @@ scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
-  <!--
-  <label><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:34.5px;vertical-align:middle;font-family:monospace"></label><br>
-  -->
   <label>Shadow: <input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
@@ -385,73 +382,6 @@ document.getElementById('scrollC').addEventListener('change', e => {
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
-  
-/*
-const scrollC = document.getElementById("scrollC");
-const scrollBgHex = document.getElementById("scrollBgHex");
-// ページの文字色を取得
-const bodyColor = getComputedStyle(document.body).color; 
-const fgHex = document.getElementById("fgHex"); // 動的に文字色を変えるinput
-// bodyのスタイル変化を監視
-let lastBodyColor = getComputedStyle(document.body).color;
-const observer = new MutationObserver(() => {
-  const color = getComputedStyle(document.body).color;
-  if (color !== lastBodyColor) {
-    lastBodyColor = color;
-    scrollBgHex.value = rgbToHex(color);
-    if (scrollC.checked) updateSliderBackground();
-  }
-});
-observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
-// Lock
-const scrollCLock = document.getElementById("scrollCLock");
-scrollCLock.addEventListener("change", () => {
-  if (scrollCLock.checked) {
-    observer.disconnect();
-  } else {
-    observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
-  }
-});
-  
-// RGB → HEX 変換関数
-function rgbToHex(rgb) {
-  const result = rgb.match(/\d+/g);
-  if (!result) return '#ffffff';
-  return '#' + result.slice(0,3).map(x => parseInt(x).toString(16).padStart(2,'0')).join('');
-}
-
-// 初期背景色をページ文字色に
-scrollBgHex.value = rgbToHex(bodyColor);
-// スライダー背景初期値は透明
-scrollSliderRight.style.setProperty("background", "transparent", "important");
-scrollSliderLeft.style.setProperty("background", "transparent", "important");
-// --- ヘルパー関数: Hexをスライダーに反映 ---
-function updateSliderBackground() {
-  const val = scrollBgHex.value.trim();
-  if (/^#([0-9A-Fa-f]{6})$/.test(val)) {
-    scrollSliderRight.style.setProperty("background", val, "important");
-    scrollSliderLeft.style.setProperty("background", val, "important");
-  }
-}
-// チェックボックス変更時
-scrollC.addEventListener('change', e => {
-  if (e.target.checked) {
-    if (scrollB.checked) scrollB.checked = false;
-    updateSliderBackground();
-    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
-  } else {
-    scrollSliderRight.style.setProperty("background", "transparent", "important");
-    scrollSliderLeft.style.setProperty("background", "transparent", "important");
-  }
-});
-
-// Hex入力欄の変更時
-scrollBgHex.addEventListener("input", () => {
-  if (scrollC.checked) { // チェックONの場合のみ反映
-    updateSliderBackground();
-  }
-});
-*/
   
 // Shadow
 const scrollS = document.getElementById('scrollS');
@@ -730,7 +660,7 @@ const controlArea = document.createElement('div');
 Object.assign(controlArea.style, {
   display: 'flex',
   flexDirection: 'column',
-  gap: '1px'
+  gap: '5px'
 });
 
 // ラベル
@@ -864,9 +794,7 @@ panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
 document.body.appendChild(panel);
 
-// ==============================
 // Font Family セレクトボックス
-// ==============================
 const fontFamilyContainer = document.createElement('div');
 Object.assign(fontFamilyContainer.style, {
   display: 'flex',
