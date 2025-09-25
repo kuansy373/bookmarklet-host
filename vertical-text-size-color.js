@@ -930,21 +930,35 @@ updateControls();
 // ==============================
 // Color Pickr
 // ============================== 
-  if (window.__pickrLoaded) return;
-  window.__pickrLoaded = !0;
-  const load = (tag, attrs) => new Promise((res, rej) => {
-    const el = document.createElement(tag);
-    Object.entries(attrs).forEach(([k, v]) => (el[k] = v));
-    el.onload = res;
-    el.onerror = rej;
-    document.head.appendChild(el)
-  });
-  Promise.all([load('link', {
+if (window.__pickrLoaded) return;
+window.__pickrLoaded = true;
+
+const load = (tag, attrs) => new Promise((resolve, reject) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    // 属性として設定
+    el.setAttribute(k, v);
+  }
+  el.onload = resolve;
+  el.onerror = reject;
+  document.head.appendChild(el);
+});
+
+
+// バージョン固定とSRI対応可能な形に変更
+Promise.all([
+  load('link', {
     rel: 'stylesheet',
-    href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css',
-  }), load('script', {
-    src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr'
-  }), ]).then(() => {
+    href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css',
+    integrity: 'sha256-qj36GhivWJmT9StJECKY9O6UivAiwl7S+uckYeyYQ38=',
+    crossorigin: 'anonymous'
+  }),
+  load('script', {
+    src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js',
+    integrity: 'sha256-9C+4uiI+EoOmixe5tRD8hziXftaA5lBhVeF5bjvtqkY=',
+    crossorigin: 'anonymous'
+  })
+]).then(() => {
     const style = document.createElement('style');
     style.textContent = `
       /* ---- #pickrContainer 関連 ---- */
