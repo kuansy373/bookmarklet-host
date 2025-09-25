@@ -2,12 +2,12 @@
 // ==============================
 // Vertical text
 // ==============================
-  let text = '';
+let text = '';
 document.querySelectorAll(
   // 青空文庫
-  'body > h1, ' +        // タイトル（h1）
-  'body > h2, ' +        // サブタイトル（h2）
-  'body > h3, ' +        // 小見出し（h3）
+  'body > h1, ' +        // タイトル
+  'body > h2, ' +        // サブタイトル
+  'body > h3, ' +        // 小見出し
   '.metadata, ' +        // メタ情報（作者名など）
   '.main_text, ' +       // 本文テキスト
   // 小説家になろう
@@ -254,6 +254,7 @@ document.querySelectorAll(
     transform: translateZ(0);
   `;
   document.body.appendChild(container);
+  
   const initialBodyStyle = `
   display: flex;
   justify-content: center;
@@ -283,7 +284,6 @@ Object.assign(scrollSliderRight.style, {
   opacity: '1',
 });
 document.body.appendChild(scrollSliderRight);
-  
 // === 左スライダー ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
@@ -682,9 +682,6 @@ modes.forEach(mode => {
 // コントロールエリア
 const controlArea = document.createElement('div');
 Object.assign(controlArea.style, {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '5px'
 });
 
 // ラベル
@@ -803,8 +800,8 @@ else if (currentMode === 'Font shadow') {
 const sliderContainer = document.createElement('div');
 Object.assign(sliderContainer.style, {
   display: 'flex',
-  alignItems: 'center', // ラベルとスライダーを中央揃え
-  gap: '8px'           // ラベルとスライダーの間の余白
+  alignItems: 'center',
+  marginBottom: '5px',
 });
 // controlArea に横並びコンテナを追加
 controlArea.appendChild(sliderContainer);
@@ -846,7 +843,7 @@ const fontSelect = document.createElement('select');
 });
 [
   '游明朝',
-  'Noto Sans Japanese',
+  'sans-serif',
   'Zen Kurenaido',
   'New Tegomin',
   'Yuji Syuku',
@@ -865,12 +862,17 @@ const fontSelect = document.createElement('select');
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
+  
   if (font === '游明朝') {
-    // 未設定ならフォントを初期状態に戻す
     document.body.style.cssText = initialBodyStyle;
     if (target) target.style.fontFamily = '';
     return;
   }
+  if (font === 'sans-serif') {
+    if (target) target.style.fontFamily = 'sans-serif';
+    return;
+  }
+  
   const id = "gf-font-" + font.replace(/\s+/g, '-');
   if (!document.getElementById(id)) {
     const link = document.createElement('link');
@@ -879,6 +881,7 @@ fontSelect.addEventListener('change', () => {
     link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
     document.head.appendChild(link);
   }
+
   if (target) {
     target.style.fontFamily = `'${font}', sans-serif`;
   }
@@ -929,21 +932,34 @@ updateControls();
 // ==============================
 // Color Pickr
 // ============================== 
-  if (window.__pickrLoaded) return;
-  window.__pickrLoaded = !0;
-  const load = (tag, attrs) => new Promise((res, rej) => {
-    const el = document.createElement(tag);
-    Object.entries(attrs).forEach(([k, v]) => (el[k] = v));
-    el.onload = res;
-    el.onerror = rej;
-    document.head.appendChild(el)
-  });
-  Promise.all([load('link', {
+if (window.__pickrLoaded) return;
+window.__pickrLoaded = true;
+
+const load = (tag, attrs) => new Promise((resolve, reject) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    // 属性として設定
+    el.setAttribute(k, v);
+  }
+  el.onload = resolve;
+  el.onerror = reject;
+  document.head.appendChild(el);
+});
+
+// バージョン固定とSRI対応可能な形に変更
+Promise.all([
+  load('link', {
     rel: 'stylesheet',
-    href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css',
-  }), load('script', {
-    src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr'
-  }), ]).then(() => {
+    href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css',
+    integrity: 'sha256-qj36GhivWJmT9StJECKY9O6UivAiwl7S+uckYeyYQ38=',
+    crossorigin: 'anonymous'
+  }),
+  load('script', {
+    src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js',
+    integrity: 'sha256-9C+4uiI+EoOmixe5tRD8hziXftaA5lBhVeF5bjvtqkY=',
+    crossorigin: 'anonymous'
+  })
+]).then(() => {
     const style = document.createElement('style');
     style.textContent = `
       /* ---- #pickrContainer 関連 ---- */
@@ -1366,7 +1382,7 @@ updateControls();
       }
       el.textContent = `
   *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-    ${prop}: ${value} !important;
+    ${prop}: ${value};
   }`
     };
     const updateSwatch = (swatch, current, saved) => {
