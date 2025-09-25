@@ -254,7 +254,7 @@ document.querySelectorAll(
     transform: translateZ(0);
   `;
   document.body.appendChild(container);
-  document.body.style.cssText = `
+  const initialBodyStyle = `
   display: flex;
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
