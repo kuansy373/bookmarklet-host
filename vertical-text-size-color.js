@@ -242,6 +242,7 @@ document.querySelectorAll(
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
+    text-orientation: upright;
     white-space: nowrap;
     letter-spacing: 0.25em;
     line-height: 1.8;
@@ -847,10 +848,10 @@ const fontSelect = document.createElement('select');
 [
   '游明朝',
   'Noto Sans Japanese',
+  'Zen Kurenaido',
   'New Tegomin',
   'Yuji Syuku',
   'Kaisei Decol',
-  'Zen Kurenaido',
   'Hachi Maru Pop',
   'Stick',
   'DotGothic16',
