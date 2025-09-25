@@ -3,7 +3,27 @@
 // Vertical text
 // ==============================
   let text = '';
-  document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
+document.querySelectorAll(
+  // 青空文庫
+  'body > h1, ' +        // タイトル（h1）
+  'body > h2, ' +        // サブタイトル（h2）
+  'body > h3, ' +        // 小見出し（h3）
+  '.metadata, ' +        // メタ情報（作者名など）
+  '.main_text, ' +       // 本文テキスト
+  // 小説家になろう
+  '.p-novel__title, ' +  // 小説タイトル
+  '.p-novel__text, ' +   // 本文テキスト
+  // カクヨム
+  '.widget-episodeTitle, ' + // エピソードタイトル
+  '.widget-episodeBody p, ' +// 本文段落
+  // アルファポリス
+  '.novel-title, ' +     // 小説タイトル
+  '.novel-body p, ' +    // 本文段落
+  '.chapter-title, ' +   // 章タイトル
+  '.episode-title, ' +   // エピソードタイトル
+  '#novelBody'           // 本文全体コンテナ
+)
+.forEach(node => {
   text += node.innerHTML
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
@@ -94,41 +114,41 @@
   const MAX_PER_PART = 10000;
   
   // chunks を走査して、可視文字で約 MAX_PER_PART ごとに parts に分割する
-const parts = [];
-let currentPart = [];
-let currentLen = 0;
-
-for (const c of chunks) {
-  const vlen = visibleLength(c);
-
-  // 既に currentPart に何か入っていて、これを加えると閾値を超える場合
-  if (currentPart.length > 0 && currentLen + vlen > MAX_PER_PART) {
-    // currentPart 内で最後の改行を探す
-    const combinedHTML = currentPart.join('') + c;
-    let lastNewlineIndex = combinedHTML.lastIndexOf('　'); // 改行は全角スペースに変換済み
-
-    if (lastNewlineIndex !== -1 && lastNewlineIndex > 0) {
-      // 改行位置で分割
-      const partHTML = combinedHTML.slice(0, lastNewlineIndex);
-      const remainderHTML = combinedHTML.slice(lastNewlineIndex);
-      parts.push([partHTML]); // パートとして追加
-      currentPart = [remainderHTML]; // 残りは次のパートに
-      currentLen = visibleLength(remainderHTML);
-      continue; // 次の chunk はもう currentPart に入っているのでスキップ
-    } else {
-      // 改行がない場合は従来通り文字数ベースで分割
-      parts.push(currentPart);
-      currentPart = [];
-      currentLen = 0;
+  const parts = [];
+  let currentPart = [];
+  let currentLen = 0;
+  
+  for (const c of chunks) {
+    const vlen = visibleLength(c);
+  
+    // 既に currentPart に何か入っていて、これを加えると閾値を超える場合
+    if (currentPart.length > 0 && currentLen + vlen > MAX_PER_PART) {
+      // currentPart 内で最後の改行を探す
+      const combinedHTML = currentPart.join('') + c;
+      let lastNewlineIndex = combinedHTML.lastIndexOf('　'); // 改行は全角スペースに変換済み
+  
+      if (lastNewlineIndex !== -1 && lastNewlineIndex > 0) {
+        // 改行位置で分割
+        const partHTML = combinedHTML.slice(0, lastNewlineIndex);
+        const remainderHTML = combinedHTML.slice(lastNewlineIndex);
+        parts.push([partHTML]); // パートとして追加
+        currentPart = [remainderHTML]; // 残りは次のパートに
+        currentLen = visibleLength(remainderHTML);
+        continue; // 次の chunk はもう currentPart に入っているのでスキップ
+      } else {
+        // 改行がない場合は従来通り文字数ベースで分割
+        parts.push(currentPart);
+        currentPart = [];
+        currentLen = 0;
+      }
     }
+  
+    currentPart.push(c);
+    currentLen += vlen;
   }
-
-  currentPart.push(c);
-  currentLen += vlen;
-}
-
-// 余りを push
-if (currentPart.length > 0) parts.push(currentPart);
+  
+  // 余りを push
+  if (currentPart.length > 0) parts.push(currentPart);
   
   // デバッグ（必要ならコンソールで確認）
   console.log('visibleTotalChars:', parts.reduce((acc, p) => {
@@ -184,7 +204,7 @@ if (currentPart.length > 0) parts.push(currentPart);
         currentIndex++;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 400); // 少し待って解除
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
@@ -210,7 +230,7 @@ if (currentPart.length > 0) parts.push(currentPart);
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 400); // 少し待って解除
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
@@ -245,6 +265,7 @@ if (currentPart.length > 0) parts.push(currentPart);
   padding: 0;
   overflow-x: hidden;
 `;
+document.body.style.cssText = initialBodyStyle;
 // === 右スライダー ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
@@ -331,9 +352,6 @@ scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
-  <!--
-  <label><input id="scrollCLock" class="settingCheckbox" type="checkbox"><span class="labelText"> Lock</span><input id="scrollBgHex" type="text" style="all:initial;width:70px;height:17px;border:1px solid;margin-left:34.5px;vertical-align:middle;font-family:monospace"></label><br>
-  -->
   <label>Shadow: <input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
@@ -385,73 +403,6 @@ document.getElementById('scrollC').addEventListener('change', e => {
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
-  
-/*
-const scrollC = document.getElementById("scrollC");
-const scrollBgHex = document.getElementById("scrollBgHex");
-// ページの文字色を取得
-const bodyColor = getComputedStyle(document.body).color; 
-const fgHex = document.getElementById("fgHex"); // 動的に文字色を変えるinput
-// bodyのスタイル変化を監視
-let lastBodyColor = getComputedStyle(document.body).color;
-const observer = new MutationObserver(() => {
-  const color = getComputedStyle(document.body).color;
-  if (color !== lastBodyColor) {
-    lastBodyColor = color;
-    scrollBgHex.value = rgbToHex(color);
-    if (scrollC.checked) updateSliderBackground();
-  }
-});
-observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
-// Lock
-const scrollCLock = document.getElementById("scrollCLock");
-scrollCLock.addEventListener("change", () => {
-  if (scrollCLock.checked) {
-    observer.disconnect();
-  } else {
-    observer.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
-  }
-});
-  
-// RGB → HEX 変換関数
-function rgbToHex(rgb) {
-  const result = rgb.match(/\d+/g);
-  if (!result) return '#ffffff';
-  return '#' + result.slice(0,3).map(x => parseInt(x).toString(16).padStart(2,'0')).join('');
-}
-
-// 初期背景色をページ文字色に
-scrollBgHex.value = rgbToHex(bodyColor);
-// スライダー背景初期値は透明
-scrollSliderRight.style.setProperty("background", "transparent", "important");
-scrollSliderLeft.style.setProperty("background", "transparent", "important");
-// --- ヘルパー関数: Hexをスライダーに反映 ---
-function updateSliderBackground() {
-  const val = scrollBgHex.value.trim();
-  if (/^#([0-9A-Fa-f]{6})$/.test(val)) {
-    scrollSliderRight.style.setProperty("background", val, "important");
-    scrollSliderLeft.style.setProperty("background", val, "important");
-  }
-}
-// チェックボックス変更時
-scrollC.addEventListener('change', e => {
-  if (e.target.checked) {
-    if (scrollB.checked) scrollB.checked = false;
-    updateSliderBackground();
-    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
-  } else {
-    scrollSliderRight.style.setProperty("background", "transparent", "important");
-    scrollSliderLeft.style.setProperty("background", "transparent", "important");
-  }
-});
-
-// Hex入力欄の変更時
-scrollBgHex.addEventListener("input", () => {
-  if (scrollC.checked) { // チェックONの場合のみ反映
-    updateSliderBackground();
-  }
-});
-*/
   
 // Shadow
 const scrollS = document.getElementById('scrollS');
@@ -664,13 +615,14 @@ if (!target) {
 const panel = document.createElement('div');
 panel.id = 'fontPanel';
 Object.assign(panel.style, {
+  lineHeight: 'initial',
   position: 'fixed',
   top: '10px',
   right: '10px',
   padding: '0 8px',
   paddingBottom: '8px',
   width: '270px',
-  height: '55px',
+  height: '87px',
   heighr: '50px', 
   border: '1px solid',
   borderRadius: '4px',
@@ -695,6 +647,8 @@ modes.forEach(mode => {
   const btn = document.createElement('button');
   btn.textContent = mode;
   Object.assign(btn.style, {
+    all: 'initial',
+    fontSize: '13px',
     padding: '2px 6px',
     border: '1px solid',
     borderRadius: '4px',
@@ -730,7 +684,7 @@ const controlArea = document.createElement('div');
 Object.assign(controlArea.style, {
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px'
+  gap: '5px'
 });
 
 // ラベル
@@ -864,6 +818,76 @@ panel.appendChild(modeContainer);
 panel.appendChild(controlArea);
 document.body.appendChild(panel);
 
+// Font Family セレクトボックス
+const fontFamilyContainer = document.createElement('div');
+Object.assign(fontFamilyContainer.style, {
+  display: 'flex',
+});
+
+// ラベル
+const fontFamilyLabel = document.createElement('div');
+fontFamilyLabel.textContent = 'Font family:';
+Object.assign(fontFamilyLabel.style, {
+  fontSize: '14px',
+  marginBottom: '4px'
+});
+fontFamilyContainer.appendChild(fontFamilyLabel);
+
+// セレクトボックス
+const fontSelect = document.createElement('select');
+  Object.assign(fontSelect.style, {
+    all: 'initial',
+    alignItems: 'center',
+    border: '1px solid',
+    marginLeft: '10px',
+    width: '155px',
+    paddingLeft: '5px',
+    fontSize: '14px',
+});
+[
+  '游明朝',
+  'Noto Sans Japanese',
+  'Zen Kurenaido',
+  'New Tegomin',
+  'Yuji Syuku',
+  'Kaisei Decol',
+  'Hachi Maru Pop',
+  'Stick',
+  'DotGothic16',
+  'Rampart One',
+].forEach(font => {
+  const opt = document.createElement('option');
+  opt.value = font;
+  opt.textContent = font;
+  fontSelect.appendChild(opt);
+});
+
+// セレクト切り替え時にフォント適用
+fontSelect.addEventListener('change', () => {
+  const font = fontSelect.value;
+  if (font === '游明朝') {
+    // 未設定ならフォントを初期状態に戻す
+    document.body.style.cssText = initialBodyStyle;
+    if (target) target.style.fontFamily = '';
+    return;
+  }
+  const id = "gf-font-" + font.replace(/\s+/g, '-');
+  if (!document.getElementById(id)) {
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
+    document.head.appendChild(link);
+  }
+  if (target) {
+    target.style.fontFamily = `'${font}', sans-serif`;
+  }
+});
+fontFamilyContainer.appendChild(fontSelect);
+
+// controlArea に追加
+controlArea.appendChild(fontFamilyContainer);
+
 // 開閉ボタン
 const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
@@ -889,10 +913,9 @@ closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
   position: 'absolute',
   top: '0px',
-  right: '10px',
+  right: '7px',
   cursor: 'pointer',
   fontSize: '14px',
-  opacity: '0.3',
   color: '#333'
 });
 closeBtn.addEventListener('click', () => {
