@@ -818,7 +818,7 @@ fontFamilyContainer.appendChild(fontFamilyLabel);
 const fontSelect = document.createElement('select');
   Object.assign(fontSelect.style, {
     all: 'initial',
-    alignItem: 'center',
+    alignItems: 'center',
     border: '1px solid',
     marginLeft: '10px',
     width: '155px',
