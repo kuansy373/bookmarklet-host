@@ -3,7 +3,27 @@
 // Vertical text
 // ==============================
   let text = '';
-  document.querySelectorAll('body > h1, body > h2, body > h3, .metadata, .main_text, .p-novel__title, .p-novel__text, .widget-episodeTitle, .widget-episodeBody p, .novel-title, .novel-body p, .chapter-title, .episode-title, #novelBody').forEach(node => {
+document.querySelectorAll(
+  // 青空文庫
+  'body > h1, ' +        // タイトル（h1）
+  'body > h2, ' +        // サブタイトル（h2）
+  'body > h3, ' +        // 小見出し（h3）
+  '.metadata, ' +        // メタ情報（作者名など）
+  '.main_text, ' +       // 本文テキスト
+  // 小説家になろう
+  '.p-novel__title, ' +  // 小説タイトル
+  '.p-novel__text, ' +   // 本文テキスト
+  // カクヨム
+  '.widget-episodeTitle, ' + // エピソードタイトル
+  '.widget-episodeBody p, ' +// 本文段落
+  // アルファポリス
+  '.novel-title, ' +     // 小説タイトル
+  '.novel-body p, ' +    // 本文段落
+  '.chapter-title, ' +   // 章タイトル
+  '.episode-title, ' +   // エピソードタイトル
+  '#novelBody'           // 本文全体コンテナ
+)
+.forEach(node => {
   text += node.innerHTML
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
@@ -184,7 +204,7 @@
         currentIndex++;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 5000); // 少し待って解除
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
@@ -210,7 +230,7 @@
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 5000); // 少し待って解除
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
         promptShownForward = false;
         promptShownBackward = false;
       }
@@ -218,7 +238,6 @@
       promptShownBackward = false;
     }
   });
-
 
   // スタイル
   container.style.cssText = `
