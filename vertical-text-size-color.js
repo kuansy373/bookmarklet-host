@@ -683,9 +683,6 @@ modes.forEach(mode => {
 // コントロールエリア
 const controlArea = document.createElement('div');
 Object.assign(controlArea.style, {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '5px'
 });
 
 // ラベル
@@ -804,8 +801,8 @@ else if (currentMode === 'Font shadow') {
 const sliderContainer = document.createElement('div');
 Object.assign(sliderContainer.style, {
   display: 'flex',
-  alignItems: 'center', // ラベルとスライダーを中央揃え
-  gap: '8px'           // ラベルとスライダーの間の余白
+  alignItems: 'center',
+  marginBottom: '5px',
 });
 // controlArea に横並びコンテナを追加
 controlArea.appendChild(sliderContainer);
