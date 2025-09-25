@@ -847,7 +847,7 @@ const fontSelect = document.createElement('select');
 });
 [
   '游明朝',
-  'Noto Sans Japanese',
+  'sans-serif',
   'Zen Kurenaido',
   'New Tegomin',
   'Yuji Syuku',
@@ -866,12 +866,17 @@ const fontSelect = document.createElement('select');
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
+  
   if (font === '游明朝') {
-    // 未設定ならフォントを初期状態に戻す
     document.body.style.cssText = initialBodyStyle;
     if (target) target.style.fontFamily = '';
     return;
   }
+  if (font === 'sans-serif') {
+    if (target) target.style.fontFamily = 'sans-serif';
+    return;
+  }
+  
   const id = "gf-font-" + font.replace(/\s+/g, '-');
   if (!document.getElementById(id)) {
     const link = document.createElement('link');
@@ -880,6 +885,7 @@ fontSelect.addEventListener('change', () => {
     link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
     document.head.appendChild(link);
   }
+
   if (target) {
     target.style.fontFamily = `'${font}', sans-serif`;
   }
