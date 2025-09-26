@@ -927,12 +927,13 @@ document.body.appendChild(openBtn);
 const closeBtn = document.createElement('div');
 closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
+  all: 'initial',
   position: 'absolute',
   top: '0px',
   right: '7px',
   cursor: 'pointer',
   fontSize: '14px',
-  color: '#333'
+  color: 'unset',
 });
 closeBtn.addEventListener('click', () => {
   panel.style.display = 'none';
