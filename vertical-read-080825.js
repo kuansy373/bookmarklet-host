@@ -577,6 +577,7 @@ Object.assign(scrollUIToggle.style, {
     left: '10px',
     padding: '0 8px',
     fontSize: '14px',
+    color: 'unset',
     opacity: '0.3',
     cursor: 'pointer',
     zIndex: '10001',
@@ -597,6 +598,7 @@ Object.assign(scrollSCloseBtn.style, {
   right: '4px',
   cursor: 'pointer',
   fontSize: '14px',
+  color: 'unset',
 });
 scrollUI.appendChild(scrollSCloseBtn);
 
@@ -905,12 +907,14 @@ const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
 openBtn.textContent = '○';
 Object.assign(openBtn.style, {
+  all: 'initial',
   position: 'fixed',
   top: '10px',
   right: '10px',
   padding: '0 8px',
   fontSize: '14px',
   opacity: '0.3',
+  color: 'unset',
   cursor: 'pointer',
   zIndex: '10001'
 });
@@ -1830,6 +1834,7 @@ Promise.all([
       top: '80px',
       right: '17.5px',
       opacity: '0.3',
+      color: 'unset',
       zIndex: '999999'
     });
     document.body.appendChild(pickrOpen);
@@ -1853,6 +1858,7 @@ Promise.all([
         top: '80px',
         right: '17.5px',
         opacity: '0.3',
+        color: 'unset',
         zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
