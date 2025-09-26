@@ -1834,9 +1834,11 @@ Promise.all([
       cursor: 'pointer',
       position: 'fixed',
       top: '80px',
-      right: '17.5px',
+      right: '10px',
+      padding: '0 8px',
       color: 'unset',
       opacity: '0.3',
+      fontSize: '14px',
       zIndex: '999999'
     });
     document.body.appendChild(pickrOpen);
@@ -1858,9 +1860,11 @@ Promise.all([
         cursor: 'pointer',
         position: 'fixed',
         top: '80px',
-        right: '17.5px',
+        right: '10px',
+        padding: '0 8px',
         color: 'unset',
         opacity: '0.3',
+        fontSize: '14px',
         zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
