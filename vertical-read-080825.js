@@ -905,7 +905,7 @@ controlArea.appendChild(fontFamilyContainer);
 // 開閉ボタン
 const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
-openBtn.textContent = '○';
+openBtn.textContent = '〇';
 Object.assign(openBtn.style, {
   all: 'initial',
   position: 'fixed',
