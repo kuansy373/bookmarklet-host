@@ -341,7 +341,6 @@ Object.assign(scrollUI.style, {
   top: '10px',
   left: '10px',
   padding: '8px',
-  color: 'inherit',
   background: 'inherit',
   border: '1px solid',
   borderRadius: '4px',
@@ -571,13 +570,16 @@ document.getElementById('scrollHide').addEventListener('change', e => {
 });
 // ===開閉ボタン ===
 const scrollUIToggle = document.createElement('button');
-scrollUIToggle.textContent = '△';
+scrollUIToggle.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <polygon points="12,4 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
 Object.assign(scrollUIToggle.style, {
   all: 'initial',
   position: 'fixed',
     top: '10px',
-    left: '10px',
-    padding: '0 8px',
+    left: '18px',
     fontSize: '14px',
     color: 'unset',
     opacity: '0.3',
@@ -906,16 +908,17 @@ controlArea.appendChild(fontFamilyContainer);
 // 開閉ボタン
 const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
-openBtn.textContent = '〇';
+openBtn.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
 Object.assign(openBtn.style, {
   all: 'initial',
   position: 'fixed',
   top: '10px',
-  right: '10px',
-  padding: '0 8px',
-  fontSize: '14px',
+  right: '18px',
   opacity: '0.3',
-  fontWeight: '200',
   color: 'unset',
   cursor: 'pointer',
   zIndex: '10001'
@@ -1829,13 +1832,17 @@ Promise.all([
     // □ ボタンを作成して表示
     const pickrOpen = document.createElement('div');
     pickrOpen.id = 'pickrOpen';
-    pickrOpen.textContent = '□';
+    pickrOpen.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24">
+      <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
+    </svg>
+    `;
     Object.assign(pickrOpen.style, {
       all: 'initial',
       cursor: 'pointer',
       position: 'fixed',
       top: '80px',
-      right: '17.5px',
+      right: '18px',
       opacity: '0.3',
       color: 'unset',
       zIndex: '999999'
@@ -1853,13 +1860,17 @@ Promise.all([
       // □ ボタンを再生成
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
-      pickrOpen.textContent = '□';
+      pickrOpen.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        `;
       Object.assign(pickrOpen.style, {
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
         top: '80px',
-        right: '17.5px',
+        right: '18px',
         opacity: '0.3',
         color: 'unset',
         zIndex: '999999'
@@ -1911,6 +1922,7 @@ const straddleUI = document.createElement('div');
     border: '1px solid',
     borderRadius: '4px',
     fontSize: '14px',
+    background: 'inherit',
     zIndex: '10002',
     fontFamily: 'sans-serif',
     display: 'none'
@@ -1923,15 +1935,17 @@ const straddleUI = document.createElement('div');
 
 // ☆ ボタン
 const toggleBtn = document.createElement('button');
-toggleBtn.textContent = '☆';
+toggleBtn.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
 Object.assign(toggleBtn.style, {
   all: 'initial',
   position: 'fixed',
   top: '80px',
-  left: '10px',
+  left: '18px',
   zIndex: '10001',
-  padding: '4px 8px',
-  fontSize: '16px',
   opacity: '0.3',
 });
 document.body.appendChild(toggleBtn);
