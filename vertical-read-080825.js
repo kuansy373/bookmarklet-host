@@ -1384,7 +1384,7 @@ Promise.all([
       const nums = rgb.match(/\d+/g)?.map(Number);
       return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
     };
-    const applyStyle = (prop, value) => {
+    window.applyStyle = (prop, value) => {
       if (!value) return;
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
       let el = document.getElementById(id);
