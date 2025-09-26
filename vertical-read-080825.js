@@ -927,12 +927,13 @@ document.body.appendChild(openBtn);
 const closeBtn = document.createElement('div');
 closeBtn.textContent = '✕';
 Object.assign(closeBtn.style, {
+  all: 'initial',
   position: 'absolute',
   top: '0px',
   right: '7px',
   cursor: 'pointer',
   fontSize: '14px',
-  color: '#333'
+  color: 'unset',
 });
 closeBtn.addEventListener('click', () => {
   panel.style.display = 'none';
@@ -941,7 +942,92 @@ closeBtn.addEventListener('click', () => {
 panel.appendChild(closeBtn);
 // 初期化
 updateControls();
-  
+
+// ==============================
+// straddle
+// ============================== 
+const straddleUI = document.createElement('div');
+  Object.assign(straddleUI.style, {
+    all: 'unset',
+    position: 'fixed',
+    top: '80px',
+    left: '10px',
+    padding: '8px',
+    border: '1px solid',
+    borderRadius: '4px',
+    fontSize: '14px',
+    zIndex: '10002',
+    fontFamily: 'sans-serif',
+  });
+  straddleUI.innerHTML = `
+  <button id="saveBtn">保存</button>
+  <button id="applyBtn">反映</button>
+`;
+document.body.appendChild(straddleUI);
+
+// 保存ボタンの動作
+document.getElementById('saveBtn').onclick = async () => {
+  const target = document.getElementById('novelDisplay');
+  if (!target) return alert('対象の要素が見つかりません');
+  const computed = window.getComputedStyle(target);
+
+  const { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
+  const fontFamily = fontSelect.value;
+
+  try {
+    await fetch('http://localhost:3000/save', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ color, backgroundColor, fontSize, fontWeight, textShadow, fontFamily })
+    });
+    alert(`保存しました\n文字色: ${color}\n背景色: ${backgroundColor}\nサイズ: ${fontSize}\n太さ: ${fontWeight}\n影: ${textShadow}\nフォント: ${fontFamily}`);
+  } catch(e) {
+    alert('保存に失敗しました: ' + e);
+  }
+};
+
+// 反映ボタンの動作
+document.getElementById('applyBtn').onclick = async () => {
+  const target = document.getElementById('novelDisplay');
+  if (!target) return alert('対象の要素が見つかりません');
+
+  try {
+    const res = await fetch('http://localhost:3000/get');
+    const data = await res.json();
+
+    if (!data.color && !data.backgroundColor && !data.fontFamily && !data.fontWeight && !data.fontSize && !data.textShadow) {
+      return alert('保存されたスタイルはありません');
+    }
+    
+    // 色
+    if (data.color) applyStyle('color', data.color);
+    if (data.backgroundColor) applyStyle('background-color', data.backgroundColor);
+    // フォント
+    if(data.fontSize) target.style.fontSize = data.fontSize;
+    if(data.fontWeight) target.style.fontWeight = data.fontWeight;
+    if(data.textShadow) target.style.textShadow = data.textShadow;
+    // フォントファミリーはセレクトを通して適用
+    if (data.fontFamily && fontSelect) {
+      // セレクトボックスの値を変更 → イベントリスナーが実行されてフォント適用
+      fontSelect.value = data.fontFamily;
+      fontSelect.dispatchEvent(new Event('change'));
+    }
+
+    alert(
+      '適用しました\n' +
+      '文字色: ' + (data.color || 'なし') + '\n' +
+      '背景色: ' + (data.backgroundColor || 'なし') + '\n' +
+      'サイズ: ' + (data.fontSize || 'なし') + '\n' +
+      '太さ: ' + (data.fontWeight || 'なし') + '\n' +
+      '影: ' + (data.textShadow || 'なし') + '\n' +
+      'フォント: ' + (data.fontFamily || 'なし')
+    );
+  } catch(e) {
+    alert('取得に失敗しました: ' + e);
+  }
+};
+
+
 // ==============================
 // Color Pickr
 // ============================== 
