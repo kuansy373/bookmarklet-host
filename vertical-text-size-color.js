@@ -284,7 +284,6 @@ Object.assign(scrollSliderRight.style, {
   opacity: '1',
 });
 document.body.appendChild(scrollSliderRight);
-  
 // === 左スライダー ===
 const scrollSliderLeft = document.createElement('input');
 scrollSliderLeft.type = 'range';
@@ -341,7 +340,6 @@ Object.assign(scrollUI.style, {
   position: 'fixed',
   top: '10px',
   left: '10px',
-  background: '#fff',
   padding: '8px',
   border: '1px solid',
   borderRadius: '4px',
@@ -353,14 +351,14 @@ scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
   <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
   <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
-  <label>Shadow: <input id="scrollS" type="number" value="0" style="all:initial;width:60px;border:1px solid;"> px</label><br>
+  <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
   <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
   <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
   <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
-  <label>Position: <input id="scrollX" type="number" value="30" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Width: <input id="scrollW" type="number" value="80" style="all:initial;width:60px;border:1px solid;"> px</label><br>
-  <label>Opacity: <input id="scrollO" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1" style="all:initial;width:60px;border:1px solid;"> (0~1)</label><br>
-  <label>Speed scale: <input id="scrollSpeedScale" type="number" min="0" max="20" step="1" value="10" style="all:initial;width:60px;border:1px solid;"> (0~20)</label><br>
+  <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
+  <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
+  <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
+  <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
   <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
 `;
 document.body.appendChild(scrollUI);
@@ -370,6 +368,14 @@ document.querySelectorAll('.settingCheckbox').forEach(cb => {
     height: '15px',
     width: '15px',
     verticalAlign: 'middle',
+  });
+});
+document.querySelectorAll('.settingInputbox').forEach(cb => {
+  Object.assign(cb.style, {
+    all: 'initial',
+    width: '60px',
+    border: '1px solid',
+    color: 'unset',
   });
 });
 document.querySelectorAll('.labelText').forEach(span => {
@@ -571,6 +577,7 @@ Object.assign(scrollUIToggle.style, {
     left: '10px',
     padding: '0 8px',
     fontSize: '14px',
+    color: 'unset',
     opacity: '0.3',
     cursor: 'pointer',
     zIndex: '10001',
@@ -591,6 +598,7 @@ Object.assign(scrollSCloseBtn.style, {
   right: '4px',
   cursor: 'pointer',
   fontSize: '14px',
+  color: 'unset',
 });
 scrollUI.appendChild(scrollSCloseBtn);
 
@@ -654,6 +662,7 @@ modes.forEach(mode => {
     border: '1px solid',
     borderRadius: '4px',
     opacity: '0.5',
+    color: 'unset',
     cursor: 'pointer',
     textAlign: 'left',
   });
@@ -837,6 +846,7 @@ const fontSelect = document.createElement('select');
     all: 'initial',
     alignItems: 'center',
     border: '1px solid',
+    color: 'unset',
     marginLeft: '10px',
     width: '155px',
     paddingLeft: '5px',
@@ -897,11 +907,13 @@ const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
 openBtn.textContent = '○';
 Object.assign(openBtn.style, {
+  all: 'initial',
   position: 'fixed',
   top: '10px',
   right: '10px',
   padding: '0 8px',
   fontSize: '14px',
+  color: 'unset',
   opacity: '0.3',
   cursor: 'pointer',
   zIndex: '10001'
@@ -1383,9 +1395,9 @@ Promise.all([
         document.head.appendChild(el)
       }
       el.textContent = `
-  *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-    ${prop}: ${value} !important;
-  }`
+        *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+          ${prop}: ${value};
+        }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
@@ -1822,6 +1834,7 @@ Promise.all([
       position: 'fixed',
       top: '80px',
       right: '17.5px',
+      color: 'unset',
       opacity: '0.3',
       zIndex: '999999'
     });
@@ -1845,6 +1858,7 @@ Promise.all([
         position: 'fixed',
         top: '80px',
         right: '17.5px',
+        color: 'unset',
         opacity: '0.3',
         zIndex: '999999'
       });
