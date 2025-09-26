@@ -341,6 +341,8 @@ Object.assign(scrollUI.style, {
   top: '10px',
   left: '10px',
   padding: '8px',
+  color: 'inherit',
+  background: 'inherit',
   border: '1px solid',
   borderRadius: '4px',
   fontSize: '14px',
@@ -914,7 +916,7 @@ Object.assign(openBtn.style, {
   padding: '0 8px',
   fontSize: '14px',
   color: 'unset',
-  opacity: '0.2',
+  opacity: '0.1',
   cursor: 'pointer',
   zIndex: '10001'
 });
