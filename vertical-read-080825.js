@@ -913,7 +913,7 @@ Object.assign(openBtn.style, {
   right: '10px',
   padding: '0 8px',
   fontSize: '14px',
-  opacity: '0.3',
+  opacity: '0.2',
   color: 'unset',
   cursor: 'pointer',
   zIndex: '10001'
