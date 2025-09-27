@@ -1401,9 +1401,9 @@ Promise.all([
         document.head.appendChild(el)
       }
       el.textContent = `
-  *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-    ${prop}: ${value};
-  }`
+      *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+        ${prop}: ${value};
+      }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
@@ -1691,10 +1691,13 @@ Promise.all([
       const fgColor = document.getElementById('fgHex').value;
       const bgLockIcon = document.getElementById('bgLockIcon');
       const fgLockIcon = document.getElementById('fgLockIcon');
+      // 🔒 / 🔓 アイコン更新
       bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
       fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
+      // 背景色は常に更新
       bgLockIcon.style.background = bgColor;
       fgLockIcon.style.background = fgColor;
+      // ロック状態に応じた装飾
       bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
       fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
       bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
@@ -1702,9 +1705,15 @@ Promise.all([
       bgLockIcon.style.padding = bgLocked ? '0px 0px' : '6px 6px';
       fgLockIcon.style.padding = fgLocked ? '0px 0px' : '6px 6px';
     }
+    // ロックチェックボックスが変わったとき
     document.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
     document.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
+    // HEX入力欄が変わったときも背景色を更新する
+    document.getElementById('bgHex').addEventListener('input', updateLockIcons);
+    document.getElementById('fgHex').addEventListener('input', updateLockIcons);
+    // 初回呼び出し
     updateLockIcons();
+
 
     document.getElementById('bgHexLoad').onclick = () => {
       const val = document.getElementById('bgHex').value.trim();
