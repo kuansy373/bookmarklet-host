@@ -1983,20 +1983,35 @@ document.getElementById('closeUIBtn').onclick = () => {
   straddleUI.style.display = 'none';
 };
 
+// RGB → HEX 変換関数
+function rgbToHex(rgb) {
+  const result = rgb.match(/\d+/g);
+  if (!result) return rgb; // マッチしなければそのまま返す
+  let r = parseInt(result[0], 10).toString(16).padStart(2, "0");
+  let g = parseInt(result[1], 10).toString(16).padStart(2, "0");
+  let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
+  return `#${r}${g}${b}`;
+}
+
 // 保存ボタンの動作
 document.getElementById('saveBtn').onclick = async () => {
   const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象の要素が見つかりません');
   const computed = window.getComputedStyle(target);
 
-  const { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
+  let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
   const fontFamily = fontSelect.value;
+
   // blur 値を抽出
   let blur = null;
   const match = textShadow.match(/(-?\d+)px$/);
   if (match) {
     blur = parseInt(match[1], 10);
   }
+
+  // HEX に変換
+  color = rgbToHex(color);
+  backgroundColor = rgbToHex(backgroundColor);
 
   try {
     await fetch('http://localhost:3000/save', {
@@ -2011,7 +2026,15 @@ document.getElementById('saveBtn').onclick = async () => {
         fontFamily 
       })
     });
-    alert(`-以下をローカルサーバーに保存します-\n文字色: ${color}\n背景色: ${backgroundColor}\n文字サイズ: ${fontSize}\n文字太さ: ${fontWeight}\n文字影: ${blur}px\nフォント: ${fontFamily}`);
+    alert(
+      `-以下をローカルサーバーに保存します-\n` +
+      `文字色: ${color}\n` +
+      `背景色: ${backgroundColor}\n` +
+      `文字サイズ: ${fontSize}\n` +
+      `文字太さ: ${fontWeight}\n` +
+      `文字影: ${blur}px\n` +
+      `フォント: ${fontFamily}`
+    );
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
@@ -2035,8 +2058,16 @@ document.getElementById('applyBtn').onclick = async () => {
     }
     
     // 色
-    if (data.color) applyStyle('color', data.color);
-    if (data.backgroundColor) applyStyle('background-color', data.backgroundColor);
+    if (data.color) {
+      applyStyle('color', data.color);
+      const fgHex = document.getElementById('fgHex');
+      if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+    }
+    if (data.backgroundColor) {
+      applyStyle('background-color', data.backgroundColor);
+      const bgHex = document.getElementById('bgHex');
+      if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+    }
     // フォント
     if(data.fontSize) target.style.fontSize = data.fontSize;
     if(data.fontWeight) target.style.fontWeight = data.fontWeight;
