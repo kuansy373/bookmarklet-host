@@ -573,7 +573,7 @@ document.getElementById('scrollHide').addEventListener('change', e => {
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.innerHTML = `
 <svg width="14" height="14" viewBox="0 0 24 24">
-  <polygon points="12,4 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
+  <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
 </svg>
 `;
 Object.assign(scrollUIToggle.style, {
