@@ -2071,11 +2071,13 @@ document.getElementById('applyBtn').onclick = async () => {
       applyStyle('color', data.color);
       const fgHex = document.getElementById('fgHex');
       if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+      fgHex.dispatchEvent(new Event('input'));
     }
     if (data.backgroundColor) {
       applyStyle('background-color', data.backgroundColor);
       const bgHex = document.getElementById('bgHex');
       if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+      bgHex.dispatchEvent(new Event('input'));
     }
     // フォント
     if(data.fontSize) target.style.fontSize = data.fontSize;
