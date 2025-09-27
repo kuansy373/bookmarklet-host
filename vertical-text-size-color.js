@@ -242,7 +242,6 @@ document.querySelectorAll(
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
-    text-orientation: upright;
     white-space: nowrap;
     letter-spacing: 0.25em;
     line-height: 1.8;
@@ -260,6 +259,7 @@ document.querySelectorAll(
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
   font-feature-settings: 'pkna';
+  text-shadow: 0 0 0px;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   margin: 0;
@@ -341,7 +341,6 @@ Object.assign(scrollUI.style, {
   top: '10px',
   left: '10px',
   padding: '8px',
-  color: 'inherit',
   background: 'inherit',
   border: '1px solid',
   borderRadius: '4px',
@@ -571,13 +570,16 @@ document.getElementById('scrollHide').addEventListener('change', e => {
 });
 // ===開閉ボタン ===
 const scrollUIToggle = document.createElement('button');
-scrollUIToggle.textContent = '△';
+scrollUIToggle.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
 Object.assign(scrollUIToggle.style, {
   all: 'initial',
   position: 'fixed',
     top: '10px',
-    left: '10px',
-    padding: '0 8px',
+    left: '18px',
     fontSize: '14px',
     color: 'unset',
     opacity: '0.3',
@@ -617,7 +619,7 @@ scrollSCloseBtn.addEventListener('click', () => {
 });
 
 // 操作対象は #novelDisplay
-const target = document.getElementById('novelDisplay');
+let target = document.getElementById('novelDisplay');
 if (!target) {
   console.error('#novelDisplay が見つかりません');
 }
@@ -663,8 +665,8 @@ modes.forEach(mode => {
     padding: '2px 6px',
     border: '1px solid',
     borderRadius: '4px',
-    opacity: '0.5',
     color: 'unset',
+    opacity: '0.5',
     cursor: 'pointer',
     textAlign: 'left',
   });
@@ -789,7 +791,7 @@ else if (currentMode === 'Font shadow') {
   slider.step = 1;
 
   // 現在のスライダー値を保持（前回の設定を使う）
-  let blur = parseInt(target.dataset.fontShadow || 0);
+  let blur = parseInt(target.dataset.textShadow || 0);
   slider.value = blur;
   label.textContent = `Font shadow: ${slider.value}px`;
 
@@ -803,10 +805,9 @@ else if (currentMode === 'Font shadow') {
     label.textContent = `Font shadow: ${b}px`;
 
     // blur 値を保持しておく
-    target.dataset.fontShadow = b;
+    target.dataset.textShadow = b;
   };
 }
-
 }
 // 横並び用コンテナを作る
 const sliderContainer = document.createElement('div');
@@ -907,16 +908,18 @@ controlArea.appendChild(fontFamilyContainer);
 // 開閉ボタン
 const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
-openBtn.textContent = '〇';
+openBtn.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
 Object.assign(openBtn.style, {
   all: 'initial',
   position: 'fixed',
   top: '10px',
-  right: '10px',
-  padding: '0 8px',
-  fontSize: '14px',
+  right: '18px',
+  opacity: '0.3',
   color: 'unset',
-  opacity: '0.1',
   cursor: 'pointer',
   zIndex: '10001'
 });
@@ -944,7 +947,7 @@ closeBtn.addEventListener('click', () => {
 panel.appendChild(closeBtn);
 // 初期化
 updateControls();
-  
+
 // ==============================
 // Color Pickr
 // ============================== 
@@ -961,7 +964,6 @@ const load = (tag, attrs) => new Promise((resolve, reject) => {
   el.onerror = reject;
   document.head.appendChild(el);
 });
-
 
 // バージョン固定とSRI対応可能な形に変更
 Promise.all([
@@ -1388,7 +1390,7 @@ Promise.all([
       const nums = rgb.match(/\d+/g)?.map(Number);
       return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
     };
-    const applyStyle = (prop, value) => {
+    window.applyStyle = (prop, value) => {
       if (!value) return;
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
       let el = document.getElementById(id);
@@ -1398,9 +1400,9 @@ Promise.all([
         document.head.appendChild(el)
       }
       el.textContent = `
-        *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-          ${prop}: ${value};
-        }`
+      *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+        ${prop}: ${value};
+      }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
@@ -1830,17 +1832,19 @@ Promise.all([
     // □ ボタンを作成して表示
     const pickrOpen = document.createElement('div');
     pickrOpen.id = 'pickrOpen';
-    pickrOpen.textContent = '□';
+    pickrOpen.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24">
+      <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
+    </svg>
+    `;
     Object.assign(pickrOpen.style, {
       all: 'initial',
       cursor: 'pointer',
       position: 'fixed',
       top: '80px',
-      right: '10px',
-      padding: '0 8px',
-      color: 'unset',
+      right: '18px',
       opacity: '0.3',
-      fontSize: '14px',
+      color: 'unset',
       zIndex: '999999'
     });
     document.body.appendChild(pickrOpen);
@@ -1856,17 +1860,19 @@ Promise.all([
       // □ ボタンを再生成
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
-      pickrOpen.textContent = '□';
+      pickrOpen.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        `;
       Object.assign(pickrOpen.style, {
         all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
         top: '80px',
-        right: '10px',
-        padding: '0 8px',
-        color: 'unset',
+        right: '18px',
         opacity: '0.3',
-        fontSize: '14px',
+        color: 'unset',
         zIndex: '999999'
       });
       document.body.appendChild(pickrOpen);
@@ -1902,4 +1908,165 @@ Promise.all([
     alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
     console.error("Pickr load error:", err);
 });
+  
+// ==============================
+// ローカルサーバーで各値を保存/反映
+// ============================== 
+const straddleUI = document.createElement('div');
+Object.assign(straddleUI.style, {
+  all: 'unset',
+  position: 'fixed',
+  top: '80px',
+  left: '10px',
+  padding: '8px',
+  border: '1px solid',
+  borderRadius: '4px',
+  fontSize: '14px',
+  background: 'inherit',
+  zIndex: '10002',
+  fontFamily: 'sans-serif',
+  display: 'none',
+  width: '200px',       // 追加例
+});
+
+straddleUI.innerHTML = `
+  <div class="ui-header">
+    <span>Apply with One Tap</span>
+    <button id="closeUIBtn" style="border:none;">✕</button>
+  </div>
+  <div class="ui-buttons">
+    <button id="saveBtn">保存</button>
+    <button id="applyBtn">反映</button>
+  </div>
+`;
+// ヘッダーのスタイル
+const header = straddleUI.querySelector('.ui-header');
+Object.assign(header.style, {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  fontWeight: 'bold',
+  marginBottom: '8px', // 下にスペースを追加
+});
+// ボタン群のスタイル
+const buttons = straddleUI.querySelector('.ui-buttons');
+Object.assign(buttons.style, {
+  display: 'flex',
+  gap: '4px',          // ボタン間の隙間
+});
+
+// ☆ ボタン
+const toggleBtn = document.createElement('button');
+toggleBtn.innerHTML = `
+<svg width="14" height="14" viewBox="0 0 24 24">
+  <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
+</svg>
+`;
+Object.assign(toggleBtn.style, {
+  all: 'initial',
+  position: 'fixed',
+  top: '80px',
+  left: '18px',
+  zIndex: '10001',
+  opacity: '0.3',
+});
+document.body.appendChild(toggleBtn);
+document.body.appendChild(straddleUI);
+
+// ☆ UIを開く
+toggleBtn.onclick = () => {
+  straddleUI.style.display = 'block';
+};
+// ✕ UIを閉じる
+document.getElementById('closeUIBtn').onclick = () => {
+  straddleUI.style.display = 'none';
+};
+
+// 保存ボタンの動作
+document.getElementById('saveBtn').onclick = async () => {
+  const target = document.getElementById('novelDisplay');
+  if (!target) return alert('対象の要素が見つかりません');
+  const computed = window.getComputedStyle(target);
+
+  const { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
+  const fontFamily = fontSelect.value;
+  // blur 値を抽出
+  let blur = null;
+  const match = textShadow.match(/(-?\d+)px$/);
+  if (match) {
+    blur = parseInt(match[1], 10);
+  }
+
+  try {
+    await fetch('http://localhost:3000/save', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ 
+        color, 
+        backgroundColor, 
+        fontSize, 
+        fontWeight, 
+        textShadow: blur,   // ← blur値だけ保存
+        fontFamily 
+      })
+    });
+    alert(`-以下をローカルサーバーに保存します-\n文字色: ${color}\n背景色: ${backgroundColor}\n文字サイズ: ${fontSize}\n文字太さ: ${fontWeight}\n文字影: ${blur}px\nフォント: ${fontFamily}`);
+  } catch(e) {
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+    } else {
+      alert('保存に失敗しました: ' + e);
+    }
+  }
+};
+
+// 反映ボタンの動作
+document.getElementById('applyBtn').onclick = async () => {
+  target = document.getElementById('novelDisplay'); // 念のため再取得
+  if (!target) return alert('対象の要素が見つかりません');
+
+  try {
+    const res = await fetch('http://localhost:3000/get');
+    const data = await res.json();
+
+    if (!data.color && !data.backgroundColor && !data.fontFamily && !data.fontWeight && !data.fontSize && !data.textShadow) {
+      return alert('保存されたスタイルはありません');
+    }
+    
+    // 色
+    if (data.color) applyStyle('color', data.color);
+    if (data.backgroundColor) applyStyle('background-color', data.backgroundColor);
+    // フォント
+    if(data.fontSize) target.style.fontSize = data.fontSize;
+    if(data.fontWeight) target.style.fontWeight = data.fontWeight;
+    if (data.textShadow !== null && data.textShadow !== undefined) {
+      target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
+      target.dataset.textShadow = data.textShadow; // ← ここを追加
+    }
+    // フォントファミリーはセレクトを通して適用
+    if (data.fontFamily && fontSelect) {
+      // セレクトボックスの値を変更 → イベントリスナーが実行されてフォント適用
+      fontSelect.value = data.fontFamily;
+      fontSelect.dispatchEvent(new Event('change'));
+    }
+    updateControls();
+
+    alert(
+      '-以下を反映します-\n' +
+      '文字色: ' + (data.color || 'なし') + '\n' +
+      '背景色: ' + (data.backgroundColor || 'なし') + '\n' +
+      '文字サイズ: ' + (data.fontSize || 'なし') + '\n' +
+      '文字太さ: ' + (data.fontWeight || 'なし') + '\n' +
+      '文字影: ' + (data.textShadow || 'なし') + '\n' +
+      '文字フォント: ' + (data.fontFamily || 'なし')
+    );
+  } catch(e) {
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+    } else {
+      alert('取得に失敗しました: ' + e);
+    }
+  }
+};
+  
 })()
