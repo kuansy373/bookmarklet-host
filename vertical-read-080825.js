@@ -2068,16 +2068,16 @@ document.getElementById('applyBtn').onclick = async () => {
     
     // 色
     if (data.color) {
-      applyStyle('color', data.color);
-      const fgHex = document.getElementById('fgHex');
-      if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
-      fgHex.dispatchEvent(new Event('input'));
+      applyStyle('color', data.color); //色を適用するだけでPickrには反映しない↓
+      //const fgHex = document.getElementById('fgHex');
+      //if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+      //fgHex.dispatchEvent(new Event('input')); //　入力イベントを発火させてロックアイコンのbackgroundを更新
     }
     if (data.backgroundColor) {
-      applyStyle('background-color', data.backgroundColor);
-      const bgHex = document.getElementById('bgHex');
-      if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
-      bgHex.dispatchEvent(new Event('input'));
+      applyStyle('background-color', data.backgroundColor); //色を適用するだけでPickrには反映しない↓
+      //const bgHex = document.getElementById('bgHex');
+      //if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+      // bgHex.dispatchEvent(new Event('input')); //　入力イベントを発火させてロックアイコンのbackgroundを更新
     }
     // フォント
     if(data.fontSize) target.style.fontSize = data.fontSize;
