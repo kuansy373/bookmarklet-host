@@ -2078,9 +2078,17 @@ document.getElementById('applyBtn').onclick = async () => {
       return alert('保存されたスタイルはありません');
     }
     
-    // --- 既存の文字スタイル反映 ---
-    if (data.color) applyStyle('color', data.color);
-    if (data.backgroundColor) applyStyle('background-color', data.backgroundColor);
+    // --- 文字スタイル反映 ---
+    if (data.color) {
+      applyStyle('color', data.color);
+      const fgHex = document.getElementById('fgHex');
+      if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+    }
+    if (data.backgroundColor) {
+      applyStyle('background-color', data.backgroundColor);
+      const bgHex = document.getElementById('bgHex');
+      if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+    }
     if (data.fontSize) target.style.fontSize = data.fontSize;
     if (data.fontWeight) target.style.fontWeight = data.fontWeight;
     if (data.textShadow !== null && data.textShadow !== undefined) {
