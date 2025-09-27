@@ -2045,6 +2045,7 @@ document.getElementById('saveBtn').onclick = async () => {
 
     alert(
       `-以下をローカルサーバーに保存します-\n` +
+      `--- スタイル設定 ---\n` +
       `BG: ${backgroundColor}\n` +
       `FG: ${color}\n` +
       `FontSize: ${fontSize}\n` +
@@ -2132,7 +2133,7 @@ document.getElementById('applyBtn').onclick = async () => {
 
     updateControls();
 
-    alert('-スタイルとスクロール設定を反映します-');
+    alert('保存されているスタイルとスクロール設定を反映します');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
