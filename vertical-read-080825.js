@@ -260,6 +260,7 @@ document.querySelectorAll(
   justify-content: center;
   font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
   font-feature-settings: 'pkna';
+  text-shadow: 0 0 0px;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   margin: 0;
@@ -1913,25 +1914,47 @@ Promise.all([
 // ローカルサーバーで各値を保存/反映
 // ============================== 
 const straddleUI = document.createElement('div');
-  Object.assign(straddleUI.style, {
-    all: 'unset',
-    position: 'fixed',
-    top: '80px',
-    left: '10px',
-    padding: '8px',
-    border: '1px solid',
-    borderRadius: '4px',
-    fontSize: '14px',
-    background: 'inherit',
-    zIndex: '10002',
-    fontFamily: 'sans-serif',
-    display: 'none'
-  });
-  straddleUI.innerHTML = `
-  <button id="closeUIBtn" style="border:none;">✕</button>
-  <button id="saveBtn">保存</button>
-  <button id="applyBtn">反映</button>
+Object.assign(straddleUI.style, {
+  all: 'unset',
+  position: 'fixed',
+  top: '80px',
+  left: '10px',
+  padding: '8px',
+  border: '1px solid',
+  borderRadius: '4px',
+  fontSize: '14px',
+  background: 'inherit',
+  zIndex: '10002',
+  fontFamily: 'sans-serif',
+  display: 'none',
+  width: '200px',       // 追加例
+});
+
+straddleUI.innerHTML = `
+  <div class="ui-header">
+    <span>Apply with One Tap</span>
+    <button id="closeUIBtn" style="border:none;">✕</button>
+  </div>
+  <div class="ui-buttons">
+    <button id="saveBtn">保存</button>
+    <button id="applyBtn">反映</button>
+  </div>
 `;
+// ヘッダーのスタイル
+const header = straddleUI.querySelector('.ui-header');
+Object.assign(header.style, {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  fontWeight: 'bold',
+  marginBottom: '8px', // 下にスペースを追加
+});
+// ボタン群のスタイル
+const buttons = straddleUI.querySelector('.ui-buttons');
+Object.assign(buttons.style, {
+  display: 'flex',
+  gap: '4px',          // ボタン間の隙間
+});
 
 // ☆ ボタン
 const toggleBtn = document.createElement('button');
@@ -1989,7 +2012,7 @@ document.getElementById('saveBtn').onclick = async () => {
         fontFamily 
       })
     });
-    alert(`保存しました\n文字色: ${color}\n背景色: ${backgroundColor}\nサイズ: ${fontSize}\n太さ: ${fontWeight}\n影: ${blur}px\nフォント: ${fontFamily}`);
+    alert(`-以下をローカルサーバーに保存します-\n文字色: ${color}\n背景色: ${backgroundColor}\n文字サイズ: ${fontSize}\n文字太さ: ${fontWeight}\n文字影: ${blur}px\nフォント: ${fontFamily}`);
   } catch(e) {
     alert('保存に失敗しました: ' + e);
   }
@@ -2027,13 +2050,13 @@ document.getElementById('applyBtn').onclick = async () => {
     updateControls();
 
     alert(
-      '適用しました\n' +
+      '-以下を反映します-\n' +
       '文字色: ' + (data.color || 'なし') + '\n' +
       '背景色: ' + (data.backgroundColor || 'なし') + '\n' +
-      'サイズ: ' + (data.fontSize || 'なし') + '\n' +
-      '太さ: ' + (data.fontWeight || 'なし') + '\n' +
-      '影: ' + (data.textShadow || 'なし') + '\n' +
-      'フォント: ' + (data.fontFamily || 'なし')
+      '文字サイズ: ' + (data.fontSize || 'なし') + '\n' +
+      '文字太さ: ' + (data.fontWeight || 'なし') + '\n' +
+      '文字影: ' + (data.textShadow || 'なし') + '\n' +
+      '文字フォント: ' + (data.fontFamily || 'なし')
     );
   } catch(e) {
     alert('取得に失敗しました: ' + e);
