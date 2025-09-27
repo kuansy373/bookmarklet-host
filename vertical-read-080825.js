@@ -1974,12 +1974,11 @@ Object.assign(toggleBtn.style, {
 document.body.appendChild(toggleBtn);
 document.body.appendChild(straddleUI);
 
-// ☆ ボタンで UI を開く
+// ☆ UIを開く
 toggleBtn.onclick = () => {
   straddleUI.style.display = 'block';
 };
-
-// ✕ ボタンで UI を閉じる
+// ✕ UIを閉じる
 document.getElementById('closeUIBtn').onclick = () => {
   straddleUI.style.display = 'none';
 };
@@ -2014,7 +2013,11 @@ document.getElementById('saveBtn').onclick = async () => {
     });
     alert(`-以下をローカルサーバーに保存します-\n文字色: ${color}\n背景色: ${backgroundColor}\n文字サイズ: ${fontSize}\n文字太さ: ${fontWeight}\n文字影: ${blur}px\nフォント: ${fontFamily}`);
   } catch(e) {
-    alert('保存に失敗しました: ' + e);
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+    } else {
+      alert('保存に失敗しました: ' + e);
+    }
   }
 };
 
@@ -2059,7 +2062,11 @@ document.getElementById('applyBtn').onclick = async () => {
       '文字フォント: ' + (data.fontFamily || 'なし')
     );
   } catch(e) {
-    alert('取得に失敗しました: ' + e);
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+    } else {
+      alert('取得に失敗しました: ' + e);
+    }
   }
 };
   
