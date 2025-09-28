@@ -1927,7 +1927,7 @@ Object.assign(straddleUI.style, {
   zIndex: '10002',
   fontFamily: 'sans-serif',
   display: 'none',
-  width: '200px',       // 追加例
+  width: '160px',
 });
 
 straddleUI.innerHTML = `
@@ -1936,8 +1936,8 @@ straddleUI.innerHTML = `
     <button id="closeUIBtn" style="border:none;">✕</button>
   </div>
   <div class="ui-buttons">
-    <button id="saveBtn">保存</button>
-    <button id="applyBtn">反映</button>
+    <button id="saveBtn">SAVE</button>
+    <button id="applyBtn">APPLY</button>
   </div>
 `;
 // ヘッダーのスタイル
@@ -1953,7 +1953,9 @@ Object.assign(header.style, {
 const buttons = straddleUI.querySelector('.ui-buttons');
 Object.assign(buttons.style, {
   display: 'flex',
-  gap: '4px',          // ボタン間の隙間
+  marginLeft: '5px',
+  gap: '8px',
+  borderRadius: '2px',
 });
 
 // ☆ ボタン
@@ -2044,7 +2046,7 @@ document.getElementById('saveBtn').onclick = async () => {
     });
 
     alert(
-      `-以下をローカルサーバーに保存します-\n` +
+      `☆ 以下をhttp://localhost:3000に保存します。\n` +
       `--- スタイル設定 ---\n` +
       `BG: ${backgroundColor}\n` +
       `FG: ${color}\n` +
@@ -2052,12 +2054,12 @@ document.getElementById('saveBtn').onclick = async () => {
       `FontWeight: ${fontWeight}\n` +
       `FontShadow: ${blur}px\n` +
       `FontFamily: ${fontFamily}\n` +
-      `--- スクロール設定 ---\n` +
+      `--- スライダー設定 ---\n` +
       JSON.stringify(scrollSettings, null, 2)
     );
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
       alert('保存に失敗しました: ' + e);
     }
@@ -2133,10 +2135,10 @@ document.getElementById('applyBtn').onclick = async () => {
 
     updateControls();
 
-    alert('保存されているスタイルとスクロール設定を反映します');
+    alert('☆ 保存されているスタイルとスライダー設定を反映します。');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
       alert('取得に失敗しました: ' + e);
     }
