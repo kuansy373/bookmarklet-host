@@ -1926,7 +1926,7 @@ Object.assign(straddleUI.style, {
   zIndex: '10002',
   fontFamily: 'sans-serif',
   display: 'none',
-  width: '200px',       // 追加例
+  width: '160px',
 });
 
 straddleUI.innerHTML = `
@@ -1935,8 +1935,8 @@ straddleUI.innerHTML = `
     <button id="closeUIBtn" style="border:none;">✕</button>
   </div>
   <div class="ui-buttons">
-    <button id="saveBtn">保存</button>
-    <button id="applyBtn">反映</button>
+    <button id="saveBtn">SAVE</button>
+    <button id="applyBtn">APPLY</button>
   </div>
 `;
 // ヘッダーのスタイル
@@ -1952,7 +1952,9 @@ Object.assign(header.style, {
 const buttons = straddleUI.querySelector('.ui-buttons');
 Object.assign(buttons.style, {
   display: 'flex',
-  gap: '4px',          // ボタン間の隙間
+  marginLeft: '5px',
+  gap: '8px',
+  borderRadius: '2px',
 });
 
 // ☆ ボタン
@@ -1982,19 +1984,65 @@ document.getElementById('closeUIBtn').onclick = () => {
   straddleUI.style.display = 'none';
 };
 
+// RGB → HEX 変換関数
+function rgbToHex(rgb) {
+  const result = rgb.match(/\d+/g);
+  if (!result) return rgb; // マッチしなければそのまま返す
+  let r = parseInt(result[0], 10).toString(16).padStart(2, "0");
+  let g = parseInt(result[1], 10).toString(16).padStart(2, "0");
+  let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
+  return `#${r}${g}${b}`;
+}
+
 // 保存ボタンの動作
 document.getElementById('saveBtn').onclick = async () => {
   const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象の要素が見つかりません');
   const computed = window.getComputedStyle(target);
 
-  const { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
+  let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
   const fontFamily = fontSelect.value;
+
   // blur 値を抽出
   let blur = null;
   const match = textShadow.match(/(-?\d+)px$/);
   if (match) {
     blur = parseInt(match[1], 10);
+  }
+  // HEX に変換
+  color = rgbToHex(color);
+  backgroundColor = rgbToHex(backgroundColor);
+
+  // === スクロールUIの値を取得 ===
+  const scrollSettings = {
+    border: document.getElementById('scrollB').checked,
+    colorIn: document.getElementById('scrollC').checked,
+    shadow: Number(document.getElementById('scrollS').value),
+    both: document.getElementById('scrollBoth').checked,
+    right: document.getElementById('scrollRight').checked,
+    left: document.getElementById('scrollLeft').checked,
+    position: Number(document.getElementById('scrollX').value),
+    width: Number(document.getElementById('scrollW').value),
+    opacity: parseFloat(document.getElementById('scrollO').value),
+    speedScale: parseFloat(document.getElementById('scrollSpeedScale').value),
+    hideBall: document.getElementById('scrollHide').checked,
+  };
+
+  // 確認ダイアログを出す
+  const confirmMessage =
+    `☆ http://localhost:3000 に保存しますか？\n` +
+    `--- スタイル設定 ---\n` +
+    `BG: ${backgroundColor}\n` +
+    `FG: ${color}\n` +
+    `FontSize: ${fontSize}\n` +
+    `FontWeight: ${fontWeight}\n` +
+    `FontShadow: ${blur}px\n` +
+    `FontFamily: ${fontFamily}\n` +
+    `--- スライダー設定 ---\n` +
+    JSON.stringify(scrollSettings, null, 2);
+
+  if (!confirm(confirmMessage)) {
+    return; // 「いいえ」の場合は中断
   }
 
   try {
@@ -2006,14 +2054,15 @@ document.getElementById('saveBtn').onclick = async () => {
         backgroundColor, 
         fontSize, 
         fontWeight, 
-        textShadow: blur,   // ← blur値だけ保存
-        fontFamily 
+        textShadow: blur,
+        fontFamily,
+        scrollSettings
       })
     });
-    alert(`-以下をローカルサーバーに保存します-\n文字色: ${color}\n背景色: ${backgroundColor}\n文字サイズ: ${fontSize}\n文字太さ: ${fontWeight}\n文字影: ${blur}px\nフォント: ${fontFamily}`);
+    alert('保存しました！');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
       alert('保存に失敗しました: ' + e);
     }
@@ -2022,47 +2071,77 @@ document.getElementById('saveBtn').onclick = async () => {
 
 // 反映ボタンの動作
 document.getElementById('applyBtn').onclick = async () => {
-  target = document.getElementById('novelDisplay'); // 念のため再取得
+  const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象の要素が見つかりません');
 
   try {
     const res = await fetch('http://localhost:3000/get');
     const data = await res.json();
 
-    if (!data.color && !data.backgroundColor && !data.fontFamily && !data.fontWeight && !data.fontSize && !data.textShadow) {
+    if (!data.color && !data.backgroundColor && !data.fontFamily &&
+        !data.fontWeight && !data.fontSize && !data.textShadow &&
+        !data.scrollSettings) {
       return alert('保存されたスタイルはありません');
     }
     
-    // 色
-    if (data.color) applyStyle('color', data.color);
-    if (data.backgroundColor) applyStyle('background-color', data.backgroundColor);
-    // フォント
-    if(data.fontSize) target.style.fontSize = data.fontSize;
-    if(data.fontWeight) target.style.fontWeight = data.fontWeight;
+    // --- 文字スタイル反映 ---
+    if (data.color) {
+      applyStyle('color', data.color);
+      const fgHex = document.getElementById('fgHex');
+      if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+    }
+    if (data.backgroundColor) {
+      applyStyle('background-color', data.backgroundColor);
+      const bgHex = document.getElementById('bgHex');
+      if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+    }
+    if (data.fontSize) target.style.fontSize = data.fontSize;
+    if (data.fontWeight) target.style.fontWeight = data.fontWeight;
     if (data.textShadow !== null && data.textShadow !== undefined) {
       target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
-      target.dataset.textShadow = data.textShadow; // ← ここを追加
+      target.dataset.textShadow = data.textShadow;
     }
-    // フォントファミリーはセレクトを通して適用
     if (data.fontFamily && fontSelect) {
-      // セレクトボックスの値を変更 → イベントリスナーが実行されてフォント適用
       fontSelect.value = data.fontFamily;
       fontSelect.dispatchEvent(new Event('change'));
     }
+
+    // --- スクロールUIを反映 ---
+    if (data.scrollSettings) {
+      const s = data.scrollSettings;
+
+      document.getElementById('scrollB').checked = s.border;
+      document.getElementById('scrollC').checked = s.colorIn;
+      document.getElementById('scrollS').value = s.shadow;
+      document.getElementById('scrollBoth').checked = s.both;
+      document.getElementById('scrollRight').checked = s.right;
+      document.getElementById('scrollLeft').checked = s.left;
+      document.getElementById('scrollX').value = s.position;
+      document.getElementById('scrollW').value = s.width;
+      document.getElementById('scrollO').value = s.opacity;
+      document.getElementById('scrollSpeedScale').value = s.speedScale;
+      document.getElementById('scrollHide').checked = s.hideBall;
+
+      // 値をUIに反映するためイベントを強制発火
+      document.getElementById('scrollB').dispatchEvent(new Event('change'));
+      document.getElementById('scrollC').dispatchEvent(new Event('change'));
+      document.getElementById('scrollS').dispatchEvent(new Event('input'));
+      document.getElementById('scrollRight').dispatchEvent(new Event('change'));
+      document.getElementById('scrollLeft').dispatchEvent(new Event('change'));
+      document.getElementById('scrollBoth').dispatchEvent(new Event('change'));
+      document.getElementById('scrollX').dispatchEvent(new Event('input'));
+      document.getElementById('scrollW').dispatchEvent(new Event('input'));
+      document.getElementById('scrollO').dispatchEvent(new Event('input'));
+      document.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
+      document.getElementById('scrollHide').dispatchEvent(new Event('change'));
+    }
+
     updateControls();
 
-    alert(
-      '-以下を反映します-\n' +
-      '文字色: ' + (data.color || 'なし') + '\n' +
-      '背景色: ' + (data.backgroundColor || 'なし') + '\n' +
-      '文字サイズ: ' + (data.fontSize || 'なし') + '\n' +
-      '文字太さ: ' + (data.fontWeight || 'なし') + '\n' +
-      '文字影: ' + (data.textShadow || 'なし') + '\n' +
-      '文字フォント: ' + (data.fontFamily || 'なし')
-    );
+    alert('☆ 保存されているスタイルとスライダー設定を反映します。');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      alert('ローカルサーバーが起動していません。\nhttp://localhost:3000 を立ち上げてから再度試してください。');
+      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
       alert('取得に失敗しました: ' + e);
     }
