@@ -2010,7 +2010,6 @@ document.getElementById('saveBtn').onclick = async () => {
   if (match) {
     blur = parseInt(match[1], 10);
   }
-
   // HEX に変換
   color = rgbToHex(color);
   backgroundColor = rgbToHex(backgroundColor);
@@ -2030,6 +2029,23 @@ document.getElementById('saveBtn').onclick = async () => {
     hideBall: document.getElementById('scrollHide').checked,
   };
 
+  // 確認ダイアログを出す
+  const confirmMessage =
+    `☆ http://localhost:3000 に保存しますか？\n` +
+    `--- スタイル設定 ---\n` +
+    `BG: ${backgroundColor}\n` +
+    `FG: ${color}\n` +
+    `FontSize: ${fontSize}\n` +
+    `FontWeight: ${fontWeight}\n` +
+    `FontShadow: ${blur}px\n` +
+    `FontFamily: ${fontFamily}\n` +
+    `--- スライダー設定 ---\n` +
+    JSON.stringify(scrollSettings, null, 2);
+
+  if (!confirm(confirmMessage)) {
+    return; // 「いいえ」の場合は中断
+  }
+
   try {
     await fetch('http://localhost:3000/save', {
       method: 'POST',
@@ -2041,22 +2057,10 @@ document.getElementById('saveBtn').onclick = async () => {
         fontWeight, 
         textShadow: blur,
         fontFamily,
-        scrollSettings // ← ここでまとめて保存
+        scrollSettings
       })
     });
-
-    alert(
-      `☆ 以下をhttp://localhost:3000に保存します。\n` +
-      `--- スタイル設定 ---\n` +
-      `BG: ${backgroundColor}\n` +
-      `FG: ${color}\n` +
-      `FontSize: ${fontSize}\n` +
-      `FontWeight: ${fontWeight}\n` +
-      `FontShadow: ${blur}px\n` +
-      `FontFamily: ${fontFamily}\n` +
-      `--- スライダー設定 ---\n` +
-      JSON.stringify(scrollSettings, null, 2)
-    );
+    alert('保存しました！');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
