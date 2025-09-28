@@ -1401,9 +1401,9 @@ Promise.all([
         document.head.appendChild(el)
       }
       el.textContent = `
-  *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-    ${prop}: ${value};
-  }`
+      *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+        ${prop}: ${value};
+      }`
     };
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
