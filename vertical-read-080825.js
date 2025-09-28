@@ -2076,7 +2076,13 @@ document.getElementById('saveBtn').onclick = async () => {
         scrollSettings
       })
     });
-    alert('保存しました！');
+    // 保存成功後にAPPLYボタンに色を反映
+    const applyBtn = document.getElementById('applyBtn');
+    if (applyBtn) {
+      applyBtn.style.color = color;
+      applyBtn.style.backgroundColor = backgroundColor;
+    }
+    alert('☆ 保存しました！');
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
@@ -2160,7 +2166,7 @@ document.getElementById('applyBtn').onclick = async () => {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
-      alert('取得に失敗しました: ' + e);
+      alert('データの取得に失敗しました: ' + e);
     }
   }
 };
