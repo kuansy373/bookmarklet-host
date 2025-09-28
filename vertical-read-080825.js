@@ -1975,6 +1975,22 @@ Object.assign(toggleBtn.style, {
 });
 document.body.appendChild(toggleBtn);
 document.body.appendChild(straddleUI);
+// ボタンの色を先に取得
+  async function initApplyButtonStyle() {
+  try {
+    const res = await fetch('http://localhost:3000/get');
+    const data = await res.json();
+    const applyBtn = document.getElementById('applyBtn');
+    if (data.color) applyBtn.style.color = data.color;
+    if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
+  } catch(e) {
+    console.log('初期スタイルの取得に失敗', e);
+  }
+}
+
+// ページ読み込み時に呼ぶ
+initApplyButtonStyle();
+
 
 // ☆ UIを開く
 toggleBtn.onclick = () => {
