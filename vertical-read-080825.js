@@ -1950,6 +1950,20 @@ straddleUI.innerHTML = `
       <span class="label">⇒</span>
       <button id="applyBtn2">APPLY</button>
     </div>
+    <!-- 3セット目 -->
+    <div class="button-set">
+      <span class="label">3.</span>
+      <button id="saveBtn3">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn3">APPLY</button>
+    </div>
+    <!-- 4セット目 -->
+    <div class="button-set">
+      <span class="label">4.</span>
+      <button id="saveBtn4">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn4">APPLY</button>
+    </div>
   </div>
 `;
 // ヘッダーのスタイル
@@ -1970,13 +1984,12 @@ Object.assign(buttons.style, {
   gap: '10px',
   borderRadius: '2px',
 });
-  
+  //label
   document.querySelectorAll('.label').forEach(span => {
   span.style.all = 'initial',
   span.style.color = 'inherit';
   span.style.background = 'inherit';
   span.style.fontSize = '14px';
-  span.style.marginRight = '4px';
 });
 
 // ☆ ボタン
@@ -2002,27 +2015,27 @@ document.getElementById('saveBtn1').onclick = () => saveStyle('style1');
 document.getElementById('applyBtn1').onclick = () => applyStyleByName('style1');
 document.getElementById('saveBtn2').onclick = () => saveStyle('style2');
 document.getElementById('applyBtn2').onclick = () => applyStyleByName('style2');
+document.getElementById('saveBtn3').onclick = () => saveStyle('style3');
+document.getElementById('applyBtn3').onclick = () => applyStyleByName('style3');
+document.getElementById('saveBtn4').onclick = () => saveStyle('style4');
+document.getElementById('applyBtn4').onclick = () => applyStyleByName('style4');
   
 // APPLYボタンの色を先に取得
 async function initApplyButtonStyle() {
-  try {
-    const res = await fetch('http://localhost:3000/get/style1'); // style1 を取得
-    const data1 = await res.json();
-    const applyBtn1 = document.getElementById('applyBtn1');
-    if (applyBtn1 && data1) {
-      if (data1.color) applyBtn1.style.color = data1.color;
-      if (data1.backgroundColor) applyBtn1.style.backgroundColor = data1.backgroundColor;
-    }
+  const styles = ['style1', 'style2', 'style3', 'style4'];
 
-    const res2 = await fetch('http://localhost:3000/get/style2'); // style2 を取得
-    const data2 = await res2.json();
-    const applyBtn2 = document.getElementById('applyBtn2');
-    if (applyBtn2 && data2) {
-      if (data2.color) applyBtn2.style.color = data2.color;
-      if (data2.backgroundColor) applyBtn2.style.backgroundColor = data2.backgroundColor;
+  for (const styleName of styles) {
+    try {
+      const res = await fetch(`http://localhost:3000/get/${styleName}`);
+      const data = await res.json();
+      const applyBtn = document.getElementById(`applyBtn${styleName.slice(-1)}`);
+      if (applyBtn && data) {
+        if (data.color) applyBtn.style.color = data.color;
+        if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
+      }
+    } catch (e) {
+      console.log(`${styleName} の取得に失敗`, e);
     }
-  } catch(e) {
-    console.log('初期スタイルの取得に失敗', e);
   }
 }
 // ページ読み込み時に呼ぶ
@@ -2114,11 +2127,16 @@ async function saveStyle(name) {
       })
     });
     // 保存成功後にAPPLYボタンに色を反映
-    const applyBtn = document.getElementById(name === 'style1' ? 'applyBtn1' : 'applyBtn2');
-    if (applyBtn) {
-      applyBtn.style.color = color;
-      applyBtn.style.backgroundColor = backgroundColor;
-    }
+    const applyBtn = document.getElementById(
+    name === 'style1' ? 'applyBtn1' :
+    name === 'style2' ? 'applyBtn2' :
+    name === 'style3' ? 'applyBtn3' :
+    'applyBtn4'
+  );
+  if (applyBtn) {
+    applyBtn.style.color = color;
+    applyBtn.style.backgroundColor = backgroundColor;
+  }
     alert(`☆ ${name} を保存しました！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
@@ -2193,7 +2211,7 @@ async function applyStyleByName(name) {
 
     updateControls();
 
-    alert(`☆ ${name} を反映しました！`);
+    alert(`☆ ${name} を反映します！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
