@@ -2083,14 +2083,14 @@ async function saveStyle(name) {
 
   // 確認ダイアログを出す
   const confirmMessage =
-    `☆ http://localhost:3000 に保存しますか？\n` +
+    `☆ http://localhost:3000 に保存しますか？\n\n` +
     `--- スタイル設定 ---\n` +
     `BG: ${backgroundColor}\n` +
     `FG: ${color}\n` +
     `FontSize: ${fontSize}\n` +
     `FontWeight: ${fontWeight}\n` +
     `FontShadow: ${blur}px\n` +
-    `FontFamily: ${fontFamily}\n` +
+    `FontFamily: ${fontFamily}\n\n` +
     `--- スライダー設定 ---\n` +
     JSON.stringify(scrollSettings, null, 2);
 
