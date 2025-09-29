@@ -11,58 +11,43 @@ const DATA_FILE = 'onetap.json';
 
 // 保存
 app.post('/save', (req, res) => {
-  const {
-    color,
-    backgroundColor,
-    fontSize,
-    fontWeight,
-    textShadow,
-    fontFamily,
+  const { 
+    name, 
+    color, 
+    backgroundColor, 
+    fontSize, 
+    fontWeight, 
+    textShadow, 
+    fontFamily, 
     scrollSettings
   } = req.body;
+  if (!name) return res.status(400).send({ error: 'スタイル名が必要です' });
 
-  // 文字スタイルもスクロール設定も両方空ならエラー
-  if (
-    !color &&
-    !backgroundColor &&
-    !fontSize &&
-    !fontWeight &&
-    !textShadow &&
-    !fontFamily &&
-    !scrollSettings
-  ) {
-    return res.status(400).send({ error: '保存するスタイルがありません' });
+  let allData = {};
+  if (fs.existsSync(DATA_FILE)) {
+    allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   }
 
-  const data = {
-    color,
-    backgroundColor,
-    fontSize,
-    fontWeight,
-    textShadow,
-    fontFamily,
-    scrollSettings: scrollSettings || null
-  };
+  allData[name] = { 
+    color, 
+    backgroundColor, 
+    fontSize, 
+    fontWeight, 
+    textShadow, 
+    fontFamily, 
+    scrollSettings: scrollSettings || null };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(allData, null, 2));
 
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-  res.send({ status: 'ok', ...data });
+  res.send({ status: 'ok', name, ...allData[name] });
 });
 
 // 取得
-app.get('/get', (req, res) => {
-  if (!fs.existsSync(DATA_FILE)) {
-    return res.send({
-      color: null,
-      backgroundColor: null,
-      fontSize: null,
-      fontWeight: null,
-      textShadow: null,
-      fontFamily: null,
-      scrollSettings: null
-    });
-  }
-  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
-  res.send(data);
+app.get('/get/:name', (req, res) => {
+  const name = req.params.name;
+  if (!fs.existsSync(DATA_FILE)) return res.send(null);
+
+  const allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  res.send(allData[name] || null);
 });
 
 app.listen(PORT, () => {
