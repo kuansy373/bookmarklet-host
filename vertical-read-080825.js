@@ -1933,30 +1933,30 @@ straddleUI.innerHTML = `
     <!-- 1セット目 -->
     <div class="button-set">
       <span class="label">1.</span>
-      <button id="saveBtn1">SAVE</button>
+      <button id="saveBtn1" style="padding: 2px 4px;">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn1">APPLY</button>
+      <button id="applyBtn1" style="padding: 2px 4px;">APPLY</button>
     </div>
     <!-- 2セット目 -->
     <div class="button-set">
       <span class="label">2.</span>
-      <button id="saveBtn2">SAVE</button>
+      <button id="saveBtn2" style="padding: 2px 4px;">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn2">APPLY</button>
+      <button id="applyBtn2" style="padding: 2px 4px;">APPLY</button>
     </div>
     <!-- 3セット目 -->
     <div class="button-set">
       <span class="label">3.</span>
-      <button id="saveBtn3">SAVE</button>
+      <button id="saveBtn3" style="padding: 2px 4px;">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn3">APPLY</button>
+      <button id="applyBtn3" style="padding: 2px 4px;">APPLY</button>
     </div>
     <!-- 4セット目 -->
     <div class="button-set">
       <span class="label">4.</span>
-      <button id="saveBtn4">SAVE</button>
+      <button id="saveBtn4" style="padding: 2px 4px;">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn4">APPLY</button>
+      <button id="applyBtn4" style="padding: 2px 4px;">APPLY</button>
     </div>
   </div>
 `;
@@ -1977,6 +1977,7 @@ Object.assign(buttons.style, {
   marginLeft: '5px',
   gap: '10px',
   borderRadius: '2px',
+  fontSize: '14px',
 });
   //label
   document.querySelectorAll('.label').forEach(span => {
