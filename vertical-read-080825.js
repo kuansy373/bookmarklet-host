@@ -1936,8 +1936,16 @@ straddleUI.innerHTML = `
     <button id="closeUIBtn" style="border:none;">✕</button>
   </div>
   <div class="ui-buttons">
-    <button id="saveBtn">SAVE</button>
-    <button id="applyBtn">APPLY</button>
+    <!-- 1セット目 -->
+    <div class="button-set">
+      <button id="saveBtn1">SAVE</button>
+      <button id="applyBtn1">APPLY</button>
+    </div>
+    <!-- 2セット目 -->
+    <div class="button-set">
+      <button id="saveBtn2">SAVE</button>
+      <button id="applyBtn2">APPLY</button>
+    </div>
   </div>
 `;
 // ヘッダーのスタイル
@@ -1953,8 +1961,9 @@ Object.assign(header.style, {
 const buttons = straddleUI.querySelector('.ui-buttons');
 Object.assign(buttons.style, {
   display: 'flex',
+  flexDirection: 'column',
   marginLeft: '5px',
-  gap: '8px',
+  gap: '10px',
   borderRadius: '2px',
 });
 
@@ -1975,19 +1984,35 @@ Object.assign(toggleBtn.style, {
 });
 document.body.appendChild(toggleBtn);
 document.body.appendChild(straddleUI);
-// ボタンの色を先に取得
-  async function initApplyButtonStyle() {
+
+// --- ボタンごとのイベント登録 ---
+document.getElementById('saveBtn1').onclick = () => saveStyle('style1');
+document.getElementById('applyBtn1').onclick = () => applyStyleByName('style1');
+document.getElementById('saveBtn2').onclick = () => saveStyle('style2');
+document.getElementById('applyBtn2').onclick = () => applyStyleByName('style2');
+  
+// APPLYボタンの色を先に取得
+async function initApplyButtonStyle() {
   try {
-    const res = await fetch('http://localhost:3000/get');
-    const data = await res.json();
-    const applyBtn = document.getElementById('applyBtn');
-    if (data.color) applyBtn.style.color = data.color;
-    if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
+    const res = await fetch('http://localhost:3000/get/style1'); // style1 を取得
+    const data1 = await res.json();
+    const applyBtn1 = document.getElementById('applyBtn1');
+    if (applyBtn1 && data1) {
+      if (data1.color) applyBtn1.style.color = data1.color;
+      if (data1.backgroundColor) applyBtn1.style.backgroundColor = data1.backgroundColor;
+    }
+
+    const res2 = await fetch('http://localhost:3000/get/style2'); // style2 を取得
+    const data2 = await res2.json();
+    const applyBtn2 = document.getElementById('applyBtn2');
+    if (applyBtn2 && data2) {
+      if (data2.color) applyBtn2.style.color = data2.color;
+      if (data2.backgroundColor) applyBtn2.style.backgroundColor = data2.backgroundColor;
+    }
   } catch(e) {
     console.log('初期スタイルの取得に失敗', e);
   }
 }
-
 // ページ読み込み時に呼ぶ
 initApplyButtonStyle();
 
@@ -2011,12 +2036,11 @@ function rgbToHex(rgb) {
   return `#${r}${g}${b}`;
 }
 
-// 保存ボタンの動作
-document.getElementById('saveBtn').onclick = async () => {
+async function saveStyle(name) {
   const target = document.getElementById('novelDisplay');
-  if (!target) return alert('対象の要素が見つかりません');
+  if (!target) return alert('対象要素が見つかりません');
+  
   const computed = window.getComputedStyle(target);
-
   let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
   const fontFamily = fontSelect.value;
 
@@ -2067,6 +2091,7 @@ document.getElementById('saveBtn').onclick = async () => {
       method: 'POST',
       headers: { 'Content-Type':'application/json' },
       body: JSON.stringify({ 
+        name,
         color, 
         backgroundColor, 
         fontSize, 
@@ -2077,12 +2102,12 @@ document.getElementById('saveBtn').onclick = async () => {
       })
     });
     // 保存成功後にAPPLYボタンに色を反映
-    const applyBtn = document.getElementById('applyBtn');
+    const applyBtn = document.getElementById(name === 'style1' ? 'applyBtn1' : 'applyBtn2');
     if (applyBtn) {
       applyBtn.style.color = color;
       applyBtn.style.backgroundColor = backgroundColor;
     }
-    alert('☆ 保存しました！');
+    alert(`☆ ${name} を保存しました！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
@@ -2093,19 +2118,14 @@ document.getElementById('saveBtn').onclick = async () => {
 };
 
 // 反映ボタンの動作
-document.getElementById('applyBtn').onclick = async () => {
+async function applyStyleByName(name) {
   const target = document.getElementById('novelDisplay');
-  if (!target) return alert('対象の要素が見つかりません');
+  if (!target) return alert('対象要素が見つかりません');
 
   try {
-    const res = await fetch('http://localhost:3000/get');
+    const res = await fetch(`http://localhost:3000/get/${name}`);
     const data = await res.json();
-
-    if (!data.color && !data.backgroundColor && !data.fontFamily &&
-        !data.fontWeight && !data.fontSize && !data.textShadow &&
-        !data.scrollSettings) {
-      return alert('保存されたスタイルはありません');
-    }
+    if (!data) return alert(`${name} は保存されていません`);
     
     // --- 文字スタイル反映 ---
     if (data.color) {
@@ -2161,7 +2181,7 @@ document.getElementById('applyBtn').onclick = async () => {
 
     updateControls();
 
-    alert('☆ 保存されているスタイルとスライダー設定を反映します。');
+    alert(`☆ ${name} を反映しました！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
