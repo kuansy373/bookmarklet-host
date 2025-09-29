@@ -1986,7 +1986,6 @@ Object.assign(buttons.style, {
   span.style.background = 'inherit';
   span.style.fontSize = '14px';
 });
-
 // ☆ ボタン
 const toggleBtn = document.createElement('button');
 toggleBtn.innerHTML = `
