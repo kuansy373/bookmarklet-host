@@ -45,9 +45,19 @@ app.post('/save', (req, res) => {
 app.get('/get/:name', (req, res) => {
   const name = req.params.name;
   if (!fs.existsSync(DATA_FILE)) return res.send(null);
-
   const allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   res.send(allData[name] || null);
+});
+// 全件取得(ブラウザで確認する用)
+app.get('/getAll', (req, res) => {
+  if (!fs.existsSync(DATA_FILE)) return res.send({});
+  const allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  res.send(allData);
+});
+// 全件リセット(ブラウザでリセットする用)
+app.get('/reset', (req, res) => {
+  fs.writeFileSync(DATA_FILE, JSON.stringify({}, null, 2));
+  res.send({ status: 'ok', message: 'JSONをリセットしました' });
 });
 
 app.listen(PORT, () => {
