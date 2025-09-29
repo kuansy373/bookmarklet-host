@@ -1938,12 +1938,16 @@ straddleUI.innerHTML = `
   <div class="ui-buttons">
     <!-- 1セット目 -->
     <div class="button-set">
+      <span class="label">1.</span>
       <button id="saveBtn1">SAVE</button>
+      <span class="label">⇒</span>
       <button id="applyBtn1">APPLY</button>
     </div>
     <!-- 2セット目 -->
     <div class="button-set">
+      <span class="label">2.</span>
       <button id="saveBtn2">SAVE</button>
+      <span class="label">⇒</span>
       <button id="applyBtn2">APPLY</button>
     </div>
   </div>
@@ -1965,6 +1969,14 @@ Object.assign(buttons.style, {
   marginLeft: '5px',
   gap: '10px',
   borderRadius: '2px',
+});
+  
+  document.querySelectorAll('.label').forEach(span => {
+  span.style.all = 'initial',
+  span.style.color = 'inherit';
+  span.style.background = 'inherit';
+  span.style.fontSize = '14px';
+  span.style.marginRight = '4px';
 });
 
 // ☆ ボタン
