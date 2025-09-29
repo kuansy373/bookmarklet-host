@@ -398,7 +398,6 @@ if (e.target.checked) {
     scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
   }
 });
-
 // Color in
 document.getElementById('scrollC').addEventListener('change', e => {
   if (e.target.checked) {
@@ -412,7 +411,6 @@ document.getElementById('scrollC').addEventListener('change', e => {
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
-  
 // Shadow
 const scrollS = document.getElementById('scrollS');
 scrollS.addEventListener('input', () => {
@@ -525,8 +523,7 @@ opacityInput.addEventListener('blur', e => {
     e.target.value = '0';
     scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
   }
-});
-  
+}); 
 // スピードスケール  
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
@@ -552,7 +549,6 @@ speedScaleInput.addEventListener('input', e => {
   speedScale = num;
   syncScrollSpeed(scrollSliderRight.value);
 });
-
 // Slider ball 
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
