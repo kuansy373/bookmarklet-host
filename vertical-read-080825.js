@@ -33,15 +33,15 @@ document.querySelectorAll(
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
 });
-
+  // 改行の処理
   text = text.trim()
-    .replace(/(\r\n|\r)+/g, '\n')
-    .replace(/\n{2,}/g, '\n')
-    .replace(/\n/g, '　')
-    .replace(/　{2,}/g, '　');
+  .replace(/(\r\n|\r)+/g, '\n')
+  .replace(/\n+/g, m => '　'.repeat(m.length));
+  // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
+  // 横スクロールやズームが起きない固定レイアウトにする処理
   let vp = document.querySelector('meta[name="viewport"]');
   if (!vp) {
     vp = document.createElement('meta');
@@ -49,9 +49,19 @@ document.querySelectorAll(
     document.head.appendChild(vp)
   }
   vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  // ページトップ、ヘッダー、フッターなどを非表示に
   const hideStyle = document.createElement('style');
-  hideStyle.textContent = `#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer { display: none !important; }`;
+  hideStyle.textContent = `
+    #pageTop,
+    .c-navigater,
+    .js-navigater-totop,
+    .global-header,
+    .global-footer {
+      display: none !important;
+    }
+  `;
   document.head.appendChild(hideStyle);
+
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   
