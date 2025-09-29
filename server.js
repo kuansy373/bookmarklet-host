@@ -11,14 +11,14 @@ const DATA_FILE = 'onetap.json';
 
 // 保存
 app.post('/save', (req, res) => {
-  const { 
-    name, 
-    color, 
-    backgroundColor, 
-    fontSize, 
-    fontWeight, 
-    textShadow, 
-    fontFamily, 
+  const {
+    name,
+    color,
+    backgroundColor,
+    fontSize,
+    fontWeight,
+    textShadow,
+    fontFamily,
     scrollSettings
   } = req.body;
   if (!name) return res.status(400).send({ error: 'スタイル名が必要です' });
@@ -28,13 +28,13 @@ app.post('/save', (req, res) => {
     allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   }
 
-  allData[name] = { 
-    color, 
-    backgroundColor, 
-    fontSize, 
-    fontWeight, 
-    textShadow, 
-    fontFamily, 
+  allData[name] = {
+    color,
+    backgroundColor,
+    fontSize,
+    fontWeight,
+    textShadow,
+    fontFamily,
     scrollSettings: scrollSettings || null };
   fs.writeFileSync(DATA_FILE, JSON.stringify(allData, null, 2));
 
