@@ -54,11 +54,6 @@ app.get('/getAll', (req, res) => {
   const allData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   res.send(allData);
 });
-// 全件リセット(ブラウザでリセットする用)
-app.get('/reset', (req, res) => {
-  fs.writeFileSync(DATA_FILE, JSON.stringify({}, null, 2));
-  res.send({ status: 'ok', message: 'JSONをリセットしました' });
-});
 
 app.listen(PORT, () => {
   console.log(`Local server running at http://localhost:${PORT}`);
