@@ -2212,6 +2212,7 @@ async function applyStyleByName(name) {
     updateControls();
 
     alert(`☆ ${name} を反映します！`);
+    straddleUI.style.display = 'none';
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
