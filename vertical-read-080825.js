@@ -486,17 +486,15 @@ bothbox.addEventListener('change', e => {
     scrollSliderRight.style.display = 'none';
   } 
 });
-  // 位置、長さ、透明度
-  document.getElementById('scrollX').addEventListener('input', e => {
+// 位置、長さ、透明度
+document.getElementById('scrollX').addEventListener('input', e => {
   const val = parseInt(e.target.value, 10);
   scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
 });
-
 document.getElementById('scrollW').addEventListener('input', e => {
   const val = parseInt(e.target.value, 10);
   scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
 });
-
 document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
