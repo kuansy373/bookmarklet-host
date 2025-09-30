@@ -25,23 +25,25 @@ document.querySelectorAll(
 )
 .forEach(node => {
   text += node.innerHTML
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
+    .replace(/<br\s*\/?>/gi, '\n')  // <br> を \nに変換
+    .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');  // ruby、rb、rp、rt、em、span 以外のタグを削除
     });
   // カクヨムの傍点
   text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
 });
-
+  // 改行の処理 （ 改行を\nに統一、連続した複数の\nを1つの\nに圧縮、\nを全角スペースに置換、連続した全角スペースを1つに圧縮 ）
   text = text.trim()
     .replace(/(\r\n|\r)+/g, '\n')
     .replace(/\n{2,}/g, '\n')
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
+  // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
+  // 横スクロールやズームが起きない固定レイアウトにする処理
   let vp = document.querySelector('meta[name="viewport"]');
   if (!vp) {
     vp = document.createElement('meta');
@@ -49,9 +51,19 @@ document.querySelectorAll(
     document.head.appendChild(vp)
   }
   vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  // ページトップ、ヘッダー、フッターなどを非表示に
   const hideStyle = document.createElement('style');
-  hideStyle.textContent = `#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer { display: none !important; }`;
+  hideStyle.textContent = `
+    #pageTop,
+    .c-navigater,
+    .js-navigater-totop,
+    .global-header,
+    .global-footer {
+      display: none !important;
+    }
+  `;
   document.head.appendChild(hideStyle);
+
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   
@@ -397,7 +409,6 @@ if (e.target.checked) {
     scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
   }
 });
-
 // Color in
 document.getElementById('scrollC').addEventListener('change', e => {
   if (e.target.checked) {
@@ -411,7 +422,6 @@ document.getElementById('scrollC').addEventListener('change', e => {
     scrollSliderLeft.style.setProperty("background", "transparent", "important");
   }
 });
-  
 // Shadow
 const scrollS = document.getElementById('scrollS');
 scrollS.addEventListener('input', () => {
@@ -485,17 +495,15 @@ bothbox.addEventListener('change', e => {
     scrollSliderRight.style.display = 'none';
   } 
 });
-  // 位置、長さ、透明度
-  document.getElementById('scrollX').addEventListener('input', e => {
+// 位置、長さ、透明度
+document.getElementById('scrollX').addEventListener('input', e => {
   const val = parseInt(e.target.value, 10);
   scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
 });
-
 document.getElementById('scrollW').addEventListener('input', e => {
   const val = parseInt(e.target.value, 10);
   scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
 });
-
 document.getElementById('scrollO').addEventListener('input', e => {
   const val = parseFloat(e.target.value);
   scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
@@ -526,8 +534,7 @@ opacityInput.addEventListener('blur', e => {
     e.target.value = '0';
     scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
   }
-});
-  
+}); 
 // スピードスケール  
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
@@ -553,7 +560,6 @@ speedScaleInput.addEventListener('input', e => {
   speedScale = num;
   syncScrollSpeed(scrollSliderRight.value);
 });
-
 // Slider ball 
 document.getElementById('scrollHide').addEventListener('change', e => {
   if (e.target.checked) {
@@ -1935,8 +1941,34 @@ straddleUI.innerHTML = `
     <button id="closeUIBtn" style="border:none;">✕</button>
   </div>
   <div class="ui-buttons">
-    <button id="saveBtn">SAVE</button>
-    <button id="applyBtn">APPLY</button>
+    <!-- 1セット目 -->
+    <div class="button-set">
+      <span class="label">1.</span>
+      <button id="saveBtn1" style="padding: 2px 4px;">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn1" style="padding: 2px 4px;">APPLY</button>
+    </div>
+    <!-- 2セット目 -->
+    <div class="button-set">
+      <span class="label">2.</span>
+      <button id="saveBtn2" style="padding: 2px 4px;">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn2" style="padding: 2px 4px;">APPLY</button>
+    </div>
+    <!-- 3セット目 -->
+    <div class="button-set">
+      <span class="label">3.</span>
+      <button id="saveBtn3" style="padding: 2px 4px;">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn3" style="padding: 2px 4px;">APPLY</button>
+    </div>
+    <!-- 4セット目 -->
+    <div class="button-set">
+      <span class="label">4.</span>
+      <button id="saveBtn4" style="padding: 2px 4px;">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn4" style="padding: 2px 4px;">APPLY</button>
+    </div>
   </div>
 `;
 // ヘッダーのスタイル
@@ -1952,11 +1984,19 @@ Object.assign(header.style, {
 const buttons = straddleUI.querySelector('.ui-buttons');
 Object.assign(buttons.style, {
   display: 'flex',
+  flexDirection: 'column',
   marginLeft: '5px',
-  gap: '8px',
+  gap: '10px',
   borderRadius: '2px',
+  fontSize: '14px',
 });
-
+  //label
+  document.querySelectorAll('.label').forEach(span => {
+  span.style.all = 'initial',
+  span.style.color = 'inherit';
+  span.style.background = 'inherit';
+  span.style.fontSize = '14px';
+});
 // ☆ ボタン
 const toggleBtn = document.createElement('button');
 toggleBtn.innerHTML = `
@@ -1974,6 +2014,38 @@ Object.assign(toggleBtn.style, {
 });
 document.body.appendChild(toggleBtn);
 document.body.appendChild(straddleUI);
+
+// --- ボタンごとのイベント登録 ---
+document.getElementById('saveBtn1').onclick = () => saveStyle('style1');
+document.getElementById('applyBtn1').onclick = () => applyStyleByName('style1');
+document.getElementById('saveBtn2').onclick = () => saveStyle('style2');
+document.getElementById('applyBtn2').onclick = () => applyStyleByName('style2');
+document.getElementById('saveBtn3').onclick = () => saveStyle('style3');
+document.getElementById('applyBtn3').onclick = () => applyStyleByName('style3');
+document.getElementById('saveBtn4').onclick = () => saveStyle('style4');
+document.getElementById('applyBtn4').onclick = () => applyStyleByName('style4');
+  
+// APPLYボタンの色を先に取得
+async function initApplyButtonStyle() {
+  const styles = ['style1', 'style2', 'style3', 'style4'];
+
+  for (const styleName of styles) {
+    try {
+      const res = await fetch(`http://localhost:3000/get/${styleName}`);
+      const data = await res.json();
+      const applyBtn = document.getElementById(`applyBtn${styleName.slice(-1)}`);
+      if (applyBtn && data) {
+        if (data.color) applyBtn.style.color = data.color;
+        if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
+      }
+    } catch (e) {
+      console.log(`${styleName} の取得に失敗`, e);
+    }
+  }
+}
+// ページ読み込み時に呼ぶ
+initApplyButtonStyle();
+
 
 // ☆ UIを開く
 toggleBtn.onclick = () => {
@@ -1994,12 +2066,11 @@ function rgbToHex(rgb) {
   return `#${r}${g}${b}`;
 }
 
-// 保存ボタンの動作
-document.getElementById('saveBtn').onclick = async () => {
+async function saveStyle(name) {
   const target = document.getElementById('novelDisplay');
-  if (!target) return alert('対象の要素が見つかりません');
+  if (!target) return alert('対象要素が見つかりません');
+  
   const computed = window.getComputedStyle(target);
-
   let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
   const fontFamily = fontSelect.value;
 
@@ -2030,14 +2101,14 @@ document.getElementById('saveBtn').onclick = async () => {
 
   // 確認ダイアログを出す
   const confirmMessage =
-    `☆ http://localhost:3000 に保存しますか？\n` +
+    `☆ http://localhost:3000 に保存しますか？\n\n` +
     `--- スタイル設定 ---\n` +
     `BG: ${backgroundColor}\n` +
     `FG: ${color}\n` +
     `FontSize: ${fontSize}\n` +
     `FontWeight: ${fontWeight}\n` +
     `FontShadow: ${blur}px\n` +
-    `FontFamily: ${fontFamily}\n` +
+    `FontFamily: ${fontFamily}\n\n` +
     `--- スライダー設定 ---\n` +
     JSON.stringify(scrollSettings, null, 2);
 
@@ -2050,6 +2121,7 @@ document.getElementById('saveBtn').onclick = async () => {
       method: 'POST',
       headers: { 'Content-Type':'application/json' },
       body: JSON.stringify({ 
+        name,
         color, 
         backgroundColor, 
         fontSize, 
@@ -2059,7 +2131,18 @@ document.getElementById('saveBtn').onclick = async () => {
         scrollSettings
       })
     });
-    alert('保存しました！');
+    // 保存成功後にAPPLYボタンに色を反映
+    const applyBtn = document.getElementById(
+    name === 'style1' ? 'applyBtn1' :
+    name === 'style2' ? 'applyBtn2' :
+    name === 'style3' ? 'applyBtn3' :
+    'applyBtn4'
+  );
+  if (applyBtn) {
+    applyBtn.style.color = color;
+    applyBtn.style.backgroundColor = backgroundColor;
+  }
+    alert(`☆ ${name} を保存しました！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
@@ -2070,19 +2153,14 @@ document.getElementById('saveBtn').onclick = async () => {
 };
 
 // 反映ボタンの動作
-document.getElementById('applyBtn').onclick = async () => {
+async function applyStyleByName(name) {
   const target = document.getElementById('novelDisplay');
-  if (!target) return alert('対象の要素が見つかりません');
+  if (!target) return alert('対象要素が見つかりません');
 
   try {
-    const res = await fetch('http://localhost:3000/get');
+    const res = await fetch(`http://localhost:3000/get/${name}`);
     const data = await res.json();
-
-    if (!data.color && !data.backgroundColor && !data.fontFamily &&
-        !data.fontWeight && !data.fontSize && !data.textShadow &&
-        !data.scrollSettings) {
-      return alert('保存されたスタイルはありません');
-    }
+    if (!data) return alert(`${name} は保存されていません`);
     
     // --- 文字スタイル反映 ---
     if (data.color) {
@@ -2138,12 +2216,13 @@ document.getElementById('applyBtn').onclick = async () => {
 
     updateControls();
 
-    alert('☆ 保存されているスタイルとスライダー設定を反映します。');
+    alert(`☆ ${name} を反映します！`);
+    straddleUI.style.display = 'none';
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
-      alert('取得に失敗しました: ' + e);
+      alert('データの取得に失敗しました: ' + e);
     }
   }
 };
