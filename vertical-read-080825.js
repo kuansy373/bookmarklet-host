@@ -25,21 +25,20 @@ document.querySelectorAll(
 )
 .forEach(node => {
   text += node.innerHTML
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');
+    .replace(/<br\s*\/?>/gi, '\n')  // <br> を \nに変換
+    .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');  // ruby、rb、rp、rt、em、span 以外のタグを削除
     });
   // カクヨムの傍点
   text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
 });
-  // 改行の処理 （ \nに統一、matchで改行の個数を数える、改行が1個なら全角スペース1個、2個なら1個、3個なら2個、4個なら3個...に変換 ）
+  // 改行の処理 （ 改行を\nに統一、連続した複数の\nを1つの\nに圧縮、\nを全角スペースに置換、連続した全角スペースを1つに圧縮 ）
   text = text.trim()
-  .replace(/(\r\n|\r|\n)+/g, (match) => {
-    const count = match.split(/\r\n|\r|\n/).length;
-    const spaces = count <= 2 ? 1 : count - 1;
-    return '　'.repeat(spaces);
-  });
+    .replace(/(\r\n|\r)+/g, '\n')
+    .replace(/\n{2,}/g, '\n')
+    .replace(/\n/g, '　')
+    .replace(/　{2,}/g, '　');
   // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
