@@ -33,10 +33,13 @@ document.querySelectorAll(
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
 });
-  // 改行の処理
+  // 改行の処理 （ \nに統一、matchで改行の個数を数える、改行が1個なら全角スペース1個、2個なら1個、3個なら2個、4個なら3個...に変換 ）
   text = text.trim()
-  .replace(/(\r\n|\r)+/g, '\n')
-  .replace(/\n+/g, m => '　'.repeat(m.length));
+  .replace(/(\r\n|\r|\n)+/g, (match) => {
+    const count = match.split(/\r\n|\r|\n/).length;
+    const spaces = count <= 2 ? 1 : count - 1;
+    return '　'.repeat(spaces);
+  });
   // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
