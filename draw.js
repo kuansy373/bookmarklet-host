@@ -5,7 +5,7 @@ javascript:(function(){
   c.style.position='fixed';
   c.style.top='0';
   c.style.left='0';
-  c.style.zIndex='1000';
+  c.style.zIndex='1';
   c.style.cursor='crosshair';
   document.body.appendChild(c);
   var ctx=c.getContext('2d');
@@ -13,28 +13,6 @@ javascript:(function(){
   ctx.lineWidth=3;
   var drawing=false;
   var mode='pen'; // 'pen' or 'eraser'
-
-  // UIコンテナ作成
-  var container=document.createElement('div');
-  container.style.position='fixed';
-  container.style.top='10px';
-  container.style.left='10px';
-  container.style.zIndex='1001';
-  container.style.background='rgba(255,255,255,0.8)';
-  container.style.padding='5px';
-  container.style.border='1px solid #ccc';
-  container.style.borderRadius='5px';
-  
-  var penBtn=document.createElement('button');
-  penBtn.innerText='ペン';
-  var eraserBtn=document.createElement('button');
-  eraserBtn.innerText='消しゴム';
-  container.appendChild(penBtn);
-  container.appendChild(eraserBtn);
-  document.body.appendChild(container);
-
-  penBtn.onclick=function(){mode='pen'; ctx.globalCompositeOperation='source-over'; ctx.strokeStyle='black';};
-  eraserBtn.onclick=function(){mode='eraser'; ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='rgba(0,0,0,1)';};
 
   // マウスイベント
   c.addEventListener('mousedown',function(e){
@@ -65,4 +43,40 @@ javascript:(function(){
   }, {passive:false});
   c.addEventListener('touchend',function(e){drawing=false;});
   c.addEventListener('touchcancel',function(e){drawing=false;});
+
+  // UIコンテナ作成
+  var container = document.createElement('div');
+  container.innerHTML = `
+    <div style="font-weight:bold;padding-bottom:3px;">< Pen-Mode ></div>
+    <button id="penBtn">ペン</button>
+    <button id="eraserBtn">消しゴム</button>
+  `;
+  container.style.cssText = `
+    position: fixed;
+    display: block;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background: rgba(255,255,255,0.8);
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  `;
+  document.body.appendChild(container);
+  
+  // ボタン取得してクリックイベント
+  var penBtn = document.getElementById('penBtn');
+  var eraserBtn = document.getElementById('eraserBtn');
+  
+  penBtn.onclick = function() {
+    mode = 'pen';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = 'black';
+  };
+  
+  eraserBtn.onclick = function() {
+    mode = 'eraser';
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+  };
 })();
