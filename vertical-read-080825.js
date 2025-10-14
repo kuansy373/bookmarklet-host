@@ -363,19 +363,53 @@ Object.assign(scrollUI.style, {
 });
 scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
-  <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
-  <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
-  <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
-  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
-  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
-  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
-  <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
-  <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
-  <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
-  <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
-  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
+  <label class="sliderSettingLabel">
+    <input id="scrollB" class="settingCheckbox" type="checkbox">
+    <span class="labelText">Border</span>
+  </label>
+  <label class="sliderSettingLabel">
+    <input id="scrollC" class="settingCheckbox" type="checkbox">
+    <span class="labelText">Color in</span>
+  </label>
+  <label class="sliderSettingLabel">
+    Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px
+  </label>
+  <label class="sliderSettingLabel">
+    <input id="scrollBoth" class="settingCheckbox" type="checkbox">
+    <span class="labelText">Both sides</span>
+  </label>
+  <label class="sliderSettingLabel">
+    <input id="scrollRight" class="settingCheckbox" type="checkbox" checked>
+    <span class="labelText">Right side</span>
+  </label>
+  <label class="sliderSettingLabel">
+    <input id="scrollLeft" class="settingCheckbox" type="checkbox">
+    <span class="labelText">Left side</span>
+  </label>
+  <label class="sliderSettingLabel">
+    Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px
+  </label>
+  <label class="sliderSettingLabel">
+    Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px
+  </label>
+  <label class="sliderSettingLabel">
+    Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)
+  </label>
+  <label class="sliderSettingLabel">
+    Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)
+  </label>
+  <label class="sliderSettingLabel">
+    <input id="scrollHide" class="settingCheckbox" type="checkbox">
+    <span class="labelText">Slider ball</span>
+  </label>
 `;
 document.body.appendChild(scrollUI);
+document.querySelectorAll('.sliderSettingLabel').forEach(cb => {
+  Object.assign(cb.style, {
+    display: 'block',
+    marginBottom: '2px',
+  });
+});
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
   Object.assign(cb.style, {
     all: 'revert',
