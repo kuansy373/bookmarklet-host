@@ -1990,7 +1990,7 @@ Object.assign(buttons.style, {
   fontSize: '14px',
 });
   //label
-document.querySelectorAll('.label').forEach(span => {
+  document.querySelectorAll('.label').forEach(span => {
   span.style.all = 'initial',
   span.style.color = 'inherit';
   span.style.background = 'inherit';
