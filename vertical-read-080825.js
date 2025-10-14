@@ -262,7 +262,6 @@ document.querySelectorAll(
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
-    will-change: transform;
     transform: translateZ(0);
   `;
   document.body.appendChild(container);
@@ -1933,13 +1932,12 @@ Object.assign(straddleUI.style, {
   zIndex: '10002',
   fontFamily: 'sans-serif',
   display: 'none',
-  width: '160px',
 });
 
 straddleUI.innerHTML = `
   <div class="ui-header">
-    <span>Apply with One Tap</span>
-    <button id="closeUIBtn" style="border:none;">✕</button>
+    <span>Apply Style with One Tap</span>
+    <button id="closeUIBtn" style="border:none; padding-left:10px;">✕</button>
   </div>
   <div class="ui-buttons">
     <!-- 1セット目 -->
@@ -2066,7 +2064,7 @@ function rgbToHex(rgb) {
   let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
   return `#${r}${g}${b}`;
 }
-
+// SAVEボタン
 async function saveStyle(name) {
   const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象要素が見つかりません');
@@ -2099,8 +2097,7 @@ async function saveStyle(name) {
     speedScale: parseFloat(document.getElementById('scrollSpeedScale').value),
     hideBall: document.getElementById('scrollHide').checked,
   };
-
-  // 確認ダイアログを出す
+// --- ユーザーに確認 ---
   const confirmMessage =
     `☆ http://localhost:3000 に保存しますか？\n\n` +
     `--- スタイル設定 ---\n` +
@@ -2153,10 +2150,14 @@ async function saveStyle(name) {
   }
 };
 
-// 反映ボタンの動作
+// APPLYボタン
 async function applyStyleByName(name) {
   const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象要素が見つかりません');
+
+  // --- ユーザーに確認 ---
+  const proceed = confirm(`☆ ${name} を反映します！`);
+  if (!proceed) return;
 
   try {
     const res = await fetch(`http://localhost:3000/get/${name}`);
@@ -2167,12 +2168,12 @@ async function applyStyleByName(name) {
     if (data.color) {
       applyStyle('color', data.color);
       const fgHex = document.getElementById('fgHex');
-      if (fgHex) fgHex.value = data.color;  // ← 文字色を入力欄へ反映
+      if (fgHex) fgHex.value = data.color;
     }
     if (data.backgroundColor) {
       applyStyle('background-color', data.backgroundColor);
       const bgHex = document.getElementById('bgHex');
-      if (bgHex) bgHex.value = data.backgroundColor;  // ← 背景色を入力欄へ反映
+      if (bgHex) bgHex.value = data.backgroundColor;
     }
     if (data.fontSize) target.style.fontSize = data.fontSize;
     if (data.fontWeight) target.style.fontWeight = data.fontWeight;
@@ -2201,7 +2202,7 @@ async function applyStyleByName(name) {
       document.getElementById('scrollSpeedScale').value = s.speedScale;
       document.getElementById('scrollHide').checked = s.hideBall;
 
-      // 値をUIに反映するためイベントを強制発火
+      // イベント強制発火
       document.getElementById('scrollB').dispatchEvent(new Event('change'));
       document.getElementById('scrollC').dispatchEvent(new Event('change'));
       document.getElementById('scrollS').dispatchEvent(new Event('input'));
@@ -2216,8 +2217,6 @@ async function applyStyleByName(name) {
     }
 
     updateControls();
-
-    alert(`☆ ${name} を反映します！`);
     straddleUI.style.display = 'none';
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
@@ -2227,5 +2226,5 @@ async function applyStyleByName(name) {
     }
   }
 };
-  
+
 })()
