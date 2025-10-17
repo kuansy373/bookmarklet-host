@@ -203,20 +203,43 @@ javascript:(function () {
               });
               layer._filled = true;
             } else {
-              // 2回目タップ：国名ポップアップ表示
-              L.popup()
+              // 2回目タップ：国名ポップアップ表示＋色を消すボタン
+              var popupContent = `
+                <div style="font-size:12px;">
+                  <div style="font-weight:600;">${name}</div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px; color:#555;">
+                    <span>${region}</span>
+                    <button id="resetColorBtn" style="padding:0px 3px; margin-left:5px; font-size:12px;">↵</button>
+                  </div>
+                </div>
+              `;
+        
+              var popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(
-                  '<div style="font-weight:600;">' +
-                    name +
-                    '</div><div style="font-size:12px;color:#555;">' +
-                    region +
-                    '</div>'
-                )
+                .setContent(popupContent)
                 .openOn(map);
+        
+              // ボタンクリックで色を元に戻す
+              setTimeout(() => {
+                // Leaflet ポップアップの DOM は少し遅れて作られるため setTimeout
+                const btn = document.getElementById('resetColorBtn');
+                if (btn) {
+                  btn.addEventListener('click', () => {
+                    layer.setStyle({
+                      fillColor: '#f5f5f5', // 元の色
+                      fillOpacity: 1,
+                      color: '#888',
+                      weight: 1,
+                    });
+                    layer._filled = false;
+                    map.closePopup(); // ポップアップも閉じる
+                  });
+                }
+              }, 0);
             }
           });
         }
+
 
         // GeoJSON をマップに追加
         L.geoJSON(geojson, {
