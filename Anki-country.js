@@ -30,8 +30,6 @@ javascript:(function () {
     transform: 'translate(-50%, -50%)',
     width: '100%',
     height: '100%',
-    maxWidth: '1400px',
-    maxHeight: '900px',
     overflow: 'hidden',
     background: '#fff',
   });
