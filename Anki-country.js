@@ -78,22 +78,12 @@ javascript:(function () {
     var map = L.map(mapDiv, {
       zoomControl: true,
       attributionControl: false,
-      touchZoom: false,
+      zoomSnap: 0,
+      zoomAnimation: false,
+      inertia: false
     });
     map.setView([20, 0], 2);
     map.getContainer().style.background = '#ffffff';
-
-    // ズームレベルに応じて線の太さを調整
-    map.on('zoomend', function() {
-    var zoom = map.getZoom();
-    map.eachLayer(function(layer) {
-      if (layer.setStyle && layer.feature && layer.feature.geometry.type === 'Polygon') {
-        layer.setStyle({
-          weight: Math.max(0.5, zoom / 3) // 適宜調整
-        });
-      }
-    });
-  });
 
     var geoUrl = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
