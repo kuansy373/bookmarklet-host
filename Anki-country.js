@@ -78,6 +78,7 @@ javascript:(function () {
     var map = L.map(mapDiv, {
       zoomControl: true,
       attributionControl: false,
+      touchZoom: false,
     });
     map.setView([20, 0], 2);
     map.getContainer().style.background = '#ffffff';
