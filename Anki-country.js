@@ -74,6 +74,7 @@ javascript:(function () {
     var map = L.map(mapDiv, {
       zoomControl: false,
       attributionControl: false,
+      doubleClickZoom: false,
       zoomSnap: 0,
       zoomAnimation: false,
       inertia: false
@@ -183,43 +184,37 @@ javascript:(function () {
 
         // 各国イベント設定
         function onEachFeature(feature, layer) {
-          var filled = false; // 一度だけ塗る用
-
+          layer._filled = false; // 初期状態は塗られていない
+        
           layer.on('click touchstart', function (e) {
             var props = feature.properties || {};
-            var name =
-              props.name ||
-              props.NAME ||
-              props.ADMIN ||
-              props.ADMIN_EN ||
-              'Unknown';
-
-            // 地域を判定
+            var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
+        
             var region = getRegion(name);
             var fillColor = regionColors[region] || regionColors.Default;
-
-            // 初回クリック時に色を固定
-            if (!filled) {
+        
+            if (!layer._filled) {
+              // 1回目タップ：色を付けるだけ
               layer.setStyle({
                 fillColor: fillColor,
                 fillOpacity: 0.9,
                 color: '#333',
                 weight: 1.5,
               });
-              filled = true;
+              layer._filled = true;
+            } else {
+              // 2回目タップ：国名ポップアップ表示
+              L.popup()
+                .setLatLng(e.latlng)
+                .setContent(
+                  '<div style="font-weight:600;">' +
+                    name +
+                    '</div><div style="font-size:12px;color:#555;">' +
+                    region +
+                    '</div>'
+                )
+                .openOn(map);
             }
-
-            // 国名ポップアップ表示
-            L.popup()
-              .setLatLng(e.latlng)
-              .setContent(
-                '<div style="font-weight:600;">' +
-                  name +
-                  '</div><div style="font-size:12px;color:#555;">' +
-                  region +
-                  '</div>'
-              )
-              .openOn(map);
           });
         }
 
