@@ -35,30 +35,6 @@ javascript:(function () {
   });
   overlay.appendChild(container);
 
-  // 閉じるボタン
-  var closeBtn = document.createElement('button');
-  closeBtn.textContent = '×';
-  closeBtn.title = '閉じる';
-  Object.assign(closeBtn.style, {
-    position: 'absolute',
-    right: '8px',
-    top: '8px',
-    zIndex: 9999,
-    fontSize: '22px',
-    opacity: '0.06',
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-  });
-  container.appendChild(closeBtn);
-
-  closeBtn.addEventListener('click', function () {
-    document.head.removeChild(css);
-    document.body.removeChild(overlay);
-    var s = document.getElementById('bm-leaflet-script');
-    if (s) s.parentNode.removeChild(s);
-  });
-
   // マップ領域
   var mapDiv = document.createElement('div');
   mapDiv.id = 'bm-worldmap';
@@ -82,7 +58,12 @@ javascript:(function () {
     map.setView([20, 0], 2);
     map.getContainer().style.background = '#ffffff';
 
-    var geoUrl = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+    // データソースをまとめて定義
+    var geoUrls = {
+      world: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson', // 世界の国境
+      usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson' // アメリカ州
+    };
+
 
     // 地域別カラー設定
     var regionColors = {
@@ -105,7 +86,7 @@ javascript:(function () {
         Europe: [
           'united kingdom', 'england', 'scotland', 'wales', 'northern ireland', 'ireland',
           'france', 'germany', 'italy', 'spain', 'portugal', 'belgium', 'netherlands',
-          'luxembourg', 'switzerland', 'austria', 'poland', 'czech republic', 'slovakia',
+          'luxembourg', 'switzerland', 'austria', 'poland', 'czech republic', 'czechia', 'slovakia',
           'hungary', 'slovenia', 'croatia', 'bosnia and herzegovina', 'serbia', 'kosovo', 'macedonia',
           'albania', 'north macedonia', 'greece', 'bulgaria', 'romania', 'moldova', 'ukraine',
           'montenegro', 'belarus', 'russia', 'finland', 'sweden', 'norway', 'denmark', 'iceland', 'estonia',
@@ -166,91 +147,84 @@ javascript:(function () {
       return 'Default';
     }
 
-    // GeoJSON 読み込み
-    fetch(geoUrl)
-      .then(function (res) {
-        if (!res.ok) throw new Error('GeoJSON load failed');
-        return res.json();
-      })
-      .then(function (geojson) {
-        function style() {
-          return {
-            color: '#888',
-            weight: 1,
-            fillColor: '#f5f5f5',
-            fillOpacity: 1,
-          };
-        }
 
-        // 各国イベント設定
-        function onEachFeature(feature, layer) {
-          layer._filled = false; // 初期状態は塗られていない
-        
-          layer.on('click touchstart', function (e) {
-            var props = feature.properties || {};
-            var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
-        
-            var region = getRegion(name);
-            var fillColor = regionColors[region] || regionColors.Default;
-        
-            if (!layer._filled) {
-              // 1回目タップ：色を付けるだけ
-              layer.setStyle({
-                fillColor: fillColor,
-                fillOpacity: 0.9,
-                color: '#333',
-                weight: 1.5,
-              });
-              layer._filled = true;
-            } else {
-              // 2回目タップ：国名ポップアップ表示＋色を消すボタン
-              var popupContent = `
-                <div style="font-size:12px;">
-                  <div style="font-weight:600;">${name}</div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px; color:#555;">
-                    <span>${region}</span>
-                    <button id="resetColorBtn" style="padding:0px 3px; margin-left:5px; font-size:12px;">↵</button>
-                  </div>
-                </div>
-              `;
-        
-              var popup = L.popup()
-                .setLatLng(e.latlng)
-                .setContent(popupContent)
-                .openOn(map);
-        
-              // ボタンクリックで色を元に戻す
-              setTimeout(() => {
-                // Leaflet ポップアップの DOM は少し遅れて作られるため setTimeout
-                const btn = document.getElementById('resetColorBtn');
-                if (btn) {
-                  btn.addEventListener('click', () => {
-                    layer.setStyle({
-                      fillColor: '#f5f5f5', // 元の色
-                      fillOpacity: 1,
-                      color: '#888',
-                      weight: 1,
-                    });
-                    layer._filled = false;
-                    map.closePopup(); // ポップアップも閉じる
-                  });
-                }
-              }, 0);
-            }
+    
+    // レイヤーを格納するオブジェクト
+    var layers = {};
+    
+    // 各国イベント設定関数
+    function onEachFeature(feature, layer) {
+      layer._filled = false; // 初期状態は塗られていない
+    
+      layer.on('click touchstart', function (e) {
+        var props = feature.properties || {};
+        var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
+    
+        var region = getRegion(name);
+        var fillColor = regionColors[region] || regionColors.Default;
+    
+        if (!layer._filled) {
+          layer.setStyle({
+            fillColor: fillColor,
+            fillOpacity: 0.9,
+            color: '#333',
+            weight: 1.5,
           });
+          layer._filled = true;
+        } else {
+          var popupContent = `
+            <div style="font-size:12px;">
+              <div style="font-weight:600;">${name}</div>
+              <div style="display:flex; align-items:center; margin-top:2px; color:#555;">
+                <span>${region}</span>
+                <button id="resetColorBtn" style="padding:0px 3px; margin-left:5px; font-size:12px;">↵</button>
+              </div>
+            </div>
+          `;
+          var popup = L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+    
+          setTimeout(() => {
+            const btn = document.getElementById('resetColorBtn');
+            if (btn) {
+              btn.addEventListener('click', () => {
+                layer.setStyle({
+                  fillColor: '#f5f5f5',
+                  fillOpacity: 1,
+                  color: '#888',
+                  weight: 1,
+                });
+                layer._filled = false;
+                map.closePopup();
+              });
+            }
+          }, 0);
         }
-
-
-        // GeoJSON をマップに追加
-        L.geoJSON(geojson, {
-          style: style,
-          onEachFeature: onEachFeature,
-        }).addTo(map);
-      })
-      .catch(function (err) {
-        console.error(err);
-        alert('国境データの読み込みに失敗しました: ' + err.message);
       });
+    }
+    
+    // GeoJSON読み込み時に onEachFeature を渡す
+    function loadLayer(key, url, style) {
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          layers[key] = L.geoJSON(data, {
+            style: style,
+            onEachFeature: onEachFeature  // ← ここに追加
+          });
+          if (key === 'world') layers[key].addTo(map);
+        })
+        .catch(err => console.error('GeoJSON load failed for', key, err));
+    }
+    
+    // 読み込み実行
+    loadLayer('world', geoUrls.world, { color: '#666', weight: 1, fillColor: '#eaeaea', fillOpacity: 0.9 });
+    loadLayer('usaStates', geoUrls.usaStates, { color: '#333', weight: 1, fillColor: '#e4f1ff', fillOpacity: 0.8 });
+
+
+
 
     
     // --- 地域ボタンコントロール ---
