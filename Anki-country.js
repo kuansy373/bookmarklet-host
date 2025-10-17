@@ -231,6 +231,112 @@ javascript:(function () {
         console.error(err);
         alert('国境データの読み込みに失敗しました: ' + err.message);
       });
+
+    // --- 地域ボタンコントロール ---
+    var RegionControl = L.Control.extend({
+      options: { position: 'topleft' },
+    
+      onAdd: function(map) {
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    
+        // ボタン
+        var button = L.DomUtil.create('a', '', container);
+        button.innerHTML = '地域';
+        button.href = '#';
+        button.style.padding = '4px 8px';
+        button.style.background = '#fff';
+        button.style.cursor = 'pointer';
+        button.style.userSelect = 'none';
+        button.style.fontSize = '14px';
+
+        // クリックをマップに伝えない
+        L.DomEvent.disableClickPropagation(button);
+        L.DomEvent.disableScrollPropagation(button);
+        
+        // アコーディオンコンテナ
+        var accordion = L.DomUtil.create('div', '', container);
+        Object.assign(accordion.style, {
+          display: 'none',
+          marginTop: '2px',
+          background: '#fff',
+          maxHeight: '300px',
+          overflowY: 'auto',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          padding: '4px'
+        });
+    
+        // 各地域の項目を追加
+        Object.entries(regionColors).forEach(([region, color]) => {
+          if(region === 'Default') return; // Default は除外
+    
+          var item = document.createElement('div');
+          item.style.display = 'flex';
+          item.style.alignItems = 'center';
+          item.style.marginBottom = '4px';
+          item.style.cursor = 'pointer';
+    
+          var colorBox = document.createElement('span');
+          colorBox.style.display = 'inline-block';
+          colorBox.style.width = '16px';
+          colorBox.style.height = '16px';
+          colorBox.style.background = color;
+          colorBox.style.marginRight = '6px';
+          colorBox.style.border = '1px solid #333';
+    
+          var label = document.createElement('span');
+          label.textContent = region;
+    
+          item.appendChild(colorBox);
+          item.appendChild(label);
+          accordion.appendChild(item);
+    
+          // アイコンクリックで地域すべてを塗る
+          colorBox.addEventListener('click', function(e){
+            e.stopPropagation(); // 親クリックイベント防止
+    
+            map.eachLayer(function(layer){
+              if(layer.feature && layer.feature.properties){
+                var name = layer.feature.properties.name ||
+                           layer.feature.properties.ADMIN ||
+                           layer.feature.properties.ADMIN_EN ||
+                           'Unknown';
+                if(getRegion(name) === region){
+                  layer.setStyle({
+                    fillColor: color,
+                    fillOpacity: 0.9,
+                    color: '#333',
+                    weight: 1.5
+                  });
+                }
+              }
+            });
+          });
+        });
+    
+        // ボタン押下でアコーディオン開閉
+        button.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation(); // ← これを追加！
+          accordion.style.display = accordion.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // アコーディオン内部のクリックも伝播させない
+        accordion.addEventListener('click', function(e){
+          e.stopPropagation();
+        });
+    
+        // Leaflet のマップ上のクリックで閉じる
+        L.DomEvent.addListener(map.getContainer(), 'click', function(){
+          accordion.style.display = 'none';
+        });
+    
+        return container;
+      }
+    });
+    
+    // マップに追加
+    map.addControl(new RegionControl());
+
   };
 
   document.body.appendChild(script);
