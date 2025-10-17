@@ -28,13 +28,11 @@ javascript:(function () {
     left: '50%',
     top: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '95%',
-    height: '90%',
+    width: '100%',
+    height: '100%',
     maxWidth: '1400px',
     maxHeight: '900px',
-    borderRadius: '8px',
     overflow: 'hidden',
-    boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
     background: '#fff',
   });
   overlay.appendChild(container);
@@ -76,7 +74,7 @@ javascript:(function () {
 
   script.onload = function () {
     var map = L.map(mapDiv, {
-      zoomControl: true,
+      zoomControl: false,
       attributionControl: false,
       zoomSnap: 0,
       zoomAnimation: false,
