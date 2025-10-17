@@ -199,7 +199,7 @@ javascript:(function () {
             var region = getRegion(name);
             var fillColor = regionColors[region] || regionColors.Default;
 
-            // 🌈 初回クリック時に色を固定
+            // 初回クリック時に色を固定
             if (!filled) {
               layer.setStyle({
                 fillColor: fillColor,
@@ -235,13 +235,16 @@ javascript:(function () {
         alert('国境データの読み込みに失敗しました: ' + err.message);
       });
 
+    
     // --- 地域ボタンコントロール ---
     var RegionControl = L.Control.extend({
       options: { position: 'topleft' },
     
       onAdd: function(map) {
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    
+        container.style.width = 'auto';
+        container.style.height = 'auto';
+
         // ボタン
         var button = L.DomUtil.create('a', '', container);
         button.innerHTML = '地域';
@@ -260,17 +263,20 @@ javascript:(function () {
         var accordion = L.DomUtil.create('div', '', container);
         Object.assign(accordion.style, {
           display: 'none',
+          position: 'absolute',
+          top: '100%',
+          left: '0',
           marginTop: '2px',
           background: '#fff',
-          maxHeight: '300px',
-          overflowY: 'auto',
           boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-          padding: '4px'
+          padding: '4px',
+          width: 'auto',
+          whiteSpace: 'nowrap'
         });
+        
         // マップへのクリック伝播を防ぐ
         L.DomEvent.disableClickPropagation(accordion);
         L.DomEvent.disableScrollPropagation(accordion);
-
     
         // 各地域の項目を追加
         Object.entries(regionColors).forEach(([region, color]) => {
@@ -322,7 +328,7 @@ javascript:(function () {
         // ボタン押下でアコーディオン開閉
         button.addEventListener('click', function(e){
           e.preventDefault();
-          e.stopPropagation(); // ← これを追加！
+          e.stopPropagation();
           accordion.style.display = accordion.style.display === 'none' ? 'block' : 'none';
         });
         
