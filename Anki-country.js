@@ -124,7 +124,7 @@ javascript:(function () {
           'nicaragua', 'costa rica', 'panama', '', 'greenland', 'bermuda', 'bahamas',
           'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'trinidad and tobago',
           'barbados', 'saint lucia', 'grenada', 'saint vincent and the grenadines', 'antigua and barbuda',
-          'dominica', 'saint kitts and nevis'
+          'dominica', 'saint kitts and nevis', 'indiana'
         ],
         'South America': [
           'brazil', 'argentina', 'chile', 'uruguay', 'paraguay', 'bolivia', 'peru',
@@ -142,7 +142,6 @@ javascript:(function () {
       for (const { name: cname, region } of all) {
         if (name.includes(cname)) return region;
       }
-      
     
       return 'Default';
     }
