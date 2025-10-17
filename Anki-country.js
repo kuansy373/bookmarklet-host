@@ -64,7 +64,6 @@ javascript:(function () {
       usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson' // アメリカ州
     };
 
-
     // 地域別カラー設定
     var regionColors = {
       Europe: '#3ebbb6',
@@ -143,6 +142,7 @@ javascript:(function () {
       for (const { name: cname, region } of all) {
         if (name.includes(cname)) return region;
       }
+      
     
       return 'Default';
     }
@@ -212,16 +212,64 @@ javascript:(function () {
         .then(data => {
           layers[key] = L.geoJSON(data, {
             style: style,
-            onEachFeature: onEachFeature  // ← ここに追加
+            onEachFeature: onEachFeature
           });
-          if (key === 'world') layers[key].addTo(map);
+    
+          // 初期状態：worldだけを地図に追加
+          if (key === 'world') {
+            layers[key].addTo(map);
+            document.getElementById('layer_' + key).checked = true; // チェックボックス初期状態
+          }
         })
         .catch(err => console.error('GeoJSON load failed for', key, err));
     }
+
+    // 左上にレイヤー切り替え用のチェックボックスUIを作る
+    function createLayerControl() {
+      const control = L.control({ position: 'topleft' });
     
+      control.onAdd = function (map) {
+        const div = L.DomUtil.create('div', 'layer-control');
+        div.style.background = 'white';
+        div.style.padding = '5px 10px';
+        div.style.borderRadius = '5px';
+        div.style.boxShadow = '0 0 5px rgba(0,0,0,0.3)';
+        div.style.fontSize = '14px';
+    
+        div.innerHTML = `
+          <label><input type="checkbox" id="layer_world" checked> World</label><br>
+          <label><input type="checkbox" id="layer_usaStates"> USA States</label>
+        `;
+    
+        // Leaflet の map イベントが UI に干渉しないようにする
+        L.DomEvent.disableClickPropagation(div);
+    
+        return div;
+      };
+    
+      control.addTo(map);
+    
+      // チェックボックスのイベント
+      ['world', 'usaStates'].forEach(key => {
+        const cb = document.getElementById('layer_' + key);
+        cb.addEventListener('change', (e) => {
+          if (layers[key]) {
+            if (e.target.checked) {
+              layers[key].addTo(map);
+            } else {
+              map.removeLayer(layers[key]);
+            }
+          }
+        });
+      });
+    }
+    
+    // レイヤーを読み込んだ後に呼ぶ
+    createLayerControl();
+
     // 読み込み実行
     loadLayer('world', geoUrls.world, { color: '#666', weight: 1, fillColor: '#eaeaea', fillOpacity: 0.9 });
-    loadLayer('usaStates', geoUrls.usaStates, { color: '#333', weight: 1, fillColor: '#e4f1ff', fillOpacity: 0.8 });
+    loadLayer('usaStates', geoUrls.usaStates, { color: '#333', weight: 1, fillColor: '#eaeaea', fillOpacity: 0.8 });
 
 
 
