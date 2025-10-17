@@ -151,8 +151,13 @@ javascript:(function () {
         Antarctica: ['antarctica']
       };
     
-      for (const [region, countries] of Object.entries(regions)) {
-        if (countries.some(c => name.includes(c))) return region;
+      const all = Object.entries(regions)
+        .map(([region, list]) => list.map(c => ({ name: c, region })))
+        .flat()
+        .sort((a, b) => b.name.length - a.name.length);
+    
+      for (const { name: cname, region } of all) {
+        if (name.includes(cname)) return region;
       }
     
       return 'Default';
