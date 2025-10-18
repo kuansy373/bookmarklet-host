@@ -121,7 +121,7 @@ javascript:(function () {
         ],
         'North America': [
           'canada', 'united states', 'usa', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
-          'nicaragua', 'costa rica', 'panama', '', 'greenland', 'bermuda', 'bahamas',
+          'nicaragua', 'costa rica', 'panama', 'greenland', 'bermuda', 'bahamas',
           'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'trinidad and tobago',
           'barbados', 'saint lucia', 'grenada', 'saint vincent and the grenadines', 'antigua and barbuda',
           'dominica', 'saint kitts and nevis', 'indiana'
