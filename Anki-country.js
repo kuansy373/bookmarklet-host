@@ -77,16 +77,13 @@ javascript:(function () {
       Default: '#000000',
     };
 
-    // 国名から地域を判定
-    function getRegion(name) {
-      name = name.trim().toLowerCase();
     
-      const regions = {
+      var countryRegions = {
         Europe: [
           'united kingdom', 'england', 'scotland', 'wales', 'northern ireland', 'ireland',
           'france', 'germany', 'italy', 'spain', 'portugal', 'belgium', 'netherlands',
           'luxembourg', 'switzerland', 'austria', 'poland', 'czech republic', 'czechia', 'slovakia',
-          'hungary', 'slovenia', 'croatia', 'bosnia and herzegovina', 'serbia', 'kosovo', 'macedonia',
+          'hungary', 'slovenia', 'croatia', 'bosnia and herzegovina', 'republic of serbia', 'kosovo', 'macedonia',
           'albania', 'north macedonia', 'greece', 'bulgaria', 'romania', 'moldova', 'ukraine',
           'montenegro', 'belarus', 'russia', 'finland', 'sweden', 'norway', 'denmark', 'iceland', 'estonia',
           'latvia', 'lithuania', 'malta', 'andorra', 'monaco', 'liechtenstein', 'san marino',
@@ -94,19 +91,19 @@ javascript:(function () {
         ],
         Africa: [
           'egypt', 'morocco', 'western sahara', 'algeria', 'tunisia', 'libya', 'sudan', 'south sudan', 'ethiopia',
-          'eritrea', 'djibouti', 'somalia', 'kenya', 'uganda', 'tanzania', 'rwanda', 'burundi',
+          'eritrea', 'djibouti', 'somalia', 'somaliland', 'kenya', 'uganda', 'united republic of tanzania', 'rwanda', 'burundi',
           'democratic republic of the congo', 'republic of the congo', 'gabon', 'angola', 'zambia', 'malawi',
           'mozambique', 'zimbabwe', 'botswana', 'namibia', 'south africa', 'lesotho', 'swaziland', 'eswatini',
           'ghana', 'nigeria', 'cameroon', 'ivory coast', 'senegal', 'gambia', 'mali', 'burkina faso',
           'niger', 'chad', 'central african republic', 'togo', 'benin', 'sierra leone',
-          'liberia', 'guinea', 'guinea-bissau', 'the gambia', 'mauritania', 'cape verde',
-          'seychelles', 'comoros', 'mauritius', 'madagascar'
+          'liberia', 'guinea', 'guinea-bissau', 'equatorial guinea', 'the gambia', 'mauritania', 'cape verde',
+          'seychelles', 'comoros', 'mauritius', 'madagascar', 'bir tawil',
         ],
         'Middle East': [
           'kazakhstan', 'uzbekistan', 'tajikistan', 'kyrgyzstan', 'turkmenistan', 'afghanistan',
           'iran', 'iraq', 'israel', 'West Bank', 'palestine', 'jordan', 'lebanon', 'syria',
           'saudi arabia','yemen', 'oman', 'united arab emirates', 'qatar', 'bahrain', 'kuwait',
-          'turkey', 'cyprus', 'azerbaijan', 'armenia', 'georgia'
+          'turkey', 'cyprus', 'northern cyprus', 'azerbaijan', 'armenia', 'georgia'
         ],
         Asia: [
           'japan', 'china', 'taiwan', 'hong kong', 'macau', 'mongolia', 'north korea', 'south korea',
@@ -120,11 +117,11 @@ javascript:(function () {
           'nauru', 'new caledonia'
         ],
         'North America': [
-          'canada', 'united states', 'usa', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
+          'canada', 'united states of america', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
           'nicaragua', 'costa rica', 'panama', 'greenland', 'bermuda', 'bahamas',
           'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'trinidad and tobago',
           'barbados', 'saint lucia', 'grenada', 'saint vincent and the grenadines', 'antigua and barbuda',
-          'dominica', 'saint kitts and nevis', 'indiana'
+          'dominica', 'saint kitts and nevis'
         ],
         'South America': [
           'brazil', 'argentina', 'chile', 'uruguay', 'paraguay', 'bolivia', 'peru',
@@ -133,18 +130,38 @@ javascript:(function () {
         ],
         Antarctica: ['antarctica', 'french southern and antarctic lands']
       };
+
+      // アメリカ州リスト（国ではなく州単位）
+      var usStates = [
+        'alabama','alaska','arizona','arkansas','california','colorado','connecticut','delaware',
+        'florida','georgia','hawaii','idaho','illinois','indiana','iowa','kansas','kentucky','louisiana',
+        'maine','maryland','massachusetts','michigan','minnesota','mississippi','missouri','montana',
+        'nebraska','nevada','new hampshire','new jersey','new mexico','new york','north carolina',
+        'north dakota','ohio','oklahoma','oregon','pennsylvania','rhode island','south carolina',
+        'south dakota','tennessee','texas','utah','vermont','virginia','washington','west virginia',
+        'wisconsin','wyoming'
+      ];
     
-      const all = Object.entries(regions)
-        .map(([region, list]) => list.map(c => ({ name: c, region })))
-        .flat()
-        .sort((a, b) => b.name.length - a.name.length);
-    
-      for (const { name: cname, region } of all) {
-        if (name.includes(cname)) return region;
+      // 名前を小文字化して空白をトリム
+      function normalize(name) {
+        return name.trim().toLowerCase();
       }
-    
-      return 'Default';
-    }
+      
+      // 地域判定関数
+      function getRegion(name) {
+        const n = normalize(name);
+      
+        // 1. 国名で判定
+        for (const [region, list] of Object.entries(countryRegions)) {
+          if (list.some(c => normalize(c) === n)) return region;
+        }
+      
+        // 2. アメリカ州名で判定（州のみ）
+        if (usStates.includes(n)) return 'North America';
+      
+        // 3. それ以外はデフォルト
+        return 'Default';
+      }
 
 
     
