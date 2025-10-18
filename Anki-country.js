@@ -60,8 +60,8 @@ javascript:(function () {
 
     // データソースをまとめて定義
     var geoUrls = {
-      world: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson', // 世界の国境
-      usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson' // アメリカ州
+      world: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+      usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson'
     };
 
     // 地域別カラー設定
@@ -77,10 +77,9 @@ javascript:(function () {
       Default: '#000000',
     };
 
-    
-      var countryRegions = {
-        Europe: [
-          'united kingdom', 'england', 'scotland', 'wales', 'northern ireland', 'ireland',
+    var countryRegions = {
+      Europe: [
+        'united kingdom', 'england', 'scotland', 'wales', 'northern ireland', 'ireland',
           'france', 'germany', 'italy', 'spain', 'portugal', 'belgium', 'netherlands',
           'luxembourg', 'switzerland', 'austria', 'poland', 'czech republic', 'czechia', 'slovakia',
           'hungary', 'slovenia', 'croatia', 'bosnia and herzegovina', 'republic of serbia', 'kosovo', 'macedonia',
@@ -88,9 +87,9 @@ javascript:(function () {
           'montenegro', 'belarus', 'russia', 'finland', 'sweden', 'norway', 'denmark', 'iceland', 'estonia',
           'latvia', 'lithuania', 'malta', 'andorra', 'monaco', 'liechtenstein', 'san marino',
           'vatican city'
-        ],
-        Africa: [
-          'egypt', 'morocco', 'western sahara', 'algeria', 'tunisia', 'libya', 'sudan', 'south sudan', 'ethiopia',
+      ],
+      Africa: [
+        'egypt', 'morocco', 'western sahara', 'algeria', 'tunisia', 'libya', 'sudan', 'south sudan', 'ethiopia',
           'eritrea', 'djibouti', 'somalia', 'somaliland', 'kenya', 'uganda', 'united republic of tanzania', 'rwanda', 'burundi',
           'democratic republic of the congo', 'republic of the congo', 'gabon', 'angola', 'zambia', 'malawi',
           'mozambique', 'zimbabwe', 'botswana', 'namibia', 'south africa', 'lesotho', 'swaziland', 'eswatini',
@@ -98,85 +97,98 @@ javascript:(function () {
           'niger', 'chad', 'central african republic', 'togo', 'benin', 'sierra leone',
           'liberia', 'guinea', 'guinea-bissau', 'equatorial guinea', 'the gambia', 'mauritania', 'cape verde',
           'seychelles', 'comoros', 'mauritius', 'madagascar', 'bir tawil',
-        ],
-        'Middle East': [
-          'kazakhstan', 'uzbekistan', 'tajikistan', 'kyrgyzstan', 'turkmenistan', 'afghanistan',
+      ],
+      'Middle East': [
+        'GEO','kazakhstan', 'uzbekistan', 'tajikistan', 'kyrgyzstan', 'turkmenistan', 'afghanistan',
           'iran', 'iraq', 'israel', 'West Bank', 'palestine', 'jordan', 'lebanon', 'syria',
           'saudi arabia','yemen', 'oman', 'united arab emirates', 'qatar', 'bahrain', 'kuwait',
-          'turkey', 'cyprus', 'northern cyprus', 'azerbaijan', 'armenia', 'georgia'
-        ],
-        Asia: [
-          'japan', 'china', 'taiwan', 'hong kong', 'macau', 'mongolia', 'north korea', 'south korea',
+          'turkey', 'cyprus', 'northern cyprus', 'azerbaijan', 'armenia'
+      ],
+      Asia: [
+        'japan', 'china', 'taiwan', 'hong kong', 'macau', 'mongolia', 'north korea', 'south korea',
           'vietnam', 'thailand', 'myanmar', 'laos', 'cambodia', 'malaysia', 'singapore',
           'indonesia', 'philippines', 'brunei', 'east timor', 'india', 'pakistan', 'bangladesh',
           'nepal', 'bhutan', 'sri lanka', 'maldives'
-        ],
-        Oceania: [
-          'australia', 'new zealand', 'papua new guinea', 'fiji', 'solomon islands', 'vanuatu',
+      ],
+      Oceania: [
+        'australia', 'new zealand', 'papua new guinea', 'fiji', 'solomon islands', 'vanuatu',
           'samoa', 'tonga', 'tuvalu', 'kiribati', 'micronesia', 'palau', 'marshall islands',
           'nauru', 'new caledonia'
-        ],
-        'North America': [
-          'canada', 'united states of america', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
+      ],
+      'North America': [
+        'canada', 'united states of america', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
           'nicaragua', 'costa rica', 'panama', 'greenland', 'bermuda', 'bahamas',
           'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'trinidad and tobago',
           'barbados', 'saint lucia', 'grenada', 'saint vincent and the grenadines', 'antigua and barbuda',
           'dominica', 'saint kitts and nevis'
-        ],
-        'South America': [
-          'brazil', 'argentina', 'chile', 'uruguay', 'paraguay', 'bolivia', 'peru',
+      ],
+      'South America': [
+        'brazil', 'argentina', 'chile', 'uruguay', 'paraguay', 'bolivia', 'peru',
           'ecuador', 'colombia', 'venezuela', 'guyana', 'suriname', 'french guiana',
           'falkland islands'
-        ],
-        Antarctica: ['antarctica', 'french southern and antarctic lands']
-      };
+      ],
+      Antarctica: [
+        'antarctica', 'french southern and antarctic lands'
+      ]
+    };
 
-      // アメリカ州リスト（国ではなく州単位）
-      var usStates = [
-        'alabama','alaska','arizona','arkansas','california','colorado','connecticut','delaware',
-        'florida','georgia','hawaii','idaho','illinois','indiana','iowa','kansas','kentucky','louisiana',
+    // アメリカ州リスト（ISO3166コードとstate_codeで判定）
+    var usStates = [
+        'GA','alabama','alaska','arizona','arkansas','california','colorado','connecticut','delaware',
+        'florida', 'hawaii','idaho','illinois','indiana','iowa','kansas','kentucky','louisiana',
         'maine','maryland','massachusetts','michigan','minnesota','mississippi','missouri','montana',
         'nebraska','nevada','new hampshire','new jersey','new mexico','new york','north carolina',
         'north dakota','ohio','oklahoma','oregon','pennsylvania','rhode island','south carolina',
         'south dakota','tennessee','texas','utah','vermont','virginia','washington','west virginia',
         'wisconsin','wyoming'
-      ];
+    ];
+  
+    // 名前を小文字化して空白をトリム
+    function normalize(name) {
+      return name.trim().toLowerCase();
+    }
     
-      // 名前を小文字化して空白をトリム
-      function normalize(name) {
-        return name.trim().toLowerCase();
+    // 地域判定関数（ISO3166コードとstate_codeを優先）
+    function getRegion(properties) {
+      // 1. アメリカ州の判定（state_codeを優先）
+      if (properties.state_code && usStates.includes(properties.state_code)) {
+        return 'North America';
       }
-      
-      // 地域判定関数
-      function getRegion(name) {
-        const n = normalize(name);
-      
-        // 1. 国名で判定
+      if (properties.id && properties.id.startsWith('USA-')) {
+        return 'North America';
+      }
+
+      // 2. 国のISO3166コードで判定
+      var isoCode = properties['ISO3166-1-Alpha-3'] || properties['ISO3166-1-Alpha-2'];
+      if (isoCode) {
         for (const [region, list] of Object.entries(countryRegions)) {
-          if (list.some(c => normalize(c) === n)) return region;
+          if (list.includes(isoCode)) return region;
         }
-      
-        // 2. アメリカ州名で判定（州のみ）
-        if (usStates.includes(n)) return 'North America';
-      
-        // 3. それ以外はデフォルト
-        return 'Default';
       }
 
+      // 3. 国名で判定（フォールバック）
+      var name = properties.name || properties.NAME || properties.ADMIN || properties.ADMIN_EN || '';
+      var n = normalize(name);
+      for (const [region, list] of Object.entries(countryRegions)) {
+        if (list.some(c => normalize(c) === n)) return region;
+      }
 
-    
+      // 4. それ以外はデフォルト
+      return 'Default';
+    }
+
     // レイヤーを格納するオブジェクト
     var layers = {};
     
     // 各国イベント設定関数
     function onEachFeature(feature, layer) {
-      layer._filled = false; // 初期状態は塗られていない
+      layer._filled = false;
     
       layer.on('click touchstart', function (e) {
         var props = feature.properties || {};
         var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
     
-        var region = getRegion(name);
+        var region = getRegion(props);
         var fillColor = regionColors[region] || regionColors.Default;
     
         if (!layer._filled) {
@@ -207,7 +219,7 @@ javascript:(function () {
             if (btn) {
               btn.addEventListener('click', () => {
                 layer.setStyle({
-                  fillColor: '#f5f5f5',
+                  fillColor: '#eaeaea',
                   fillOpacity: 1,
                   color: '#888',
                   weight: 1,
@@ -231,10 +243,9 @@ javascript:(function () {
             onEachFeature: onEachFeature
           });
     
-          // 初期状態：worldだけを地図に追加
           if (key === 'world') {
             layers[key].addTo(map);
-            document.getElementById('layer_' + key).checked = true; // チェックボックス初期状態
+            document.getElementById('layer_' + key).checked = true;
           }
         })
         .catch(err => console.error('GeoJSON load failed for', key, err));
@@ -257,7 +268,6 @@ javascript:(function () {
           <label><input type="checkbox" id="layer_usaStates"> USA States</label>
         `;
     
-        // Leaflet の map イベントが UI に干渉しないようにする
         L.DomEvent.disableClickPropagation(div);
     
         return div;
@@ -265,7 +275,6 @@ javascript:(function () {
     
       control.addTo(map);
     
-      // チェックボックスのイベント
       ['world', 'usaStates'].forEach(key => {
         const cb = document.getElementById('layer_' + key);
         cb.addEventListener('change', (e) => {
@@ -280,17 +289,11 @@ javascript:(function () {
       });
     }
     
-    // レイヤーを読み込んだ後に呼ぶ
     createLayerControl();
 
-    // 読み込み実行
     loadLayer('world', geoUrls.world, { color: '#666', weight: 1, fillColor: '#eaeaea', fillOpacity: 0.9 });
     loadLayer('usaStates', geoUrls.usaStates, { color: '#333', weight: 1, fillColor: '#eaeaea', fillOpacity: 0.8 });
 
-
-
-
-    
     // --- 地域ボタンコントロール ---
     var RegionControl = L.Control.extend({
       options: { position: 'topleft' },
@@ -300,7 +303,6 @@ javascript:(function () {
         container.style.width = 'auto';
         container.style.height = 'auto';
 
-        // ボタン
         var button = L.DomUtil.create('a', '', container);
         button.innerHTML = '地域';
         button.href = '#';
@@ -310,11 +312,9 @@ javascript:(function () {
         button.style.userSelect = 'none';
         button.style.fontSize = '14px';
 
-        // マップへのクリック伝播を防ぐ
         L.DomEvent.disableClickPropagation(button);
         L.DomEvent.disableScrollPropagation(button);
         
-        // アコーディオンコンテナ
         var accordion = L.DomUtil.create('div', '', container);
         Object.assign(accordion.style, {
           display: 'none',
@@ -329,13 +329,10 @@ javascript:(function () {
           whiteSpace: 'nowrap'
         });
         
-        // マップへのクリック伝播を防ぐ
         L.DomEvent.disableClickPropagation(accordion);
         L.DomEvent.disableScrollPropagation(accordion);
     
-        // 各地域の項目を追加
         Object.entries(regionColors).forEach(([region, color]) => {
-    
           var item = document.createElement('div');
           item.style.display = 'flex';
           item.style.alignItems = 'center';
@@ -357,42 +354,35 @@ javascript:(function () {
           item.appendChild(label);
           accordion.appendChild(item);
     
-          // アイコンクリックで地域すべてを塗る
           colorBox.addEventListener('click', function(e){
-            e.stopPropagation(); // 親クリックイベント防止
+            e.stopPropagation();
     
             map.eachLayer(function(layer){
               if(layer.feature && layer.feature.properties){
-                var name = layer.feature.properties.name ||
-                           layer.feature.properties.ADMIN ||
-                           layer.feature.properties.ADMIN_EN ||
-                           'Unknown';
-                if(getRegion(name) === region){
+                if(getRegion(layer.feature.properties) === region){
                   layer.setStyle({
                     fillColor: color,
                     fillOpacity: 0.9,
                     color: '#333',
                     weight: 1.5
                   });
+                  layer._filled = true;
                 }
               }
             });
           });
         });
     
-        // ボタン押下でアコーディオン開閉
         button.addEventListener('click', function(e){
           e.preventDefault();
           e.stopPropagation();
           accordion.style.display = accordion.style.display === 'none' ? 'block' : 'none';
         });
         
-        // アコーディオン内部のクリックも伝播させない
         accordion.addEventListener('click', function(e){
           e.stopPropagation();
         });
     
-        // Leaflet のマップ上のクリックで閉じる
         L.DomEvent.addListener(map.getContainer(), 'click', function(){
           accordion.style.display = 'none';
         });
@@ -401,7 +391,6 @@ javascript:(function () {
       }
     });
     
-    // マップに追加
     map.addControl(new RegionControl());
 
   };
