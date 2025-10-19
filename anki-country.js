@@ -55,10 +55,11 @@ javascript:(function () {
         layers: [],
         glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
       },
-      center: [0, 20],
-      zoom: 1.5,
-      attributionControl: false
+      center: [0, 20], // マップの初期中心座標
+      zoom: 1,         // 初期ズームレベル
+      attributionControl: false // 右下に著作権🄫表示
     });
+    map.doubleClickZoom.disable();　// ダブルクリックでズームを無効
 
     // データソース
     var geoUrls = {
