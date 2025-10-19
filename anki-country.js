@@ -260,7 +260,7 @@ javascript:(function () {
           map.addSource(key, {
             type: 'geojson',
             data: data,
-            promoteId: 'ISO3166-1-Alpha-3'
+            promoteId: key === 'usaStates' ? 'state_code' : 'ISO3166-1-Alpha-3'
           });
 
           map.addLayer({
@@ -307,7 +307,8 @@ javascript:(function () {
         map.on('click', key + '-fill', function(e) {
           var feature = e.features[0];
           var props = feature.properties;
-          var id = feature.id || props.id || props.name || props.NAME;
+          var featureId = key === 'usaStates' ? props.state_code : (props['ISO3166-1-Alpha-3'] || feature.id);
+          var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
           var fillColor = regionColors[region] || regionColors.Default;
@@ -316,7 +317,7 @@ javascript:(function () {
             filledFeatures[id] = { color: fillColor, layerId: key };
             
             map.setFeatureState(
-              { source: key, id: feature.id },
+              { source: key, id: featureId },
               { fillColor: fillColor }
             );
           } else {
@@ -342,7 +343,7 @@ javascript:(function () {
                   delete filledFeatures[id];
                   
                   map.removeFeatureState(
-                    { source: key, id: feature.id }
+                    { source: key, id: featureId }
                   );
                   
                   popup.remove();
@@ -459,7 +460,9 @@ javascript:(function () {
             var data = source._data;
             data.features.forEach(f => {
               if (getRegion(f.properties) === region) {
-                var fId = f.properties['ISO3166-1-Alpha-3'] || f.id || f.properties.id;
+                var fId = key === 'usaStates' 
+                  ? f.properties.state_code 
+                  : (f.properties['ISO3166-1-Alpha-3'] || f.id || f.properties.id);
                 if (fId) {
                   map.setFeatureState(
                     { source: key, id: fId },
