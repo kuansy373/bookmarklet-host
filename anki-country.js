@@ -479,8 +479,11 @@ javascript:(function () {
       resetBtn.textContent = '↵';
       Object.assign(resetBtn.style, {
         marginLeft: '6px',
-        padding: '0 4px',
-        fontSize: '12px',
+        paddingInline: '4px 4px',
+        fontSize: '13px',
+        background: 'white',
+        color: '#979797',
+        border: '1px solid #c3c3c3',
         cursor: 'pointer'
       });
     
