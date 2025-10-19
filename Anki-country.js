@@ -68,7 +68,7 @@ javascript:(function () {
     var regionColors = {
       Europe: '#3ebbb6',
       Africa: '#81ca98',
-      'Middle East': '#a5a66a',
+      'MiddleEast': '#a5a66a',
       Asia: '#fa9eaa',
       Oceania: '#dc7550',
       'North America': '#b3ce62',
@@ -78,69 +78,146 @@ javascript:(function () {
     };
 
     var countryRegions = {
-      Europe: [
-        'united kingdom', 'england', 'scotland', 'wales', 'northern ireland', 'ireland',
-          'france', 'germany', 'italy', 'spain', 'portugal', 'belgium', 'netherlands',
-          'luxembourg', 'switzerland', 'austria', 'poland', 'czech republic', 'czechia', 'slovakia',
-          'hungary', 'slovenia', 'croatia', 'bosnia and herzegovina', 'republic of serbia', 'kosovo', 'macedonia',
-          'albania', 'north macedonia', 'greece', 'bulgaria', 'romania', 'moldova', 'ukraine',
-          'montenegro', 'belarus', 'russia', 'finland', 'sweden', 'norway', 'denmark', 'iceland', 'estonia',
-          'latvia', 'lithuania', 'malta', 'andorra', 'monaco', 'liechtenstein', 'san marino',
-          'vatican city'
-      ],
-      Africa: [
-        'egypt', 'morocco', 'western sahara', 'algeria', 'tunisia', 'libya', 'sudan', 'south sudan', 'ethiopia',
-          'eritrea', 'djibouti', 'somalia', 'somaliland', 'kenya', 'uganda', 'united republic of tanzania', 'rwanda', 'burundi',
-          'democratic republic of the congo', 'republic of the congo', 'gabon', 'angola', 'zambia', 'malawi',
-          'mozambique', 'zimbabwe', 'botswana', 'namibia', 'south africa', 'lesotho', 'swaziland', 'eswatini',
-          'ghana', 'nigeria', 'cameroon', 'ivory coast', 'senegal', 'gambia', 'mali', 'burkina faso',
-          'niger', 'chad', 'central african republic', 'togo', 'benin', 'sierra leone',
-          'liberia', 'guinea', 'guinea-bissau', 'equatorial guinea', 'the gambia', 'mauritania', 'cape verde',
-          'seychelles', 'comoros', 'mauritius', 'madagascar', 'bir tawil',
-      ],
-      'Middle East': [
-        'GEO','kazakhstan', 'uzbekistan', 'tajikistan', 'kyrgyzstan', 'turkmenistan', 'afghanistan',
-          'iran', 'iraq', 'israel', 'West Bank', 'palestine', 'jordan', 'lebanon', 'syria',
-          'saudi arabia','yemen', 'oman', 'united arab emirates', 'qatar', 'bahrain', 'kuwait',
-          'turkey', 'cyprus', 'northern cyprus', 'azerbaijan', 'armenia'
-      ],
-      Asia: [
-        'japan', 'china', 'taiwan', 'hong kong', 'macau', 'mongolia', 'north korea', 'south korea',
-          'vietnam', 'thailand', 'myanmar', 'laos', 'cambodia', 'malaysia', 'singapore',
-          'indonesia', 'philippines', 'brunei', 'east timor', 'india', 'pakistan', 'bangladesh',
-          'nepal', 'bhutan', 'sri lanka', 'maldives'
-      ],
-      Oceania: [
-        'australia', 'new zealand', 'papua new guinea', 'fiji', 'solomon islands', 'vanuatu',
-          'samoa', 'tonga', 'tuvalu', 'kiribati', 'micronesia', 'palau', 'marshall islands',
-          'nauru', 'new caledonia'
-      ],
-      'North America': [
-        'canada', 'united states of america', 'mexico', 'guatemala', 'belize', 'honduras', 'el salvador',
-          'nicaragua', 'costa rica', 'panama', 'greenland', 'bermuda', 'bahamas',
-          'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'trinidad and tobago',
-          'barbados', 'saint lucia', 'grenada', 'saint vincent and the grenadines', 'antigua and barbuda',
-          'dominica', 'saint kitts and nevis'
-      ],
-      'South America': [
-        'brazil', 'argentina', 'chile', 'uruguay', 'paraguay', 'bolivia', 'peru',
-          'ecuador', 'colombia', 'venezuela', 'guyana', 'suriname', 'french guiana',
-          'falkland islands'
-      ],
-      Antarctica: [
-        'antarctica', 'french southern and antarctic lands'
-      ]
+     Europe: [
+      'albania','andorra','austria',
+      'belarus','belgium','bosniaandherzegovina','bulgaria',
+      'croatia','czechia','czechrepublic',
+      'denmark',
+      'england','estonia',
+      'finland','france',
+      'germany','greece',
+      'hungary',
+      'iceland','ireland','italy',
+      'kosovo',
+      'latvia','liechtenstein','lithuania','luxembourg',
+      'macedonia','malta','moldova','monaco','montenegro',
+      'netherlands','northernireland','northmacedonia','norway',
+      'poland','portugal',
+      'republicofserbia','romania','russia',
+      'sanmarino','scotland','slovakia','slovenia','spain','sweden','switzerland',
+      'ukraine','unitedkingdom',
+      'vaticancity',
+      'wales'
+    ],
+    Africa: [
+      'algeria','angola',
+      'benin','birtawil','botswana','burkinafaso','burundi',
+      'cameroon','capeverde','centralafricanrepublic','chad','comoros',
+      'democraticrepublicofthecongo','djibouti',
+      'egypt','equatorialguinea','eritrea','eswatini','ethiopia',
+      'gabon','gambia','ghana','guinea','guineabissau',
+      'ivorycoast',
+      'kenya',
+      'lesotho','liberia','libya',
+      'madagascar','malawi','mali','mauritania','mauritius','morocco','mozambique',
+      'namibia','niger','nigeria',
+      'republicofthecongo','rwanda',
+      'senegal','seychelles','sierraleone','somalia','somaliland','southafrica','southsudan','sudan','swaziland',
+      'thegambia','togo','tunisia',
+      'uganda','unitedrepublicoftanzania',
+      'westernsahara',
+      'zambia','zimbabwe'
+    ],
+    'MiddleEast': [
+      'afghanistan','armenia','azerbaijan',
+      'bahrain',
+      'cyprus',
+      'GEO',
+      'iran','iraq','israel',
+      'jordan',
+      'kazakhstan','kuwait','kyrgyzstan',
+      'lebanon',
+      'northerncyprus',
+      'oman',
+      'palestine',
+      'qatar',
+      'saudiarabia','syria',
+      'tajikistan','turkey','turkmenistan',
+      'unitedarabemirates','uzbekistan',
+      'westbank',
+      'yemen'
+    ],
+    Asia: [
+      'bangladesh','bhutan','brunei',
+      'cambodia','china',
+      'east timor',
+      'hong kong',
+      'india','indonesia',
+      'japan',
+      'laos',
+      'macau','malaysia','maldives','mongolia','myanmar',
+      'nepal','north korea',
+      'pakistan','philippines',
+      'singapore','south korea','sri lanka',
+      'taiwan','thailand',
+      'vietnam'
+    ],
+    Oceania: [
+      'australia',
+      'fiji',
+      'kiribati',
+      'marshall islands','micronesia',
+      'nauru','new caledonia','new zealand',
+      'palau','papua new guinea',
+      'samoa','solomon islands',
+      'tonga','tuvalu',
+      'vanuatu'
+    ],
+    'North America': [
+      'antiguaandbarbuda',
+      'bahamas','barbados','belize','bermuda',
+      'canada','costarica','cuba',
+      'dominica','dominicanrepublic',
+      'elsalvador',
+      'grenada','greenland','guatemala',
+      'haiti','honduras',
+      'jamaica',
+      'mexico',
+      'nicaragua',
+      'panama','puertorico',
+      'saintkittsandnevis','saintlucia','saintvincentandthegrenadines',
+      'trinidadandtobago',
+      'unitedstatesofamerica'
+    ],
+    'South America': [
+      'argentina',
+      'bolivia','brazil',
+      'chile','colombia',
+      'ecuador',
+      'falklandislands','frenchguiana',
+      'guyana',
+      'paraguay','peru',
+      'suriname',
+      'uruguay',
+      'venezuela'
+    ],
+    Antarctica: [
+      'antarctica',
+      'french southern and antarctic lands'
+    ]
     };
 
     // アメリカ州リスト（ISO3166コードとstate_codeで判定）
     var usStates = [
-        'GA','alabama','alaska','arizona','arkansas','california','colorado','connecticut','delaware',
-        'florida', 'hawaii','idaho','illinois','indiana','iowa','kansas','kentucky','louisiana',
-        'maine','maryland','massachusetts','michigan','minnesota','mississippi','missouri','montana',
-        'nebraska','nevada','new hampshire','new jersey','new mexico','new york','north carolina',
-        'north dakota','ohio','oklahoma','oregon','pennsylvania','rhode island','south carolina',
-        'south dakota','tennessee','texas','utah','vermont','virginia','washington','west virginia',
-        'wisconsin','wyoming'
+      'alabama','alaska','arizona','arkansas',
+      'california','colorado','connecticut',
+      'delaware',
+      'florida',
+      'GA',
+      'hawaii',
+      'idaho','illinois','indiana','iowa',
+      'kansas','kentucky',
+      'louisiana',
+      'maine','maryland','massachusetts','michigan','minnesota','mississippi','missouri','montana',
+      'nebraska','nevada','newhampshire','newjersey','newmexico','newyork','northcarolina','northdakota',
+      'ohio','oklahoma','oregon',
+      'pennsylvania',
+      'rhodeisland',
+      'southcarolina','southdakota',
+      'tennessee','texas',
+      'utah',
+      'vermont','virginia',
+      'washington','westvirginia','wisconsin','wyoming'
     ];
   
     // 名前を小文字化して空白をトリム
