@@ -310,7 +310,6 @@ javascript:(function () {
       // クリックイベント
       ['world', 'usaStates'].forEach(key => {
         map.on('click', key + '-fill', function(e) {
-          if (key !== activeTopLayer) return;　// アクティブレイヤー以外は無視する
           var feature = e.features[0];
           var props = feature.properties;
           var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
@@ -373,18 +372,37 @@ javascript:(function () {
       });
     });
 
-    // レイヤー切り替えUI
+    // 地図ボタンの親コンテナ作成
+    var mappBtnContainer = document.createElement('div');
+    Object.assign(mappBtnContainer.style, {
+      position: 'absolute',
+      top: '20px',
+      left: '10px',
+      zIndex: 1
+    });
+    
+    // 地図ボタン作成
+    var mapButton = document.createElement('button');
+    mapButton.innerHTML = '地図';
+    Object.assign(mapButton.style, {
+      padding: '4px 8px',
+      background: '#fff',
+      border: '2px solid rgba(0,0,0,0.2)',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    });
+    
+    // レイヤー切り替えUI（アコーディオン風）
     var layerControl = document.createElement('div');
     Object.assign(layerControl.style, {
-      position: 'absolute',
-      top: '10px',
-      left: '10px',
-      background: 'white',
+      display: 'none',
+      marginTop: '2px',
+      background: '#fff',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
       padding: '5px 10px',
-      borderRadius: '5px',
-      boxShadow: '0 0 5px rgba(0,0,0,0.3)',
-      fontSize: '14px',
-      zIndex: 1
+      borderRadius: '4px',
+      fontSize: '14px'
     });
     
     layerControl.innerHTML = `
@@ -392,14 +410,16 @@ javascript:(function () {
       <label><input type="checkbox" id="layer_usaStates"> USA States</label>
     `;
     
-    container.appendChild(layerControl);
-
-    let activeTopLayer = 'world';
-
+    // layerControl自体のクリックで閉じないようにする
+    layerControl.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    
     // チェックボックスのイベント設定
     ['world', 'usaStates'].forEach(key => {
-      const cb = document.getElementById('layer_' + key);
+      const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
+        
         const visibility = e.target.checked ? 'visible' : 'none';
     
         if (map.getLayer(key + '-fill')) {
@@ -407,29 +427,54 @@ javascript:(function () {
           map.setLayoutProperty(key + '-line', 'visibility', visibility);
         }
     
-        // チェックを入れたら、そのレイヤーを最前面に移動
+        // チェックを入れたレイヤーを最前面へ
         if (e.target.checked) {
-          // fillレイヤー → lineレイヤーの順に動かす
           map.moveLayer(key + '-fill');
           map.moveLayer(key + '-line');
-          activeTopLayer = key; // ← このレイヤーをアクティブ扱いにする
         }
       });
     });
+    
+    // アコーディオン開閉
+    mapButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      layerControl.style.display = layerControl.style.display === 'none' ? 'block' : 'none';
+      
+      // 地域ボタンの位置を調整
+      if (layerControl.style.display === 'block') {
+        const mapBtnHeight = mappBtnContainer.offsetHeight;
+        regionBtnContainer.style.top = (20 + mapBtnHeight + 5) + 'px'; // 5pxは余白
+      } else {
+        regionBtnContainer.style.top = '55px'; // 元の位置に戻す
+      }
+    });
+    
+    // 外側クリックで閉じる
+    document.addEventListener('click', function() {
+      if (layerControl.style.display === 'block') {
+        layerControl.style.display = 'none';
+        regionBtnContainer.style.top = '55px'; // 元の位置に戻す
+      }
+    });
+    
+    // コンテナ組み立て
+    mappBtnContainer.appendChild(mapButton);
+    mappBtnContainer.appendChild(layerControl);
+    container.appendChild(mappBtnContainer);
 
     // 地域ボタンの親コンテナ作成
-    var regionControl = document.createElement('div');
-    Object.assign(regionControl.style, {
+    var regionBtnContainer = document.createElement('div');
+    Object.assign(regionBtnContainer.style, {
       position: 'absolute',
-      top: '70px',
+      top: '55px',
       left: '10px',
       zIndex: 1
     });
 
     // 地域ボタン作成
-    var button = document.createElement('button');
-    button.innerHTML = '地域';
-    Object.assign(button.style, {
+    var regionButton = document.createElement('button');
+    regionButton.innerHTML = '地域';
+    Object.assign(regionButton.style, {
       padding: '4px 8px',
       background: '#fff',
       border: '2px solid rgba(0,0,0,0.2)',
@@ -438,9 +483,9 @@ javascript:(function () {
       fontSize: '14px'
     });
 
-    // アコーディオン領域作成
-    var accordion = document.createElement('div');
-    Object.assign(accordion.style, {
+    // 地域コントロールUI（アコーディオン風）
+    var regionControl = document.createElement('div');
+    Object.assign(regionControl.style, {
       display: 'none',
       marginTop: '2px',
       background: '#fff',
@@ -478,6 +523,7 @@ javascript:(function () {
       var resetBtn = document.createElement('button');
       resetBtn.textContent = '↵';
       Object.assign(resetBtn.style, {
+        all: 'initial',
         marginLeft: '6px',
         paddingInline: '4px 4px',
         fontSize: '13px',
@@ -541,24 +587,25 @@ javascript:(function () {
     
       item.appendChild(colorBox);
       item.appendChild(label);
-      item.appendChild(resetBtn); // ← ここにリセットボタン追加
-      accordion.appendChild(item);
+      item.appendChild(resetBtn);
+      regionControl.appendChild(item);
     });
 
 
     // アコーディオン開閉
-    button.addEventListener('click', function(e) {
+    regionButton.addEventListener('click', function(e) {
       e.stopPropagation();
-      accordion.style.display = accordion.style.display === 'none' ? 'block' : 'none';
+      regionControl.style.display = regionControl.style.display === 'none' ? 'block' : 'none';
     });
 
     document.addEventListener('click', function() {
-      accordion.style.display = 'none';
+      regionControl.style.display = 'none';
     });
 
-    regionControl.appendChild(button);
-    regionControl.appendChild(accordion);
-    container.appendChild(regionControl);
+    // コンテナ組み立て
+    regionBtnContainer.appendChild(regionButton);
+    regionBtnContainer.appendChild(regionControl);
+    container.appendChild(regionBtnContainer);
   };
 
   document.body.appendChild(script);
