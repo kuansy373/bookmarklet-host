@@ -124,7 +124,7 @@ javascript:(function () {
       'afghanistan','armenia','azerbaijan',
       'bahrain',
       'cyprus',
-      'GEO',
+      'georgia',
       'iran','iraq','israel',
       'jordan',
       'kazakhstan','kuwait','kyrgyzstan',
@@ -236,7 +236,7 @@ javascript:(function () {
         return 'North America';
       }
 
-      var isoCode = properties['ISO3166-1-Alpha-3'] || properties['ISO3166-1-Alpha-2'];
+      var isoCode = properties['name'] || properties['ISO3166-1-Alpha-2'];
       if (isoCode) {
         for (const [region, list] of Object.entries(countryRegions)) {
           if (list.includes(isoCode)) return region;
@@ -252,7 +252,7 @@ javascript:(function () {
       return 'Default';
     }
 
-    // GeoJSON読み込みとレイヤー追加
+    // 指定したURLからGeoJSONデータを取得
     function loadLayer(key, url) {
       fetch(url)
         .then(res => res.json())
@@ -260,9 +260,10 @@ javascript:(function () {
           map.addSource(key, {
             type: 'geojson',
             data: data,
-            promoteId: key === 'usaStates' ? 'state_code' : 'ISO3166-1-Alpha-3'
+            promoteId: key === 'usaStates' ? 'state_code' : 'name'
           });
 
+          // 塗りつぶしレイヤーの追加
           map.addLayer({
             id: key + '-fill',
             type: 'fill',
@@ -274,10 +275,11 @@ javascript:(function () {
                 ['feature-state', 'fillColor'],
                 '#eaeaea'
               ],
-              'fill-opacity': 0.9
+              'fill-opacity': 1
             }
           });
 
+          // 境界線レイヤーの追加
           map.addLayer({
             id: key + '-line',
             type: 'line',
@@ -288,6 +290,7 @@ javascript:(function () {
             }
           });
 
+          // 初期表示設定（world初期表示、usaStates初期非表示）
           if (key === 'world') {
             document.getElementById('layer_' + key).checked = true;
           } else {
@@ -298,6 +301,7 @@ javascript:(function () {
         .catch(err => console.error('GeoJSON load failed for', key, err));
     }
 
+    // 地図ロード（地図の読み込み完了後に、世界地図レイヤー、アメリカ州レイヤーを順に読み込んで追加）
     map.on('load', function() {
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
@@ -305,14 +309,16 @@ javascript:(function () {
       // クリックイベント
       ['world', 'usaStates'].forEach(key => {
         map.on('click', key + '-fill', function(e) {
+          if (key !== activeTopLayer) return;　// アクティブレイヤー以外は無視する
           var feature = e.features[0];
           var props = feature.properties;
-          var featureId = key === 'usaStates' ? props.state_code : (props['ISO3166-1-Alpha-3'] || feature.id);
+          var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
           var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
           var fillColor = regionColors[region] || regionColors.Default;
 
+          // クリックによる色塗り・解除
           if (!filledFeatures[id]) {
             filledFeatures[id] = { color: fillColor, layerId: key };
             
@@ -320,6 +326,7 @@ javascript:(function () {
               { source: key, id: featureId },
               { fillColor: fillColor }
             );
+          // すでに塗られている地物を再クリックしたとき
           } else {
             var popupContent = `
               <div style="font-size:12px;">
@@ -330,12 +337,13 @@ javascript:(function () {
                 </div>
               </div>
             `;
-            
+            // ポップアップを表示
             var popup = new maplibregl.Popup()
               .setLngLat(e.lngLat)
               .setHTML(popupContent)
               .addTo(map);
 
+            // リセットボタンで色を戻す
             setTimeout(() => {
               const btn = document.getElementById('resetColorBtn');
               if (btn) {
@@ -353,6 +361,7 @@ javascript:(function () {
           }
         });
 
+        // マウスイベント
         map.on('mouseenter', key + '-fill', function() {
           map.getCanvas().style.cursor = 'pointer';
         });
@@ -384,13 +393,25 @@ javascript:(function () {
     
     container.appendChild(layerControl);
 
+    let activeTopLayer = 'world';
+
+    // チェックボックスのイベント設定
     ['world', 'usaStates'].forEach(key => {
       const cb = document.getElementById('layer_' + key);
       cb.addEventListener('change', (e) => {
-        var visibility = e.target.checked ? 'visible' : 'none';
+        const visibility = e.target.checked ? 'visible' : 'none';
+    
         if (map.getLayer(key + '-fill')) {
           map.setLayoutProperty(key + '-fill', 'visibility', visibility);
           map.setLayoutProperty(key + '-line', 'visibility', visibility);
+        }
+    
+        // チェックを入れたら、そのレイヤーを最前面に移動
+        if (e.target.checked) {
+          // fillレイヤー → lineレイヤーの順に動かす
+          map.moveLayer(key + '-fill');
+          map.moveLayer(key + '-line');
+          activeTopLayer = key; // ← このレイヤーをアクティブ扱いにする
         }
       });
     });
@@ -462,7 +483,7 @@ javascript:(function () {
               if (getRegion(f.properties) === region) {
                 var fId = key === 'usaStates' 
                   ? f.properties.state_code 
-                  : (f.properties['ISO3166-1-Alpha-3'] || f.id || f.properties.id);
+                  : (f.properties['name'] || f.id || f.properties.id);
                 if (fId) {
                   map.setFeatureState(
                     { source: key, id: fId },
