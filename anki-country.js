@@ -417,7 +417,7 @@ javascript:(function () {
       });
     });
 
-    // 地域ボタンコントロール
+    // 地域ボタンの親コンテナ作成
     var regionControl = document.createElement('div');
     Object.assign(regionControl.style, {
       position: 'absolute',
@@ -426,6 +426,7 @@ javascript:(function () {
       zIndex: 1
     });
 
+    // 地域ボタン作成
     var button = document.createElement('button');
     button.innerHTML = '地域';
     Object.assign(button.style, {
@@ -437,6 +438,7 @@ javascript:(function () {
       fontSize: '14px'
     });
 
+    // アコーディオン領域作成
     var accordion = document.createElement('div');
     Object.assign(accordion.style, {
       display: 'none',
@@ -447,6 +449,7 @@ javascript:(function () {
       borderRadius: '4px'
     });
 
+    // 地域リスト（カラー付き）生成
     Object.entries(regionColors).forEach(([region, color]) => {
       var item = document.createElement('div');
       Object.assign(item.style, {
@@ -455,7 +458,8 @@ javascript:(function () {
         marginBottom: '4px',
         cursor: 'pointer'
       });
-
+    
+      // 色の四角
       var colorBox = document.createElement('span');
       Object.assign(colorBox.style, {
         display: 'inline-block',
@@ -465,14 +469,22 @@ javascript:(function () {
         marginRight: '6px',
         border: '1px solid #333'
       });
-
+    
+      // ラベル
       var label = document.createElement('span');
       label.textContent = region;
-
-      item.appendChild(colorBox);
-      item.appendChild(label);
-      accordion.appendChild(item);
-
+    
+      // リセットボタン
+      var resetBtn = document.createElement('button');
+      resetBtn.textContent = '↵';
+      Object.assign(resetBtn.style, {
+        marginLeft: '6px',
+        padding: '0 4px',
+        fontSize: '12px',
+        cursor: 'pointer'
+      });
+    
+      // 色ボックスクリックで色を設定
       colorBox.addEventListener('click', function(e) {
         e.stopPropagation();
         
@@ -497,8 +509,41 @@ javascript:(function () {
           }
         });
       });
+    
+      // リセットボタンクリックで色を元に戻す
+      resetBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+    
+        ['world', 'usaStates'].forEach(key => {
+          if (map.getSource(key)) {
+            var source = map.getSource(key);
+            var data = source._data;
+            data.features.forEach(f => {
+              if (getRegion(f.properties) === region) {
+                var fId = key === 'usaStates' 
+                  ? f.properties.state_code 
+                  : (f.properties['name'] || f.id || f.properties.id);
+                if (fId) {
+                  map.setFeatureState(
+                    { source: key, id: fId },
+                    { fillColor: null } // 元に戻す
+                  );
+                  delete filledFeatures[fId]; // 管理オブジェクトから削除
+                }
+              }
+            });
+          }
+        });
+      });
+    
+      item.appendChild(colorBox);
+      item.appendChild(label);
+      item.appendChild(resetBtn); // ← ここにリセットボタン追加
+      accordion.appendChild(item);
     });
 
+
+    // アコーディオン開閉
     button.addEventListener('click', function(e) {
       e.stopPropagation();
       accordion.style.display = accordion.style.display === 'none' ? 'block' : 'none';
