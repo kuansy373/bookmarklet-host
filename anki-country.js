@@ -312,7 +312,20 @@ javascript:(function () {
         map.on('click', key + '-fill', function(e) {
           var feature = e.features[0];
           var props = feature.properties;
-          var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
+    
+    // usaStatesが表示されているとき、worldレイヤーのアメリカはスキップ
+    if (key === 'world') {
+      const usaStatesVisible = map.getLayoutProperty('usaStates-fill', 'visibility') !== 'none';
+      const isUSA = props.ADMIN === 'United States of America' || 
+                    props.name === 'United States of America' ||
+                    props.NAME === 'United States of America';
+      
+      if (usaStatesVisible && isUSA) {
+        return; // アメリカ本土のクリックを無視
+      }
+    }
+    
+    var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
           var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
@@ -419,7 +432,6 @@ javascript:(function () {
     ['world', 'usaStates'].forEach(key => {
       const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
-        
         const visibility = e.target.checked ? 'visible' : 'none';
     
         if (map.getLayer(key + '-fill')) {
@@ -427,13 +439,14 @@ javascript:(function () {
           map.setLayoutProperty(key + '-line', 'visibility', visibility);
         }
     
-        // チェックを入れたレイヤーを最前面へ
-        if (e.target.checked) {
-          map.moveLayer(key + '-fill');
-          map.moveLayer(key + '-line');
+        // usaStates は常に上に
+        if (map.getLayer('usaStates-fill') && map.getLayer('usaStates-line')) {
+          map.moveLayer('usaStates-fill');
+          map.moveLayer('usaStates-line');
         }
       });
     });
+
     
     // アコーディオン開閉
     mapButton.addEventListener('click', function(e) {
