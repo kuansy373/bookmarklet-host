@@ -80,8 +80,8 @@ javascript:(function () {
     var countryRegions = {
      Europe: [
       'albania','andorra','austria',
-      'belarus','belgium','bosniaandherzegovina','bulgaria',
-      'croatia','czechia','czechrepublic',
+      'belarus','belgium','bosnia and herzegovina','bulgaria',
+      'croatia','czechia',
       'denmark',
       'england','estonia',
       'finland','france',
@@ -90,12 +90,12 @@ javascript:(function () {
       'iceland','ireland','italy',
       'kosovo',
       'latvia','liechtenstein','lithuania','luxembourg',
-      'macedonia','malta','moldova','monaco','montenegro',
-      'netherlands','northernireland','northmacedonia','norway',
+      'malta','moldova','monaco','montenegro',
+      'netherlands','northern ireland','north macedonia','norway',
       'poland','portugal',
-      'republicofserbia','romania','russia',
+      'republic of serbia','romania','russia',
       'sanmarino','scotland','slovakia','slovenia','spain','sweden','switzerland',
-      'ukraine','unitedkingdom',
+      'ukraine','united kingdom',
       'vaticancity',
       'wales'
     ],
@@ -165,9 +165,9 @@ javascript:(function () {
     ],
     'North America': [
       'antiguaandbarbuda',
-      'bahamas','barbados','belize','bermuda',
+      'barbados','belize','bermuda',
       'canada','costarica','cuba',
-      'dominica','dominicanrepublic',
+      'dominica','dominican republic',
       'elsalvador',
       'grenada','greenland','guatemala',
       'haiti','honduras',
@@ -176,8 +176,8 @@ javascript:(function () {
       'nicaragua',
       'panama','puertorico',
       'saintkittsandnevis','saintlucia','saintvincentandthegrenadines',
-      'trinidadandtobago',
-      'unitedstatesofamerica'
+      'the bahamas','trinidadand tobago',
+      'united states of america'
     ],
     'South America': [
       'argentina',
