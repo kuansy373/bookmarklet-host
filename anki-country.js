@@ -557,7 +557,8 @@ javascript:(function () {
         const feature = e.features[0];
         const coords = feature.geometry.coordinates;
         const isMeridian = layerId === 'meridians-line-hitarea';
-        const degree = isMeridian ? coords[0][0] : coords[0][1];
+        const degreeRaw = isMeridian ? coords[0][0] : coords[0][1];
+        const degree = Math.round(degreeRaw); // 小数点以下を四捨五入して整数化
         const label = (isMeridian ? '経度 ' : '緯度 ') + degree + '°';
         
         // 一意のIDを生成（経度/緯度の値で識別）
