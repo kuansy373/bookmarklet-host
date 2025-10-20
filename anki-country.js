@@ -492,7 +492,18 @@ javascript:(function () {
       map.addSource('meridians', { type: 'geojson', data: gridData.meridians });
       map.addSource('parallels', { type: 'geojson', data: gridData.parallels });
     
-      // レイヤー追加
+      // レイヤー追加（当たり判定用の透明な太い線 + 表示用の細い線）
+      map.addLayer({
+        id: 'meridians-line-hitarea',
+        type: 'line',
+        source: 'meridians',
+        paint: { 
+          'line-color': 'rgba(0,0,0,0)', // 完全に透明
+          'line-width': 10 // 当たり判定用に太く
+        },
+        layout: { visibility: 'none' }
+      });
+      
       map.addLayer({
         id: 'meridians-line',
         type: 'line',
@@ -500,7 +511,18 @@ javascript:(function () {
         paint: { 'line-color': '#888', 'line-width': 1 },
         layout: { visibility: 'none' }
       });
-    
+      
+      map.addLayer({
+        id: 'parallels-line-hitarea',
+        type: 'line',
+        source: 'parallels',
+        paint: { 
+          'line-color': 'rgba(0,0,0,0)',
+          'line-width': 10
+        },
+        layout: { visibility: 'none' }
+      });
+      
       map.addLayer({
         id: 'parallels-line',
         type: 'line',
@@ -510,15 +532,69 @@ javascript:(function () {
       });
     });
     
-    // // チェックボックスのイベント（Meridians、Parallels）
+    // チェックボックスのイベント（両方のレイヤーを連動）
     ['meridians', 'parallels'].forEach(key => {
       const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
         const visibility = e.target.checked ? 'visible' : 'none';
         if (map.getLayer(key + '-line')) {
           map.setLayoutProperty(key + '-line', 'visibility', visibility);
+          map.setLayoutProperty(key + '-line-hitarea', 'visibility', visibility);
         }
       });
+    });
+
+    // クリックされた線のハイライト管理
+    let highlightedLineId = null;
+    
+    // クリックイベントは当たり判定レイヤー（-hitarea）に設定
+    ['meridians-line-hitarea', 'parallels-line-hitarea'].forEach(layerId => {
+      map.on('click', layerId, function (e) {
+        if (!e.features.length) return;
+        const feature = e.features[0];
+        const coords = feature.geometry.coordinates;
+        const isMeridian = layerId === 'meridians-line-hitarea';
+        const degree = isMeridian ? coords[0][0] : coords[0][1];
+        const label = (isMeridian ? '経度 ' : '緯度 ') + degree + '°';
+    
+        // ハイライト解除（前回）
+        if (highlightedLineId && map.getLayer('highlight-line')) {
+          map.removeLayer('highlight-line');
+          map.removeSource('highlight-line');
+          highlightedLineId = null;
+        }
+    
+        // 新しいハイライト追加
+        map.addSource('highlight-line', {
+          type: 'geojson',
+          data: feature
+        });
+    
+        map.addLayer({
+          id: 'highlight-line',
+          type: 'line',
+          source: 'highlight-line',
+          paint: {
+            'line-color': '#ff7171',
+            'line-width': 1.5
+          }
+        });
+    
+        map.moveLayer('highlight-line');
+        highlightedLineId = feature.id || Math.random().toString(36).substring(2);
+
+        // ポップアップをクリック位置に表示
+        new maplibregl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`<strong>${label}</strong>`)
+          .addTo(map);
+      });
+    });
+    
+    // カーソル変更も当たり判定レイヤーに
+    ['meridians-line-hitarea', 'parallels-line-hitarea'].forEach(layerId => {
+      map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
     });
 
     // アコーディオン開閉
