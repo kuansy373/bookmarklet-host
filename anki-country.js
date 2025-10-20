@@ -547,7 +547,10 @@ javascript:(function () {
     // クリックされた線のハイライト管理
     let highlightedLineId = null;
     
-    // クリックイベントは当たり判定レイヤー（-hitarea）に設定
+    // クリックされた線のハイライト管理（配列で複数管理）
+    let highlightedLines = new Map(); // key: 一意のID, value: { layerId, sourceId, degree }
+    
+    // 経線・緯線クリックイベント
     ['meridians-line-hitarea', 'parallels-line-hitarea'].forEach(layerId => {
       map.on('click', layerId, function (e) {
         if (!e.features.length) return;
@@ -556,33 +559,50 @@ javascript:(function () {
         const isMeridian = layerId === 'meridians-line-hitarea';
         const degree = isMeridian ? coords[0][0] : coords[0][1];
         const label = (isMeridian ? '経度 ' : '緯度 ') + degree + '°';
+        
+        // 一意のIDを生成（経度/緯度の値で識別）
+        const uniqueId = (isMeridian ? 'lon_' : 'lat_') + degree;
+        const highlightLayerId = 'highlight-line-' + uniqueId;
+        const highlightSourceId = 'highlight-source-' + uniqueId;
     
-        // ハイライト解除（前回）
-        if (highlightedLineId && map.getLayer('highlight-line')) {
-          map.removeLayer('highlight-line');
-          map.removeSource('highlight-line');
-          highlightedLineId = null;
+        // すでにハイライトされている場合は解除
+        if (highlightedLines.has(uniqueId)) {
+          if (map.getLayer(highlightLayerId)) {
+            map.removeLayer(highlightLayerId);
+          }
+          if (map.getSource(highlightSourceId)) {
+            map.removeSource(highlightSourceId);
+          }
+          highlightedLines.delete(uniqueId);
+          return; // 解除したら終了
         }
     
         // 新しいハイライト追加
-        map.addSource('highlight-line', {
+        map.addSource(highlightSourceId, {
           type: 'geojson',
           data: feature
         });
     
         map.addLayer({
-          id: 'highlight-line',
+          id: highlightLayerId,
           type: 'line',
-          source: 'highlight-line',
+          source: highlightSourceId,
           paint: {
             'line-color': '#ff7171',
             'line-width': 1.5
           }
         });
     
-        map.moveLayer('highlight-line');
-        highlightedLineId = feature.id || Math.random().toString(36).substring(2);
-
+        // 最前面に移動
+        map.moveLayer(highlightLayerId);
+    
+        // 管理用Mapに追加
+        highlightedLines.set(uniqueId, { 
+          layerId: highlightLayerId, 
+          sourceId: highlightSourceId,
+          degree: degree 
+        });
+    
         // ポップアップをクリック位置に表示
         new maplibregl.Popup()
           .setLngLat(e.lngLat)
