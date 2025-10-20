@@ -308,41 +308,41 @@ javascript:(function () {
     map.on('load', function() {
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
-
+    
       // クリックイベント
       ['world', 'usaStates'].forEach(key => {
         map.on('click', key + '-fill', function(e) {
           var feature = e.features[0];
           var props = feature.properties;
     
-    // usaStatesが表示されているとき、worldレイヤーのアメリカはスキップ
-    if (key === 'world') {
-      const usaStatesVisible = map.getLayoutProperty('usaStates-fill', 'visibility') !== 'none';
-      const isUSA = props.ADMIN === 'United States of America' || 
-                    props.name === 'United States of America' ||
-                    props.NAME === 'United States of America';
-      
-      if (usaStatesVisible && isUSA) {
-        return; // アメリカ本土のクリックを無視
-      }
-    }
+          // usaStatesが表示されているとき、worldレイヤーのアメリカはスキップ
+          if (key === 'world') {
+            const usaStatesVisible = map.getLayoutProperty('usaStates-fill', 'visibility') !== 'none';
+            const isUSA = props.ADMIN === 'United States of America' || 
+                          props.name === 'United States of America' ||
+                          props.NAME === 'United States of America';
+            
+            if (usaStatesVisible && isUSA) {
+              return; // アメリカ本土のクリックを無視
+            }
+          }
     
-    var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
+          var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
           var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
           var fillColor = regionColors[region] || regionColors.Default;
-
+    
           // クリックによる色塗り・解除
           if (!filledFeatures[id]) {
             filledFeatures[id] = { color: fillColor, layerId: key };
-            
+    
             map.setFeatureState(
               { source: key, id: featureId },
               { fillColor: fillColor }
             );
-          // すでに塗られている地物を再クリックしたとき
           } else {
+            // すでに塗られている地物を再クリックしたとき
             var popupContent = `
               <div style="font-size:12px;">
                 <div style="font-weight:600;">${name}</div>
@@ -352,40 +352,42 @@ javascript:(function () {
                 </div>
               </div>
             `;
+    
             // ポップアップを表示
             var popup = new maplibregl.Popup()
               .setLngLat(e.lngLat)
               .setHTML(popupContent)
               .addTo(map);
-
+    
             // リセットボタンで色を戻す
             setTimeout(() => {
               const btn = document.getElementById('resetColorBtn');
               if (btn) {
                 btn.addEventListener('click', () => {
                   delete filledFeatures[id];
-                  
+    
                   map.removeFeatureState(
                     { source: key, id: featureId }
                   );
-                  
+    
                   popup.remove();
                 });
               }
             }, 0);
           }
         });
-
+    
         // マウスイベント
         map.on('mouseenter', key + '-fill', function() {
           map.getCanvas().style.cursor = 'pointer';
         });
-
+    
         map.on('mouseleave', key + '-fill', function() {
           map.getCanvas().style.cursor = '';
         });
       });
     });
+
 
     // 地図ボタンの親コンテナ作成
     var mapBtnContainer = document.createElement('div');
@@ -646,12 +648,12 @@ javascript:(function () {
       // 地域ごとの中心座標とズーム設定
       var regionView = {
         'Europe': { center: [10, 50], zoom: 2.7 },
-        'Africa': { center: [20, 0], zoom: 2 },
-        'MiddleEast': { center: [45, 25], zoom: 2.7 },
-        'North America': { center: [-100, 40], zoom: 3 },
-        'South America': { center: [-60, -15], zoom: 3 },
-        'Asia': { center: [100, 35], zoom: 3 },
-        'Oceania': { center: [135, -25], zoom: 3.5 },
+        'Africa': { center: [15, 5], zoom: 2.4 },
+        'MiddleEast': { center: [50, 35], zoom: 2.7 },
+        'Asia': { center: [110, 25], zoom: 2.2 },
+        'Oceania': { center: [147, -25], zoom: 2.5 },
+        'North America': { center: [-85, 25], zoom: 3 },
+        'South America': { center: [-60, -21], zoom: 2.3 },
       };
       
       // 地域名クリックでフォーカスズーム
