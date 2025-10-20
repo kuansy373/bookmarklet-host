@@ -578,10 +578,22 @@ javascript:(function () {
         }
     
         // 新しいハイライト追加
+        // 極域を避けた新しい線を生成
+        const highlightFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: isMeridian
+              ? [[degree, -85.0511], [degree, 85.0511]] // 経線
+              : [[-180, degree], [180, degree]]          // 緯線
+          }
+        };
+        
         map.addSource(highlightSourceId, {
           type: 'geojson',
-          data: feature
+          data: highlightFeature
         });
+
     
         map.addLayer({
           id: highlightLayerId,
