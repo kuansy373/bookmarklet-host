@@ -553,6 +553,15 @@ javascript:(function () {
     // 経線・緯線クリックイベント
     ['meridians-line-hitarea', 'parallels-line-hitarea'].forEach(layerId => {
       map.on('click', layerId, function (e) {
+        // 他の上位レイヤー（国や州）をクリックしているか判定
+        const topFeatures = map.queryRenderedFeatures(e.point, {
+          layers: ['world-fill', 'world-line', 'usaStates-fill', 'usaStates-line'] // ← 上位レイヤーIDを指定
+        });
+        
+        // もし上位フィーチャがあれば、このクリックは無視
+        if (topFeatures.length > 0) {
+          return;
+        }
         if (!e.features.length) return;
         const feature = e.features[0];
         const coords = feature.geometry.coordinates;
@@ -626,9 +635,26 @@ javascript:(function () {
     
     // カーソル変更も当たり判定レイヤーに
     ['meridians-line-hitarea', 'parallels-line-hitarea'].forEach(layerId => {
-      map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
-      map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+      map.on('mousemove', layerId, (e) => {
+        // 上位レイヤーに地物があるかチェック
+        const topFeatures = map.queryRenderedFeatures(e.point, {
+          layers: ['world-fill', 'world-line', 'usaStates-fill', 'usaStates-line'] // ← 上位レイヤーIDに合わせて調整
+        });
+    
+        // 経線・緯線の下に上位地物がなければカーソルをpointerに
+        if (topFeatures.length === 0) {
+          map.getCanvas().style.cursor = 'pointer';
+        } else {
+          map.getCanvas().style.cursor = '';
+        }
+      });
+    
+      // マウスがレイヤー外に出たらカーソルを戻す
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
+      });
     });
+
 
     // アコーディオン開閉
     mapButton.addEventListener('click', function(e) {
