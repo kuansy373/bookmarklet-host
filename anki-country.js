@@ -60,6 +60,8 @@ javascript:(function () {
       attributionControl: false // 右下に著作権🄫表示
     });
     map.doubleClickZoom.disable();　// ダブルクリックでズームを無効
+    map.dragRotate.disable();  // マウスでの回転を無効
+    map.touchZoomRotate.disableRotation();  // タッチ操作での回転を無効
 
     // データソース
     var geoUrls = {
@@ -386,8 +388,8 @@ javascript:(function () {
     });
 
     // 地図ボタンの親コンテナ作成
-    var mappBtnContainer = document.createElement('div');
-    Object.assign(mappBtnContainer.style, {
+    var mapBtnContainer = document.createElement('div');
+    Object.assign(mapBtnContainer.style, {
       position: 'absolute',
       top: '20px',
       left: '10px',
@@ -455,7 +457,7 @@ javascript:(function () {
       
       // 地域ボタンの位置を調整
       if (layerControl.style.display === 'block') {
-        const mapBtnHeight = mappBtnContainer.offsetHeight;
+        const mapBtnHeight = mapBtnContainer.offsetHeight;
         regionBtnContainer.style.top = (20 + mapBtnHeight + 5) + 'px'; // 5pxは余白
       } else {
         regionBtnContainer.style.top = '55px'; // 元の位置に戻す
@@ -471,9 +473,9 @@ javascript:(function () {
     });
     
     // コンテナ組み立て
-    mappBtnContainer.appendChild(mapButton);
-    mappBtnContainer.appendChild(layerControl);
-    container.appendChild(mappBtnContainer);
+    mapBtnContainer.appendChild(mapButton);
+    mapBtnContainer.appendChild(layerControl);
+    container.appendChild(mapBtnContainer);
 
     // 地域ボタンの親コンテナ作成
     var regionBtnContainer = document.createElement('div');
