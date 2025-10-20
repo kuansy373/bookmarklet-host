@@ -573,7 +573,36 @@ javascript:(function () {
           }
         });
       });
-    
+
+      // 地域ごとの中心座標とズーム設定
+      var regionView = {
+        'Europe': { center: [10, 50], zoom: 2.7 },
+        'Africa': { center: [20, 0], zoom: 2 },
+        'MiddleEast': { center: [45, 25], zoom: 2.7 },
+        'North America': { center: [-100, 40], zoom: 3 },
+        'South America': { center: [-60, -15], zoom: 3 },
+        'Asia': { center: [100, 35], zoom: 3 },
+        'Oceania': { center: [135, -25], zoom: 3.5 },
+      };
+      
+      // 地域名クリックでフォーカスズーム
+      label.addEventListener('click', function (e) {
+        e.stopPropagation();
+      
+        var view = regionView[region];
+        if (view) {
+          map.flyTo({
+            center: view.center,
+            zoom: view.zoom,
+            speed: 0.8,   // アニメーション速度
+            curve: 1.2,   // 動きの滑らかさ
+            essential: true
+          });
+        } else {
+          alert(region + ' のビュー設定がありません');
+        }
+      });
+
       // リセットボタンクリックで色を元に戻す
       resetBtn.addEventListener('click', function(e) {
         e.stopPropagation();
