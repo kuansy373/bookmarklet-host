@@ -422,7 +422,9 @@ javascript:(function () {
     
     layerControl.innerHTML = `
       <label><input type="checkbox" id="layer_world" checked> World</label><br>
-      <label><input type="checkbox" id="layer_usaStates"> USA States</label>
+      <label><input type="checkbox" id="layer_usaStates"> USA States</label><br>
+      <label><input type="checkbox" id="layer_meridians"> Meridians</label><br>
+      <label><input type="checkbox" id="layer_parallels"> Parallels</label>
     `;
     
     // layerControl自体のクリックで閉じないようにする
@@ -430,7 +432,7 @@ javascript:(function () {
       e.stopPropagation();
     });
     
-    // チェックボックスのイベント設定
+    // チェックボックスのイベント（World、USA States）
     ['world', 'usaStates'].forEach(key => {
       const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
@@ -449,7 +451,74 @@ javascript:(function () {
       });
     });
 
+    // 経線・緯線のGeoJSON生成
+    function generateMeridiansParallels() {
+      const meridians = { type: 'FeatureCollection', features: [] };
+      const parallels = { type: 'FeatureCollection', features: [] };
     
+      // 経線: -180 ~ 180 度, 10度刻み
+      for (let lon = -180; lon <= 180; lon += 10) {
+        meridians.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[lon, -90], [lon, 90]]
+          },
+          properties: {}
+        });
+      }
+    
+      // 緯線: -90 ~ 90 度, 10度刻み
+      for (let lat = -90; lat <= 90; lat += 10) {
+        parallels.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [[-180, lat], [180, lat]]
+          },
+          properties: {}
+        });
+      }
+    
+      return { meridians, parallels };
+    }
+    
+    const gridData = generateMeridiansParallels();
+    
+    // Mapにソース追加
+    map.on('load', function() {
+      map.addSource('meridians', { type: 'geojson', data: gridData.meridians });
+      map.addSource('parallels', { type: 'geojson', data: gridData.parallels });
+    
+      // レイヤー追加
+      map.addLayer({
+        id: 'meridians-line',
+        type: 'line',
+        source: 'meridians',
+        paint: { 'line-color': '#888', 'line-width': 1 },
+        layout: { visibility: 'none' }
+      });
+    
+      map.addLayer({
+        id: 'parallels-line',
+        type: 'line',
+        source: 'parallels',
+        paint: { 'line-color': '#888', 'line-width': 1 },
+        layout: { visibility: 'none' }
+      });
+    });
+    
+    // // チェックボックスのイベント（Meridians、Parallels）
+    ['meridians', 'parallels'].forEach(key => {
+      const cb = layerControl.querySelector('#layer_' + key);
+      cb.addEventListener('change', (e) => {
+        const visibility = e.target.checked ? 'visible' : 'none';
+        if (map.getLayer(key + '-line')) {
+          map.setLayoutProperty(key + '-line', 'visibility', visibility);
+        }
+      });
+    });
+
     // アコーディオン開閉
     mapButton.addEventListener('click', function(e) {
       e.stopPropagation();
