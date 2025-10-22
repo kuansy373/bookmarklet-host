@@ -4,7 +4,7 @@
   "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   "features": [
     
-    { // Japan
+    {
       "type": "Feature",
       "properties": { "name": "Tokyo" },
       "geometry": {
@@ -13,7 +13,7 @@
       }
     },
     
-    { // South korea
+    {
       "type": "Feature",
       "properties": { "name": "Seoul" },
       "geometry": {
@@ -22,7 +22,7 @@
       }
     },
 
-    { // Ghana
+    {
       "type": "Feature",
       "properties": { "name": "Accra" },
       "geometry": {
@@ -31,7 +31,7 @@
       }
     },
 
-    { // Turkmenistan
+    {
       "type": "Feature",
       "properties": { "name": "Ashgabat" },
       "geometry": {
