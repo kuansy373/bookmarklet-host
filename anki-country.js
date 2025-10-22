@@ -83,6 +83,7 @@ javascript:(function () {
       Default: '#000000',
     };
 
+    // 判定用リスト
     var countryRegions = {
      Europe: [
       'albania','andorra','austria',
@@ -203,29 +204,15 @@ javascript:(function () {
     ]
     };
 
-    // アメリカ州リスト（ISO3166コードとstate_codeで判定）
+    // アメリカ州リスト（state_codeで判定）
     var usStates = [
-      'alabama','alaska','arizona','arkansas',
-      'california','colorado','connecticut',
-      'delaware',
-      'florida',
-      'GA',
-      'hawaii',
-      'idaho','illinois','indiana','iowa',
-      'kansas','kentucky',
-      'louisiana',
-      'maine','maryland','massachusetts','michigan','minnesota','mississippi','missouri','montana',
-      'nebraska','nevada','newhampshire','newjersey','newmexico','newyork','northcarolina','northdakota',
-      'ohio','oklahoma','oregon',
-      'pennsylvania',
-      'rhodeisland',
-      'southcarolina','southdakota',
-      'tennessee','texas',
-      'utah',
-      'vermont','virginia',
-      'washington','westvirginia','wisconsin','wyoming'
+      'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY','NC','RI',
+      'VT','KY','TN','OH','LA','IN','MS','IL','AL','ME',
+      'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
+      'KS','WV','NV','NE','CO','ND','SD','MT','WA','ID',
+      'WY','UT','OK','NM','AZ','AK','HI',
     ];
-
+     
     var allCapitals = [
       'accra','ashgabat','astana','asmara','Asuncion',
       'seoul',
@@ -235,10 +222,12 @@ javascript:(function () {
     // 色塗り管理オブジェクト
     var filledFeatures = {};
 
+    // nameの前後の空白を削除し、小文字に変換する関数
     function normalize(name) {
       return name.trim().toLowerCase();
     }
     
+    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。IDがUSA-で始まる場合もNorth Americaを返す。
     function getRegion(properties) {
       if (properties.state_code && usStates.includes(properties.state_code)) {
         return 'North America';
@@ -247,6 +236,7 @@ javascript:(function () {
         return 'North America';
       }
 
+      // geojsonにプロパティnameがあればnameで、なければISO3166-1-Alpha-2を使ってregionを判定し返す。
       var isoCode = properties['name'] || properties['ISO3166-1-Alpha-2'];
       if (isoCode) {
         for (const [region, list] of Object.entries(countryRegions)) {
@@ -254,6 +244,7 @@ javascript:(function () {
         }
       }
 
+      // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
       var name = properties.name || '';
       var n = normalize(name);
       for (const [region, list] of Object.entries(countryRegions)) {
