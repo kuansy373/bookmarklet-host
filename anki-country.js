@@ -226,6 +226,7 @@ javascript:(function () {
       'washington','westvirginia','wisconsin','wyoming'
     ];
     
+    // 色塗り管理オブジェクト
     var filledFeatures = {};
 
     function normalize(name) {
@@ -756,7 +757,7 @@ javascript:(function () {
         cursor: 'pointer'
       });
     
-      // 色ボックスクリックで色を設定
+      // 色ボックスクリックで色を適用
       colorBox.addEventListener('click', function(e) {
         e.stopPropagation();
         
