@@ -59,14 +59,15 @@ javascript:(function () {
       zoom: 1,         // 初期ズームレベル
       attributionControl: false // 右下に著作権🄫表示
     });
-    map.doubleClickZoom.disable();　// ダブルクリックでズームを無効
-    map.dragRotate.disable();  // マウスでの回転を無効
-    map.touchZoomRotate.disableRotation();  // タッチ操作での回転を無効
+    map.doubleClickZoom.disable(); // ダブルクリックでズームを無効
+    map.dragRotate.disable(); // マウスでの回転を無効
+    map.touchZoomRotate.disableRotation(); // タッチ操作での回転を無効
 
     // データソース
     var geoUrls = {
       world: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-      usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson'
+      usaStates: 'https://raw.githubusercontent.com/datasets/geo-admin1-us/master/data/admin1-us.geojson',
+      capitals: 'https://raw.githubusercontent.com/kuansy373/bookmarklet-host/main/capitals.json'
     };
 
     // 地域別カラー設定
@@ -308,6 +309,7 @@ javascript:(function () {
     map.on('load', function() {
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
+      loadLayer('capitals', geoUrls.capitals);
     
       // クリックイベント
       ['world', 'usaStates'].forEach(key => {
