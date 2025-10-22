@@ -318,21 +318,29 @@ javascript:(function () {
       loadLayer('usaStates', geoUrls.usaStates);
       loadLayer('capitals', geoUrls.capitals);
     
+      // レイヤー順（下から上）
+      const layerOrder = ['world', 'usaStates', 'capitals'];
+      
       // クリックイベント
-      ['world', 'usaStates'].forEach(key => {
-        map.on('click', key + '-fill', function(e) {
-          var feature = e.features[0];
-          var props = feature.properties;
-    
-          // usaStatesが表示されているとき、worldレイヤーのアメリカはスキップ
-          if (key === 'world') {
-            const usaStatesVisible = map.getLayoutProperty('usaStates-fill', 'visibility') !== 'none';
-            const isUSA = props.ADMIN === 'United States of America' || 
-                          props.name === 'United States of America' ||
-                          props.NAME === 'United States of America';
-            
-            if (usaStatesVisible && isUSA) {
-              return; // アメリカ本土のクリックを無視
+      layerOrder.forEach(key => {
+        map.on('click', key + '-fill', function (e) {
+          const feature = e.features[0];
+          const props = feature.properties;
+      
+          // ▼ クリック座標から上位レイヤーを探索
+          const currentIndex = layerOrder.indexOf(key);
+          const upperLayers = layerOrder.slice(currentIndex + 1);
+      
+          for (const upperKey of upperLayers) {
+            const upperFillId = upperKey + '-fill';
+            if (!map.getLayer(upperFillId)) continue;
+      
+            // クリック地点に上位レイヤーのフィーチャがあるかを判定
+            const upperFeatures = map.queryRenderedFeatures(e.point, { layers: [upperFillId] });
+      
+            if (upperFeatures.length > 0) {
+              // 上位レイヤー上をクリックしている → 下位レイヤーは無視
+              return;
             }
           }
     
@@ -444,22 +452,37 @@ javascript:(function () {
       e.stopPropagation();
     });
     
-    // チェックボックスのイベント（World、USA States、Capitals）
-    ['world', 'usaStates','capitals'].forEach(key => {
+    // レイヤー順の定義（下から上）
+    const layerOrder = ['world', 'usaStates', 'capitals'];
+    
+    // レイヤー順を整理する関数
+    function reorderLayers() {
+      // 下から順に moveLayer を呼ぶことで、最終的に上に積まれていく
+      layerOrder.forEach(key => {
+        ['fill', 'line'].forEach(type => {
+          const layerId = key + '-' + type;
+          if (map.getLayer(layerId)) {
+            map.moveLayer(layerId);
+          }
+        });
+      });
+    }
+    
+    // チェックボックスのイベント
+    ['world', 'usaStates', 'capitals'].forEach(key => {
       const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
         const visibility = e.target.checked ? 'visible' : 'none';
     
-        if (map.getLayer(key + '-fill')) {
-          map.setLayoutProperty(key + '-fill', 'visibility', visibility);
-          map.setLayoutProperty(key + '-line', 'visibility', visibility);
-        }
+        ['fill', 'line'].forEach(type => {
+          const layerId = key + '-' + type;
+          if (map.getLayer(layerId)) {
+            map.setLayoutProperty(layerId, 'visibility', visibility);
+          }
+        });
     
-        // usaStates は常に上に
-        if (map.getLayer('usaStates-fill') && map.getLayer('usaStates-line')) {
-          map.moveLayer('usaStates-fill');
-          map.moveLayer('usaStates-line');
-        }
+        // チェック変更のたびに順序を整理
+        reorderLayers();
       });
     });
 
@@ -625,7 +648,7 @@ javascript:(function () {
           }
         });
     
-        // 最前面に移動
+        // タップで最前面に移動
         map.moveLayer(highlightLayerId);
     
         // 管理用Mapに追加
