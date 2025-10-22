@@ -80,6 +80,7 @@ javascript:(function () {
       'North America': '#b3ce62',
       'South America': '#a3d3d8',
       Antarctica: '#a5dce9',
+      Allcapitals: '#ff0000',
       Default: '#000000',
     };
 
@@ -201,6 +202,11 @@ javascript:(function () {
     Antarctica: [
       'antarctica',
       'french southern and antarctic lands'
+    ],
+    Allcapitals: [
+      'accra','ashgabat','astana','asmara','Asuncion',
+      'seoul',
+      'tokyo'
     ]
     };
 
@@ -211,12 +217,6 @@ javascript:(function () {
       'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
       'KS','WV','NV','NE','CO','ND','SD','MT','WA','ID',
       'WY','UT','OK','NM','AZ','AK','HI',
-    ];
-     
-    var allCapitals = [
-      'accra','ashgabat','astana','asmara','Asuncion',
-      'seoul',
-      'tokyo',
     ];
     
     // 色塗り管理オブジェクト
@@ -782,7 +782,7 @@ javascript:(function () {
       colorBox.addEventListener('click', function(e) {
         e.stopPropagation();
         
-        ['world', 'usaStates'].forEach(key => {
+        ['world', 'usaStates', 'capitals'].forEach(key => {
           if (map.getSource(key)) {
             var source = map.getSource(key);
             var data = source._data;
