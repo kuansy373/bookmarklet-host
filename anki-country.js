@@ -306,7 +306,7 @@ javascript:(function () {
         .catch(err => console.error('GeoJSON load failed for', key, err));
     }
 
-    // 地図ロード（地図の読み込み完了後に、世界地図レイヤー、アメリカ州レイヤーを順に読み込んで追加）
+    // 地図ロード
     map.on('load', function() {
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
@@ -427,6 +427,7 @@ javascript:(function () {
     
     layerControl.innerHTML = `
       <label><input type="checkbox" id="layer_world" checked> World</label><br>
+      <label><input type="checkbox" id="layer_capitals"> Capitals</label><br>
       <label><input type="checkbox" id="layer_usaStates"> USA States</label><br>
       <label><input type="checkbox" id="layer_meridians"> Meridians</label><br>
       <label><input type="checkbox" id="layer_parallels"> Parallels</label>
@@ -437,8 +438,8 @@ javascript:(function () {
       e.stopPropagation();
     });
     
-    // チェックボックスのイベント（World、USA States）
-    ['world', 'usaStates'].forEach(key => {
+    // チェックボックスのイベント（World、USA States、Capitals）
+    ['world', 'usaStates','capitals'].forEach(key => {
       const cb = layerControl.querySelector('#layer_' + key);
       cb.addEventListener('change', (e) => {
         const visibility = e.target.checked ? 'visible' : 'none';
