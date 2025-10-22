@@ -226,7 +226,7 @@ javascript:(function () {
       'washington','westvirginia','wisconsin','wyoming'
     ];
 
-    var capitals = [
+    var allCapitals = [
       'accra','ashgabat','astana','asmara','Asuncion',
       'seoul',
       'tokyo',
