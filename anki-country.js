@@ -225,6 +225,12 @@ javascript:(function () {
       'vermont','virginia',
       'washington','westvirginia','wisconsin','wyoming'
     ];
+
+    var capitals = [
+      'accra','ashgabat','astana','asmara','Asuncion',
+      'seoul',
+      'tokyo',
+    ];
     
     // 色塗り管理オブジェクト
     var filledFeatures = {};
@@ -248,7 +254,7 @@ javascript:(function () {
         }
       }
 
-      var name = properties.name || properties.NAME || properties.ADMIN || properties.ADMIN_EN || '';
+      var name = properties.name || '';
       var n = normalize(name);
       for (const [region, list] of Object.entries(countryRegions)) {
         if (list.some(c => normalize(c) === n)) return region;
