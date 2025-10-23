@@ -116,6 +116,7 @@
 
     {
       "type": "Feature",
+      "generator": "paintmaps",
       "properties": {"name": "Abu Dhabi" },
       "geometry": {
         "type": "Polygon",
