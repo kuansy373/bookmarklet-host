@@ -60,7 +60,9 @@ Third-party libraries used:
 Note: The `fs` module is part of Node.js core and is covered under the Node.js license (MIT). 
 
 4.Google Fonts used:
+
 The following fonts are provided via Google Fonts and are licensed under the SIL Open Font License (OFL) or Apache License, as specified by each font:
+
    -1. Zen Kurenaido — SIL Open Font License, 1.1
       https://fonts.google.com/specimen/Zen+Kurenaido
    -2. New Tegomin — SIL Open Font License, 1.1
@@ -77,4 +79,5 @@ The following fonts are provided via Google Fonts and are licensed under the SIL
       https://fonts.google.com/specimen/DotGothic16
    -8. Rampart One — SIL Open Font License, 1.1
       https://fonts.google.com/specimen/Rampart+One
+
 These fonts are free to use, modify, and distribute under their respective licenses. For full license details, please visit the links above.
