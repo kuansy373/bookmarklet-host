@@ -41,6 +41,42 @@ javascript:(function () {
   Object.assign(mapDiv.style, { width: '100%', height: '100%' });
   container.appendChild(mapDiv);
 
+  // 検索ボックスとプログレス表示エリア
+  var searchContainer = document.createElement('div');
+  Object.assign(searchContainer.style, {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    zIndex: 1000,
+    background: 'white',
+    padding: '10px',
+    borderRadius: '4px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    minWidth: '200px'
+  });
+  container.appendChild(searchContainer);
+
+  var searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.placeholder = '地域名を入力...';
+  Object.assign(searchInput.style, {
+    width: '100%',
+    padding: '5px',
+    border: '1px solid #ccc',
+    borderRadius: '3px',
+    fontSize: '14px'
+  });
+  searchContainer.appendChild(searchInput);
+
+  var progressDisplay = document.createElement('div');
+  progressDisplay.id = 'progress-display';
+  Object.assign(progressDisplay.style, {
+    marginTop: '10px',
+    fontSize: '14px',
+    lineHeight: '1.4'
+  });
+  searchContainer.appendChild(progressDisplay);
+
   // MapLibre GL スクリプト
   var script = document.createElement('script');
   script.id = 'bm-maplibre-script';
@@ -226,6 +262,56 @@ javascript:(function () {
     function normalize(name) {
       return name.trim().toLowerCase();
     }
+
+    // 進捗を更新する関数
+    function updateProgress() {
+      var searchQuery = searchInput.value.trim().toLowerCase();
+      
+      if (!searchQuery) {
+        progressDisplay.innerHTML = '';
+        return;
+      }
+
+      // 地域名の部分一致検索
+      var matchedRegions = Object.keys(countryRegions).filter(region => 
+        region.toLowerCase().includes(searchQuery)
+      );
+
+      if (matchedRegions.length === 0) {
+        progressDisplay.innerHTML = '<div style="color:#999;">該当する地域がありません</div>';
+        return;
+      }
+
+      var html = '';
+      matchedRegions.forEach(region => {
+        var totalCount = countryRegions[region].length;
+        var filledCount = 0;
+
+        // その地域で塗られている国をカウント
+        Object.keys(filledFeatures).forEach(id => {
+          var feature = filledFeatures[id];
+          // 地域が一致するかチェック
+          if (countryRegions[region].some(country => {
+            return normalize(country) === normalize(id) || country === id;
+          })) {
+            filledCount++;
+          }
+        });
+
+        var color = regionColors[region] || regionColors.Default;
+        html += `
+          <div style="margin-bottom:5px;">
+            <div style="font-weight:600; color:${color};">${region}</div>
+            <div style="color:#555;">${filledCount} / ${totalCount}</div>
+          </div>
+        `;
+      });
+
+      progressDisplay.innerHTML = html;
+    }
+
+    // 検索ボックスのイベント
+    searchInput.addEventListener('input', updateProgress);
     
     // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。IDがUSA-で始まる場合もNorth Americaを返す。
     function getRegion(properties) {
@@ -349,6 +435,9 @@ javascript:(function () {
               { source: key, id: featureId },
               { fillColor: fillColor }
             );
+            
+            // 進捗を更新
+            updateProgress();
           } else {
             // すでに塗られている地物を再クリックしたとき
             var popupContent = `
@@ -379,6 +468,9 @@ javascript:(function () {
                   );
     
                   popup.remove();
+                  
+                  // 進捗を更新
+                  updateProgress();
                 });
               }
             }, 0);
