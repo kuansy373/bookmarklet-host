@@ -74,7 +74,7 @@ javascript:(function () {
     var regionColors = {
       Europe: '#3ebbb6',
       Africa: '#81ca98',
-      'MiddleEast': '#a5a66a',
+      'Middle East': '#a5a66a',
       Asia: '#fa9eaa',
       Oceania: '#dc7550',
       'North America': '#b3ce62',
@@ -126,7 +126,7 @@ javascript:(function () {
       'western sahara',
       'zambia','zimbabwe'
     ],
-    'MiddleEast': [
+    'Middle East': [
       'afghanistan','armenia','azerbaijan',
       'bahrain',
       'cyprus',
@@ -806,7 +806,7 @@ javascript:(function () {
       var regionView = {
         'Europe': { center: [14, 52], zoom: 2.7 },
         'Africa': { center: [17, 5], zoom: 2.4 },
-        'MiddleEast': { center: [54, 36], zoom: 2.7 },
+        'Middle East': { center: [54, 36], zoom: 2.7 },
         'Asia': { center: [105, 25], zoom: 2.5 },
         'Oceania': { center: [147, -25], zoom: 2.5 },
         'North America': { center: [-85, 25], zoom: 3 },
