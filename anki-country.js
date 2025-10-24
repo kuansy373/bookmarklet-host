@@ -780,7 +780,7 @@ javascript:(function () {
       colorBox.addEventListener('click', function(e) {
         e.stopPropagation();
         
-        ['world', 'usaStates', 'Capitals' 'capitals'].forEach(key => {
+        ['world', 'usaStates', 'capitals'].forEach(key => {
           if (map.getSource(key)) {
             var source = map.getSource(key);
             var data = source._data;
