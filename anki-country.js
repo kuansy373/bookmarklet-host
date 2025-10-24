@@ -272,8 +272,9 @@ javascript:(function () {
         return;
       }
 
-      // 地域名の部分一致検索
-      var matchedRegions = Object.keys(countryRegions).filter(region => 
+      // 地域名の部分一致検索（Defaultも含む）
+      var allRegions = Object.keys(countryRegions).concat(['Default']);
+      var matchedRegions = allRegions.filter(region => 
         region.toLowerCase().includes(searchQuery)
       );
 
@@ -284,19 +285,39 @@ javascript:(function () {
 
       var html = '';
       matchedRegions.forEach(region => {
-        var totalCount = countryRegions[region].length;
+        var totalCount = 0;
         var filledCount = 0;
 
-        // その地域で塗られている国をカウント
-        Object.keys(filledFeatures).forEach(id => {
-          var feature = filledFeatures[id];
-          // 地域が一致するかチェック
-          if (countryRegions[region].some(country => {
-            return normalize(country) === normalize(id) || country === id;
-          })) {
-            filledCount++;
-          }
-        });
+        if (region === 'Default') {
+          // Defaultは塗られた国の中からカウント
+          Object.keys(filledFeatures).forEach(id => {
+            var feature = filledFeatures[id];
+            // どの地域にも属していないかチェック
+            var belongsToRegion = false;
+            for (const [reg, list] of Object.entries(countryRegions)) {
+              if (list.some(country => normalize(country) === normalize(id) || country === id)) {
+                belongsToRegion = true;
+                break;
+              }
+            }
+            if (!belongsToRegion) {
+              filledCount++;
+            }
+          });
+          totalCount = '?'; // 総数は不明
+        } else {
+          totalCount = countryRegions[region].length;
+
+          // その地域で塗られている国をカウント
+          Object.keys(filledFeatures).forEach(id => {
+            // 地域が一致するかチェック
+            if (countryRegions[region].some(country => {
+              return normalize(country) === normalize(id) || country === id;
+            })) {
+              filledCount++;
+            }
+          });
+        }
 
         var color = regionColors[region] || regionColors.Default;
         html += `
