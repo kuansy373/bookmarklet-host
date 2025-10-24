@@ -80,7 +80,7 @@ javascript:(function () {
       'North America': '#b3ce62',
       'South America': '#a3d3d8',
       Antarctica: '#a5dce9',
-      Allcapitals: '#ff0000',
+      Capitals: '#ff0000',
       Default: '#000000',
     };
 
@@ -203,7 +203,7 @@ javascript:(function () {
       'antarctica',
       'french southern and antarctic lands'
     ],
-    Allcapitals: [
+    Capitals: [
       'accra','ashgabat','astana','asmara','Asuncion',
       'seoul',
       'tokyo'
@@ -627,7 +627,6 @@ javascript:(function () {
           type: 'geojson',
           data: highlightFeature
         });
-
     
         map.addLayer({
           id: highlightLayerId,
@@ -678,7 +677,6 @@ javascript:(function () {
         map.getCanvas().style.cursor = '';
       });
     });
-
 
     // アコーディオン開閉
     mapButton.addEventListener('click', function(e) {
@@ -782,7 +780,7 @@ javascript:(function () {
       colorBox.addEventListener('click', function(e) {
         e.stopPropagation();
         
-        ['world', 'usaStates', 'capitals'].forEach(key => {
+        ['world', 'usaStates', 'Capitals' 'capitals'].forEach(key => {
           if (map.getSource(key)) {
             var source = map.getSource(key);
             var data = source._data;
