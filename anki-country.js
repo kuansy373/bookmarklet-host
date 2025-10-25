@@ -41,42 +41,6 @@ javascript:(function () {
   Object.assign(mapDiv.style, { width: '100%', height: '100%' });
   container.appendChild(mapDiv);
 
-  // 検索ボックスとプログレス表示エリア
-  var searchContainer = document.createElement('div');
-  Object.assign(searchContainer.style, {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    zIndex: 1000,
-    background: 'white',
-    padding: '10px',
-    borderRadius: '4px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    minWidth: '200px'
-  });
-  container.appendChild(searchContainer);
-
-  var searchInput = document.createElement('input');
-  searchInput.type = 'text';
-  searchInput.placeholder = '個数を確認...';
-  Object.assign(searchInput.style, {
-    width: '100%',
-    padding: '5px',
-    border: '1px solid #ccc',
-    borderRadius: '3px',
-    fontSize: '14px'
-  });
-  searchContainer.appendChild(searchInput);
-
-  var progressDisplay = document.createElement('div');
-  progressDisplay.id = 'progress-display';
-  Object.assign(progressDisplay.style, {
-    marginTop: '10px',
-    fontSize: '14px',
-    lineHeight: '1.4'
-  });
-  searchContainer.appendChild(progressDisplay);
-
   // MapLibre GL スクリプト
   var script = document.createElement('script');
   script.id = 'bm-maplibre-script';
@@ -236,9 +200,10 @@ javascript:(function () {
       'french southern and antarctic lands'
     ],
     Capitals: [
-      'accra','ashgabat','astana','asmara','Asuncion',
+      'accra','ashgabat','astana','asmara','asuncion','addis ababa','athenes','apia','abuja','abu dhabi','amsterdam',
       'seoul',
-      'tokyo'
+      'tokyo',
+      'district of columbia'
     ]
     };
 
@@ -258,6 +223,66 @@ javascript:(function () {
     function normalize(name) {
       return name.trim().toLowerCase();
     }
+    
+    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。IDがUSA-で始まる場合もNorth Americaを返す。
+    function getRegion(properties) {
+      if (properties.state_code && usStates.includes(properties.state_code)) {
+        return 'North America';
+      }
+
+      // geojsonにプロパティnameがあればnameで、なければISO3166-1-Alpha-2を使ってregionを判定し返す。
+      var isoCode = properties['name'] || properties['ISO3166-1-Alpha-2'];
+      if (isoCode) {
+        for (const [region, list] of Object.entries(countryRegions)) {
+          if (list.includes(isoCode)) return region;
+        }
+      }
+
+      // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
+      var name = properties.name || '';
+      var n = normalize(name);
+      for (const [region, list] of Object.entries(countryRegions)) {
+        if (list.some(c => normalize(c) === n)) return region;
+      }
+
+      return 'Default';
+    }
+
+    // 検索ボックスとプログレス表示エリア
+  var searchContainer = document.createElement('div');
+  Object.assign(searchContainer.style, {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    zIndex: 1000,
+    background: 'white',
+    padding: '10px',
+    borderRadius: '4px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    minWidth: '200px'
+  });
+  container.appendChild(searchContainer);
+
+  var searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.placeholder = '個数を確認...';
+  Object.assign(searchInput.style, {
+    width: '100%',
+    padding: '5px',
+    border: '1px solid #ccc',
+    borderRadius: '3px',
+    fontSize: '14px'
+  });
+  searchContainer.appendChild(searchInput);
+
+  var progressDisplay = document.createElement('div');
+  progressDisplay.id = 'progress-display';
+  Object.assign(progressDisplay.style, {
+    marginTop: '10px',
+    fontSize: '14px',
+    lineHeight: '1.4'
+  });
+  searchContainer.appendChild(progressDisplay);
 
     // 進捗を更新する関数
     function updateProgress() {
@@ -343,33 +368,6 @@ javascript:(function () {
 
     // 検索ボックスのイベント
     searchInput.addEventListener('input', updateProgress);
-    
-    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。IDがUSA-で始まる場合もNorth Americaを返す。
-    function getRegion(properties) {
-      if (properties.state_code && usStates.includes(properties.state_code)) {
-        return 'North America';
-      }
-      if (properties.id && properties.id.startsWith('USA-')) {
-        return 'North America';
-      }
-
-      // geojsonにプロパティnameがあればnameで、なければISO3166-1-Alpha-2を使ってregionを判定し返す。
-      var isoCode = properties['name'] || properties['ISO3166-1-Alpha-2'];
-      if (isoCode) {
-        for (const [region, list] of Object.entries(countryRegions)) {
-          if (list.includes(isoCode)) return region;
-        }
-      }
-
-      // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
-      var name = properties.name || '';
-      var n = normalize(name);
-      for (const [region, list] of Object.entries(countryRegions)) {
-        if (list.some(c => normalize(c) === n)) return region;
-      }
-
-      return 'Default';
-    }
 
     // 指定したURLからGeoJSONデータを取得
     function loadLayer(key, url) {
@@ -958,7 +956,7 @@ javascript:(function () {
       resetBtn.addEventListener('click', function(e) {
         e.stopPropagation();
     
-        ['world', 'usaStates'].forEach(key => {
+        ['world', 'usaStates', 'capitals'].forEach(key => {
           if (map.getSource(key)) {
             var source = map.getSource(key);
             var data = source._data;
