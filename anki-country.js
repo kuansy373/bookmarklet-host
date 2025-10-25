@@ -109,8 +109,8 @@ javascript:(function () {
     // 地域別カラー設定
     var regionColors = {
       Europe: '#3ebbb6',
-      Africa: '#81ca98',
       'Middle East': '#a5a66a',
+      Africa: '#81ca98',
       Asia: '#fa9eaa',
       Oceania: '#dc7550',
       'North America': '#b3ce62',
@@ -123,24 +123,39 @@ javascript:(function () {
     // 判定用リスト
     var countryRegions = {
      Europe: [
-      'albania','andorra','austria',
+      'albania','andorra','armenia','austria','azerbaijan',
       'belarus','belgium','bosnia and herzegovina','bulgaria',
-      'croatia','czechia',
+      'croatia','cyprus','czechia',
       'denmark',
-      'england','estonia',
+      'estonia',
       'finland','france',
-      'germany','greece',
+      'georgia','germany','greece',
       'hungary',
       'iceland','ireland','italy',
-      'kosovo',
+      'kazakhstan','kosovo','kyrgyzstan',
       'latvia','liechtenstein','lithuania','luxembourg',
       'malta','moldova','monaco','montenegro',
-      'netherlands','northern ireland','north macedonia','norway',
+      'netherlands','north macedonia','norway',
       'poland','portugal',
       'republic of serbia','romania','russia',
-      'sanmarino','scotland','slovakia','slovenia','spain','sweden','switzerland',
-      'ukraine','united kingdom',
-      'vaticancity'
+      'san marino','slovakia','slovenia','spain','sweden','switzerland',
+      'tajikistan','turkmenistan',
+      'ukraine','united kingdom','uzbekistan',
+      'vatican'
+    ],
+    'Middle East': [
+      'afghanistan',
+      'bahrain',
+      'iran','iraq','israel',
+      'jordan',
+      'kuwait',
+      'lebanon',
+      'oman',
+      'qatar',
+      'saudi arabia','syria',
+      'turkey',
+      'united arab emirates',
+      'yemen'
     ],
     Africa: [
       'algeria','angola',
@@ -160,25 +175,6 @@ javascript:(function () {
       'uganda','united republic of tanzania',
       'western sahara',
       'zambia','zimbabwe'
-    ],
-    'Middle East': [
-      'afghanistan','armenia','azerbaijan',
-      'bahrain',
-      'cyprus',
-      'georgia',
-      'iran','iraq','israel',
-      'jordan',
-      'kazakhstan','kuwait','kyrgyzstan',
-      'lebanon',
-      'northerncyprus',
-      'oman',
-      'palestine',
-      'qatar',
-      'saudi arabia','syria',
-      'tajikistan','turkey','turkmenistan',
-      'united arab emirates','uzbekistan',
-      'westbank',
-      'yemen'
     ],
     Asia: [
       'bangladesh','bhutan','brunei',
@@ -264,18 +260,32 @@ javascript:(function () {
 
     // 進捗を更新する関数
     function updateProgress() {
-      var searchQuery = searchInput.value.trim().toLowerCase();
+      var searchQuery = searchInput.value.trim();
       
       if (!searchQuery) {
         progressDisplay.innerHTML = '';
         return;
       }
 
+      // コンマ区切りで複数検索に対応
+      var searchTerms = searchQuery.split(',').map(term => term.trim().toLowerCase()).filter(term => term);
+      
+      if (searchTerms.length === 0) {
+        progressDisplay.innerHTML = '';
+        return;
+      }
+
       // 地域名の部分一致検索（Defaultも含む）
       var allRegions = Object.keys(countryRegions).concat(['Default']);
-      var matchedRegions = allRegions.filter(region => 
-        region.toLowerCase().includes(searchQuery)
-      );
+      var matchedRegions = [];
+      
+      searchTerms.forEach(searchTerm => {
+        allRegions.forEach(region => {
+          if (region.toLowerCase().includes(searchTerm) && !matchedRegions.includes(region)) {
+            matchedRegions.push(region);
+          }
+        });
+      });
 
       if (matchedRegions.length === 0) {
         progressDisplay.innerHTML = '<div style="color:#999;">該当する地域がありません</div>';
@@ -910,7 +920,7 @@ javascript:(function () {
                 }
               }
             });
-          }
+          }updateProgress();
         });
       });
 
