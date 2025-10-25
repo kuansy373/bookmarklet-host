@@ -109,8 +109,8 @@ javascript:(function () {
     // 地域別カラー設定
     var regionColors = {
       Europe: '#3ebbb6',
-      'Middle East': '#a5a66a',
       Africa: '#81ca98',
+      'Middle East': '#a5a66a',
       Asia: '#fa9eaa',
       Oceania: '#dc7550',
       'North America': '#b3ce62',
@@ -143,20 +143,6 @@ javascript:(function () {
       'ukraine','united kingdom','uzbekistan',
       'vatican'
     ],
-    'Middle East': [
-      'afghanistan',
-      'bahrain',
-      'iran','iraq','israel',
-      'jordan',
-      'kuwait',
-      'lebanon',
-      'oman',
-      'qatar',
-      'saudi arabia','syria',
-      'turkey',
-      'united arab emirates',
-      'yemen'
-    ],
     Africa: [
       'algeria','angola',
       'benin','birtawil','botswana','burkina faso','burundi',
@@ -176,15 +162,30 @@ javascript:(function () {
       'western sahara',
       'zambia','zimbabwe'
     ],
+    'Middle East': [
+      'afghanistan',
+      'bahrain',
+      'iran','iraq','israel',
+      'jordan',
+      'kuwait',
+      'lebanon',
+      'oman',
+      'palestine',
+      'qatar',
+      'saudi arabia','syria',
+      'turkey',
+      'united arab emirates',
+      'yemen'
+    ],
     Asia: [
       'bangladesh','bhutan','brunei',
       'cambodia','china',
       'east timor',
-      'hong kong',
+      'hong kong s.a.r.',
       'india','indonesia',
       'japan',
       'laos',
-      'macau','malaysia','maldives','mongolia','myanmar',
+      'macao s.a.r','malaysia','maldives','mongolia','myanmar',
       'nepal','north korea',
       'pakistan','philippines',
       'singapore','south korea','sri lanka',
