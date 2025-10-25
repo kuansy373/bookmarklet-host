@@ -58,7 +58,7 @@ javascript:(function () {
 
   var searchInput = document.createElement('input');
   searchInput.type = 'text';
-  searchInput.placeholder = '地域名を入力...';
+  searchInput.placeholder = '個数を確認...';
   Object.assign(searchInput.style, {
     width: '100%',
     padding: '5px',
@@ -140,8 +140,7 @@ javascript:(function () {
       'republic of serbia','romania','russia',
       'sanmarino','scotland','slovakia','slovenia','spain','sweden','switzerland',
       'ukraine','united kingdom',
-      'vaticancity',
-      'wales'
+      'vaticancity'
     ],
     Africa: [
       'algeria','angola',
