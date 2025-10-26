@@ -60,13 +60,16 @@ javascript:(function () {
         layers: [],
         glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
       },
-      center: [0, 20], // マップの初期中心座標
-      zoom: 1,         // 初期ズームレベル
-      attributionControl: false // 右下に著作権🄫表示
+      center: [0, 20],
+      zoom: 1,
+      attributionControl: false
     });
-    map.doubleClickZoom.disable(); // ダブルクリックでズームを無効
-    map.dragRotate.disable(); // マウスでの回転を無効
-    map.touchZoomRotate.disableRotation(); // タッチ操作での回転を無効
+    map.doubleClickZoom.disable();
+    map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
+
+    // GeoJSONデータを保持するオブジェクト
+    var geojsonData = {};
 
     // データソース
     var geoUrls = {
@@ -224,12 +227,15 @@ javascript:(function () {
     // 色塗り管理オブジェクト
     var filledFeatures = {};
 
+    // USA Statesを地域として扱うための設定
+    var usaStatesRegion = 'USA States';
+
     // nameの前後の空白を削除し、小文字に変換する関数
     function normalize(name) {
       return name.trim().toLowerCase();
     }
     
-    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。IDがUSA-で始まる場合もNorth Americaを返す。
+    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。
     function getRegion(properties) {
       if (properties.state_code && usStates.includes(properties.state_code)) {
         return 'North America';
@@ -308,7 +314,7 @@ javascript:(function () {
       }
 
       // 地域名の部分一致検索（Defaultも含む）
-      var allRegions = Object.keys(countryRegions).concat(['Default']);
+      var allRegions = Object.keys(countryRegions).concat(['Default', usaStatesRegion]);
       var matchedRegions = [];
       
       searchTerms.forEach(searchTerm => {
@@ -347,7 +353,22 @@ javascript:(function () {
               countryList.push({ name: id, filled: true });
             }
           });
-          totalCount = '?'; // 総数は不明
+          totalCount = '?';
+        } else if (region === usaStatesRegion) {
+          // USA Statesの処理
+          totalCount = usStates.length;
+          
+          usStates.forEach(stateCode => {
+            var isFilled = Object.keys(filledFeatures).some(id => {
+              return id === stateCode;
+            });
+            
+            if (isFilled) {
+              filledCount++;
+            }
+            
+            countryList.push({ name: stateCode, filled: isFilled });
+          });
         } else {
           var regionCountries = countryRegions[region];
           totalCount = regionCountries.length;
@@ -369,7 +390,6 @@ javascript:(function () {
         var color = regionColors[region] || regionColors.Default;
         var listId = 'country-list-' + region.replace(/\s+/g, '-');
         var isExpanded = expandedLists[region] || false;
-        // 未塗りつぶしの国リストを作成
         var unfilledCountries = countryList.filter(c => !c.filled);
         
        html += `
@@ -399,44 +419,54 @@ javascript:(function () {
         elem.addEventListener('click', function() {
           var region = this.getAttribute('data-region');
           
-          // その地域の未塗りつぶし国を取得
-          var unfilledCountries = [];
-          
           if (region === 'Default') {
-            // Defaultの場合は処理をスキップ（どの国が該当するか判定が難しいため）
             return;
           }
           
-          var regionCountries = countryRegions[region];
-          regionCountries.forEach(country => {
-            var isFilled = Object.keys(filledFeatures).some(id => {
-              return normalize(country) === normalize(id) || country === id;
-            });
-            
-            if (!isFilled) {
-              unfilledCountries.push(country);
-            }
-          });
+          var unfilledCountries = [];
           
-          if (unfilledCountries.length === 0) {
-            return; // すべて塗りつぶし済み
+          if (region === usaStatesRegion) {
+            // USA Statesの未塗りつぶし州を取得
+            usStates.forEach(stateCode => {
+              var isFilled = Object.keys(filledFeatures).some(id => {
+                return id === stateCode;
+              });
+              
+              if (!isFilled) {
+                unfilledCountries.push(stateCode);
+              }
+            });
+          } else {
+            var regionCountries = countryRegions[region];
+            
+            regionCountries.forEach(country => {
+              var isFilled = Object.keys(filledFeatures).some(id => {
+                return normalize(country) === normalize(id) || country === id;
+              });
+              
+              if (!isFilled) {
+                unfilledCountries.push(country);
+              }
+            });
           }
           
-          // ランダムに1つ選択
+          if (unfilledCountries.length === 0) {
+            return;
+          }
+          
           var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
           
-          // マップ上でその国を探してズーム
-          var sources = ['world', 'usaStates', 'capitals'];
+          // GeoJSONデータから直接検索
+          var sources = region === usaStatesRegion ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
           var found = false;
           
           sources.forEach(sourceKey => {
             if (found) return;
             
-            var source = map.getSource(sourceKey);
-            if (!source) return;
+            var data = geojsonData[sourceKey];
+            if (!data || !data.features) return;
             
-            var features = map.querySourceFeatures(sourceKey);
-            features.forEach(feature => {
+            data.features.forEach(feature => {
               if (found) return;
               
               var props = feature.properties;
@@ -447,7 +477,6 @@ javascript:(function () {
                   featureCode === randomCountry ||
                   randomCountry === featureName) {
                 
-                // 国の境界に合わせてズーム
                 if (feature.geometry && feature.geometry.type) {
                   var bbox = turf.bbox(feature.geometry);
                   map.fitBounds(bbox, { padding: 50, maxZoom: 6 });
@@ -488,6 +517,9 @@ javascript:(function () {
       fetch(url)
         .then(res => res.json())
         .then(data => {
+          // GeoJSONデータを保存
+          geojsonData[key] = data;
+          
           map.addSource(key, {
             type: 'geojson',
             data: data,
