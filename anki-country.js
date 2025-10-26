@@ -366,15 +366,15 @@ javascript:(function () {
         var isExpanded = expandedLists[region] || false;
         
        html += `
-          <div style="margin-bottom:8px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+          <div style="margin-bottom:3px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
               <div>
                 <div style="font-weight:600; color:${color};">${region}</div>
                 <div style="color:#555; font-size:13px;">${filledCount} / ${totalCount}</div>
               </div>
-              <button class="toggle-list-btn" data-target="${listId}" data-region="${region}" style="background:none; border:none; cursor:pointer; font-size:16px; padding:4px 8px;">${isExpanded ? '▲' : '▼'}</button>
+              <button class="toggle-list-btn" data-target="${listId}" data-region="${region}" style="background:none; border:none; cursor:pointer; font-size:16px; padding:4px 8px 4px 140px; margin-left:-140px;">${isExpanded ? '▲' : '▼'}</button>
             </div>
-            <div id="${listId}" style="display:${isExpanded ? 'block' : 'none'}; margin-top:5px; padding-left:10px; max-height:200px; overflow-y:auto; font-size:12px; line-height:1.6;">
+            <div id="${listId}" style="display:${isExpanded ? 'block' : 'none'}; margin-top:5px; padding-left:10px; max-height:200px; overflow-y:auto; font-size:13px; line-height:1.6;">
               ${countryList.map(country => {
                 var countryColor = country.filled ? color : '#ccc';
                 return `<div style="color:${countryColor};">${country.name}</div>`;
