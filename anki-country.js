@@ -249,40 +249,43 @@ javascript:(function () {
     }
 
     // 検索ボックスとプログレス表示エリア
-  var searchContainer = document.createElement('div');
-  Object.assign(searchContainer.style, {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    zIndex: 1000,
-    background: 'white',
-    padding: '10px',
-    borderRadius: '4px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    minWidth: '200px'
-  });
-  container.appendChild(searchContainer);
+    var searchContainer = document.createElement('div');
+    Object.assign(searchContainer.style, {
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      zIndex: 1000,
+      background: 'white',
+      padding: '10px',
+      borderRadius: '4px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+      minWidth: '200px'
+    });
+    container.appendChild(searchContainer);
+  
+    var searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = '個数を確認...';
+    Object.assign(searchInput.style, {
+      width: '100%',
+      padding: '5px',
+      border: '1px solid #ccc',
+      borderRadius: '3px',
+      fontSize: '14px'
+    });
+    searchContainer.appendChild(searchInput);
+  
+    var progressDisplay = document.createElement('div');
+    progressDisplay.id = 'progress-display';
+    Object.assign(progressDisplay.style, {
+      marginTop: '10px',
+      fontSize: '14px',
+      lineHeight: '1.4'
+    });
+    searchContainer.appendChild(progressDisplay);
 
-  var searchInput = document.createElement('input');
-  searchInput.type = 'text';
-  searchInput.placeholder = '個数を確認...';
-  Object.assign(searchInput.style, {
-    width: '100%',
-    padding: '5px',
-    border: '1px solid #ccc',
-    borderRadius: '3px',
-    fontSize: '14px'
-  });
-  searchContainer.appendChild(searchInput);
-
-  var progressDisplay = document.createElement('div');
-  progressDisplay.id = 'progress-display';
-  Object.assign(progressDisplay.style, {
-    marginTop: '10px',
-    fontSize: '14px',
-    lineHeight: '1.4'
-  });
-  searchContainer.appendChild(progressDisplay);
+    // 国リストの開閉状態を保持
+    var expandedLists = {};
 
     // 進捗を更新する関数
     function updateProgress() {
@@ -322,6 +325,7 @@ javascript:(function () {
       matchedRegions.forEach(region => {
         var totalCount = 0;
         var filledCount = 0;
+        var countryList = [];
 
         if (region === 'Default') {
           // Defaultは塗られた国の中からカウント
@@ -337,33 +341,72 @@ javascript:(function () {
             }
             if (!belongsToRegion) {
               filledCount++;
+              countryList.push({ name: id, filled: true });
             }
           });
           totalCount = '?'; // 総数は不明
         } else {
-          totalCount = countryRegions[region].length;
+          var regionCountries = countryRegions[region];
+          totalCount = regionCountries.length;
 
-          // その地域で塗られている国をカウント
-          Object.keys(filledFeatures).forEach(id => {
-            // 地域が一致するかチェック
-            if (countryRegions[region].some(country => {
+          // その地域の国リストを作成
+          regionCountries.forEach(country => {
+            var isFilled = Object.keys(filledFeatures).some(id => {
               return normalize(country) === normalize(id) || country === id;
-            })) {
+            });
+            
+            if (isFilled) {
               filledCount++;
             }
+            
+            countryList.push({ name: country, filled: isFilled });
           });
         }
 
         var color = regionColors[region] || regionColors.Default;
-        html += `
-          <div style="margin-bottom:5px;">
-            <div style="font-weight:600; color:${color};">${region}</div>
-            <div style="color:#555;">${filledCount} / ${totalCount}</div>
+        var listId = 'country-list-' + region.replace(/\s+/g, '-');
+        var isExpanded = expandedLists[region] || false;
+        
+       html += `
+          <div style="margin-bottom:8px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div style="font-weight:600; color:${color};">${region}</div>
+                <div style="color:#555; font-size:13px;">${filledCount} / ${totalCount}</div>
+              </div>
+              <button class="toggle-list-btn" data-target="${listId}" data-region="${region}" style="background:none; border:none; cursor:pointer; font-size:16px; padding:4px 8px;">${isExpanded ? '▲' : '▼'}</button>
+            </div>
+            <div id="${listId}" style="display:${isExpanded ? 'block' : 'none'}; margin-top:5px; padding-left:10px; max-height:200px; overflow-y:auto; font-size:12px; line-height:1.6;">
+              ${countryList.map(country => {
+                var countryColor = country.filled ? color : '#ccc';
+                return `<div style="color:${countryColor};">${country.name}</div>`;
+              }).join('')}
+            </div>
           </div>
         `;
       });
 
       progressDisplay.innerHTML = html;
+      
+      // トグルボタンのイベントを設定
+      var toggleButtons = progressDisplay.querySelectorAll('.toggle-list-btn');
+      toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          var targetId = this.getAttribute('data-target');
+          var region = this.getAttribute('data-region');
+          var listElement = document.getElementById(targetId);
+          
+          if (listElement.style.display === 'none') {
+            listElement.style.display = 'block';
+            this.textContent = '▲';
+            expandedLists[region] = true;
+          } else {
+            listElement.style.display = 'none';
+            this.textContent = '▼';
+            expandedLists[region] = false;
+          }
+        });
+      });
     }
 
     // 検索ボックスのイベント
@@ -433,7 +476,7 @@ javascript:(function () {
           const feature = e.features[0];
           const props = feature.properties;
       
-          // ▼ クリック座標から上位レイヤーを探索
+          // クリック座標から上位レイヤーを探索
           const currentIndex = layerOrder.indexOf(key);
           const upperLayers = layerOrder.slice(currentIndex + 1);
       
@@ -974,7 +1017,7 @@ javascript:(function () {
                 }
               }
             });
-          }
+          }updateProgress();
         });
       });
     
