@@ -278,9 +278,7 @@ javascript:(function () {
     var progressDisplay = document.createElement('div');
     progressDisplay.id = 'progress-display';
     Object.assign(progressDisplay.style, {
-      marginTop: '10px',
-      fontSize: '14px',
-      lineHeight: '1.4'
+      fontSize: '15px',
     });
     searchContainer.appendChild(progressDisplay);
 
@@ -369,7 +367,7 @@ javascript:(function () {
         
        html += `
           <div style="margin-bottom:8px;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
               <div>
                 <div style="font-weight:600; color:${color};">${region}</div>
                 <div style="color:#555; font-size:13px;">${filledCount} / ${totalCount}</div>
