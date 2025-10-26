@@ -46,6 +46,11 @@ javascript:(function () {
   script.id = 'bm-maplibre-script';
   script.src = 'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js';
 
+  // Turf.js スクリプト（境界計算用）
+  var turfScript = document.createElement('script');
+  turfScript.src = 'https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js';
+  document.head.appendChild(turfScript);
+
   script.onload = function () {
     var map = new maplibregl.Map({
       container: mapDiv,
@@ -265,7 +270,7 @@ javascript:(function () {
   
     var searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = '個数を確認...';
+    searchInput.placeholder = '地域名を入力...';
     Object.assign(searchInput.style, {
       width: '100%',
       padding: '5px',
@@ -364,11 +369,13 @@ javascript:(function () {
         var color = regionColors[region] || regionColors.Default;
         var listId = 'country-list-' + region.replace(/\s+/g, '-');
         var isExpanded = expandedLists[region] || false;
+        // 未塗りつぶしの国リストを作成
+        var unfilledCountries = countryList.filter(c => !c.filled);
         
        html += `
           <div style="margin-bottom:3px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
-              <div>
+              <div class="region-progress" data-region="${region}" style="cursor:${unfilledCountries.length > 0 ? 'pointer' : 'default'};">
                 <div style="font-weight:600; color:${color};">${region}</div>
                 <div style="color:#555; font-size:13px;">${filledCount} / ${totalCount}</div>
               </div>
@@ -385,6 +392,72 @@ javascript:(function () {
       });
 
       progressDisplay.innerHTML = html;
+
+      // 進捗部分のクリックイベント（未塗りつぶし国にズーム）
+      var progressElements = progressDisplay.querySelectorAll('.region-progress');
+      progressElements.forEach(elem => {
+        elem.addEventListener('click', function() {
+          var region = this.getAttribute('data-region');
+          
+          // その地域の未塗りつぶし国を取得
+          var unfilledCountries = [];
+          
+          if (region === 'Default') {
+            // Defaultの場合は処理をスキップ（どの国が該当するか判定が難しいため）
+            return;
+          }
+          
+          var regionCountries = countryRegions[region];
+          regionCountries.forEach(country => {
+            var isFilled = Object.keys(filledFeatures).some(id => {
+              return normalize(country) === normalize(id) || country === id;
+            });
+            
+            if (!isFilled) {
+              unfilledCountries.push(country);
+            }
+          });
+          
+          if (unfilledCountries.length === 0) {
+            return; // すべて塗りつぶし済み
+          }
+          
+          // ランダムに1つ選択
+          var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
+          
+          // マップ上でその国を探してズーム
+          var sources = ['world', 'usaStates', 'capitals'];
+          var found = false;
+          
+          sources.forEach(sourceKey => {
+            if (found) return;
+            
+            var source = map.getSource(sourceKey);
+            if (!source) return;
+            
+            var features = map.querySourceFeatures(sourceKey);
+            features.forEach(feature => {
+              if (found) return;
+              
+              var props = feature.properties;
+              var featureName = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '';
+              var featureCode = props.state_code || props['ISO3166-1-Alpha-2'] || '';
+              
+              if (normalize(featureName) === normalize(randomCountry) || 
+                  featureCode === randomCountry ||
+                  randomCountry === featureName) {
+                
+                // 国の境界に合わせてズーム
+                if (feature.geometry && feature.geometry.type) {
+                  var bbox = turf.bbox(feature.geometry);
+                  map.fitBounds(bbox, { padding: 50, maxZoom: 6 });
+                  found = true;
+                }
+              }
+            });
+          });
+        });
+      });
       
       // トグルボタンのイベントを設定
       var toggleButtons = progressDisplay.querySelectorAll('.toggle-list-btn');
