@@ -285,14 +285,12 @@ javascript:(function () {
     var searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = '地域名を入力...';
-    searchInput.setAttribute('lang', 'en');
     Object.assign(searchInput.style, {
       width: '100%',
       padding: '5px 30px 5px 5px',
       border: '1px solid #ccc',
       borderRadius: '3px',
       fontSize: '14px',
-      imeMode: 'disabled',
       boxSizing: 'border-box'
     });
     searchWrapper.appendChild(searchInput);
@@ -333,12 +331,6 @@ javascript:(function () {
       fontSize: '15px',
     });
     searchContainer.appendChild(progressDisplay);
-
-    // 検索入力欄にフォーカスしたときに英語入力に強制
-    searchInput.addEventListener('focus', function() {
-      this.style.imeMode = 'disabled';
-      this.setAttribute('inputmode', 'latin');
-    });
 
     // 国リストの開閉状態を保持
     var expandedLists = {};
