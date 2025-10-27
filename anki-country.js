@@ -378,62 +378,76 @@ javascript:(function () {
         var countryList = [];
 
         if (region === 'Default') {
-          // Defaultは塗られた国の中からカウント
-          Object.keys(filledFeatures).forEach(id => {
-            var feature = filledFeatures[id];
-            // どの地域にも属していないかチェック
-            var belongsToRegion = false;
-            for (const [reg, list] of Object.entries(countryRegions)) {
-              if (list.some(country => normalize(country) === normalize(id) || country === id)) {
-                belongsToRegion = true;
-                break;
-              }
-            }
-            if (!belongsToRegion) {
-              filledCount++;
-              countryList.push({ name: id, filled: true });
-            }
-          });
-          totalCount = '?';
-        } else if (region === usaStatesRegion) {
-          // USA Statesの処理
-          totalCount = usStates.length;
-          
-          usStates.forEach(stateCode => {
-            var isFilled = Object.keys(filledFeatures).some(id => {
-              return id === stateCode;
-            });
+        // GeoJSONデータから直接Defaultに属する地物を取得
+        var defaultFeatures = [];
+        
+        // worldレイヤーから取得
+        if (geojsonData.world && geojsonData.world.features) {
+          geojsonData.world.features.forEach(feature => {
+            var props = feature.properties;
+            var featureRegion = getRegion(props);
             
-            if (isFilled) {
-              filledCount++;
+            if (featureRegion === 'Default') {
+              var id = props.name || feature.id;
+              defaultFeatures.push(id);
             }
-            
-            countryList.push({ name: stateCode, filled: isFilled });
-          });
-        } else {
-          var regionCountries = countryRegions[region];
-          totalCount = regionCountries.length;
-
-          // その地域の国リストを作成
-          regionCountries.forEach(country => {
-            var isFilled = Object.keys(filledFeatures).some(id => {
-              return normalize(country) === normalize(id) || country === id;
-            });
-            
-            if (isFilled) {
-              filledCount++;
-            }
-            
-            countryList.push({ name: country, filled: isFilled });
           });
         }
-
-        var color = regionColors[region] || regionColors.Default;
-        var listId = 'country-list-' + region.replace(/\s+/g, '-');
-        var isExpanded = expandedLists[region] || false;
-        var unfilledCountries = countryList.filter(c => !c.filled);
         
-       html += `
+        totalCount = defaultFeatures.length;
+        
+        // 各Default地物の塗りつぶし状態をチェック
+        defaultFeatures.forEach(id => {
+          var isFilled = Object.keys(filledFeatures).some(filledId => {
+            return normalize(id) === normalize(filledId) || id === filledId;
+          });
+          
+          if (isFilled) {
+            filledCount++;
+          }
+          
+          countryList.push({ name: id, filled: isFilled });
+        });
+        
+      } else if (region === usaStatesRegion) {
+        // USA Statesの処理
+        totalCount = usStates.length;
+        
+        usStates.forEach(stateCode => {
+          var isFilled = Object.keys(filledFeatures).some(id => {
+            return id === stateCode;
+          });
+          
+          if (isFilled) {
+            filledCount++;
+          }
+          
+          countryList.push({ name: stateCode, filled: isFilled });
+        });
+      } else {
+        var regionCountries = countryRegions[region];
+        totalCount = regionCountries.length;
+      
+        // その地域の国リストを作成
+        regionCountries.forEach(country => {
+          var isFilled = Object.keys(filledFeatures).some(id => {
+            return normalize(country) === normalize(id) || country === id;
+          });
+          
+          if (isFilled) {
+            filledCount++;
+          }
+          
+          countryList.push({ name: country, filled: isFilled });
+        });
+      }
+
+      var color = regionColors[region] || regionColors.Default;
+      var listId = 'country-list-' + region.replace(/\s+/g, '-');
+      var isExpanded = expandedLists[region] || false;
+      var unfilledCountries = countryList.filter(c => !c.filled);
+        
+      html += `
           <div style="margin-bottom:3px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
               <div class="region-progress" data-region="${region}" style="cursor:${unfilledCountries.length > 0 ? 'pointer' : 'default'};">
