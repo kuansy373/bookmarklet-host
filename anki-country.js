@@ -665,9 +665,11 @@ javascript:(function () {
               return;
             }
           }
-    
+
+          // 色塗りに使う
           var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
-          var id = featureId || props.id || props.name || props.NAME;
+          // 進捗に使う
+          var id = props['name'] || props.state_code || feature.id;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
           var fillColor = regionColors[region] || regionColors.Default;
