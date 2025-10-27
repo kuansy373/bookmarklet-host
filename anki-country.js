@@ -438,7 +438,7 @@ javascript:(function () {
                 <div style="font-weight:600; color:${color};">${region}</div>
                 <div style="color:#555; font-size:13px;">${filledCount} / ${totalCount}</div>
               </div>
-              <button class="toggle-list-btn" data-target="${listId}" data-region="${region}" style="background:none; border:none; cursor:pointer; font-size:16px; padding:4px 8px 4px 140px; margin-left:-140px;">${isExpanded ? '▲' : '▼'}</button>
+              <button class="toggle-list-btn" data-target="${listId}" data-region="${region}" style="background:none; border:none; cursor:pointer; font-size:16px; height:40px; padding:4px 8px 4px 140px; margin-left:-140px;">${isExpanded ? '▲' : '▼'}</button>
             </div>
             <div id="${listId}" style="display:${isExpanded ? 'block' : 'none'}; margin-top:5px; padding-left:10px; max-height:200px; overflow-y:auto; font-size:13px; line-height:1.6;">
               ${countryList.map(country => {
