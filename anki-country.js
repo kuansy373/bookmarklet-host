@@ -478,8 +478,39 @@ javascript:(function () {
                   randomCountry === featureName) {
                 
                 if (feature.geometry && feature.geometry.type) {
-                  var bbox = turf.bbox(feature.geometry);
-                  map.fitBounds(bbox, { padding: 50, maxZoom: 6 });
+                  // 面積重心を計算
+                  var centroid = turf.centroid(feature.geometry);
+                  var coords = centroid.geometry.coordinates;
+                  
+                  // 面積を計算（平方キロメートル）
+                  var area = turf.area(feature.geometry) / 1000000;
+                  
+                  // 面積に応じてズームレベルを決定
+                  var zoom;
+                  if (area > 5000000) {
+                    zoom = 3; // 超大
+                  } else if (area > 1000000) {
+                    zoom = 4; // 大
+                  } else if (area > 100000) {
+                    zoom = 5; // 中
+                  } else if (area > 10000) {
+                    zoom = 6; // 小
+                  } else if (area > 1000) {
+                    zoom = 7; 
+                  } else if (area > 100) {
+                    zoom = 8;
+                  } else if (area > 10) {
+                    zoom = 9;
+                  } else {
+                    zoom = 15; // 極小
+                  }
+                  
+                  // 固定ズームレベルで中心に移動
+                  map.flyTo({
+                    center: coords,
+                    zoom: zoom,
+                    duration: 1000
+                  });
                   found = true;
                 }
               }
