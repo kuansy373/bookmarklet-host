@@ -117,8 +117,8 @@ javascript:(function () {
     ],
     Africa: [
       'algeria','angola',
-      'benin','birtawil','botswana','burkina faso','burundi',
-      'cameroon','capeverde','central african republic','chad','comoros',
+      'benin','botswana','burkina faso','burundi',
+      'cabo verde','cameroon','central african republic','chad','comoros',
       'democratic republic of the congo','djibouti',
       'egypt','equatorial guinea','eritrea','eswatini','ethiopia',
       'gabon','gambia','ghana','guinea','guinea-bissau',
@@ -128,8 +128,8 @@ javascript:(function () {
       'madagascar','malawi','mali','mauritania','mauritius','morocco','mozambique',
       'namibia','niger','nigeria',
       'republic of the congo','rwanda',
-      'senegal','seychelles','sierra leone','somalia','somaliland','south africa','south sudan','sudan','swaziland',
-      'thegambia','togo','tunisia',
+      'senegal','seychelles','sierra leone','somalia','south africa','south sudan','sudan',
+      'togo','tunisia',
       'uganda','united republic of tanzania',
       'western sahara',
       'zambia','zimbabwe'
