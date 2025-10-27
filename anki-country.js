@@ -176,20 +176,20 @@ javascript:(function () {
       'vanuatu'
     ],
     'North America': [
-      'antigua and barbuda',
-      'barbados','belize','bermuda',
-      'canada','costa rica','cuba',
-      'dominica','dominican republic',
-      'el salvador',
-      'grenada','greenland','guatemala',
-      'haiti','honduras',
-      'jamaica',
-      'mexico',
-      'nicaragua',
-      'panama','puerto rico',
-      'saintkittsandnevis','saint lucia','saintvincentand the grenadines',
-      'the bahamas','trinidad and tobago',
-      'united states of america'
+      'Antigua and Barbuda',
+      'Barbados','Belize','Bermuda',
+      'Canada','Costa Rica','Cuba',
+      'Dominica','Dominican Republic',
+      'El Salvador',
+      'Grenada','Greenland','Guatemala',
+      'Haiti','Honduras',
+      'Jamaica',
+      'Mexico',
+      'Nicaragua',
+      'Panama','Puerto Rico',
+      'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+      'The Bahamas','Trinidad and Tobago',
+      'United States of America'
     ],
     'South America': [
       'argentina',
@@ -250,6 +250,7 @@ javascript:(function () {
       }
 
       // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
+      // list（countryRegions） の中の各要素 c を一時的に normalize(c) で正規化し、n（正規化済みのgeojson名）と一致するか比較。
       var name = properties.name || '';
       var n = normalize(name);
       for (const [region, list] of Object.entries(countryRegions)) {
