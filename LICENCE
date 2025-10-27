@@ -44,11 +44,11 @@ Third-party libraries used:
    - Copyright (c) 2013 Troy Goode  
    - https://github.com/expressjs/cors/blob/master/LICENSE  
 
-Note: The `fs` module is part of Node.js core and is covered under the Node.js license (MIT). 
+  Note: The `fs` module is part of Node.js core and is covered under the Node.js license (MIT). 
 
 4. Google Fonts
 
-The following fonts are provided via Google Fonts and are licensed under the SIL Open Font License (OFL) or Apache License, as specified by each font:
+  The following fonts are provided via Google Fonts and are licensed under the SIL Open Font License (OFL) or Apache License, as specified by each font:
 
    -1. Zen Kurenaido — SIL Open Font License, 1.1
       https://fonts.google.com/specimen/Zen+Kurenaido
@@ -67,16 +67,32 @@ The following fonts are provided via Google Fonts and are licensed under the SIL
    -8. Rampart One — SIL Open Font License, 1.1
       https://fonts.google.com/specimen/Rampart+One
 
-These fonts are free to use, modify, and distribute under their respective licenses. For full license details, please visit the links above.
+  These fonts are free to use, modify, and distribute under their respective licenses. For full license details, please visit the links above.
 
-5. Geo data
+5. MapLibre GL JS
+   - BSD-3-Clause license
+   - Copyright (c) 2023, MapLibre contributors
+   - https://github.com/maplibre/maplibre-gl-js/blob/main/LICENSE.txt
+   - Files used:
+     - https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js
+     - https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css
+
+6. MapLibre Demo Fonts
+   - License: BSD-3-Clause License (as distributed via demotiles.maplibre.org)
+   - Source: https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf
+   - Provided by MapLibre project for demonstration purposes
+
+7. Turf.js
+   - MIT License
+   - Copyright (c) 2019 Morgan Herlocker
+   - https://github.com/Turfjs/turf/blob/master/LICENSE
+
+8. Geo data
 
    -1. geo-countries
-      - 
-      - Copyright (c) Open Data Community / Natural Earth
-    https://github.com/datasets/geo-countries
-
+      - All data is licensed under the Open Data Commons Public Domain Dedication and License.
+      - https://github.com/datasets/geo-countries
+    
    -2. geo-admin1-us
-      - 
-      - Copyright (c) Open Data Community / Natural Earth
-    https://github.com/datasets/geo-admin1-us
+      - All data is licensed under the Open Data Commons Public Domain Dedication and License.
+      - https://github.com/datasets/geo-admin1-us
