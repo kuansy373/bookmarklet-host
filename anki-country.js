@@ -274,17 +274,58 @@ javascript:(function () {
     });
     container.appendChild(searchContainer);
   
+    // 検索ボックスのラッパー（相対配置用）
+    var searchWrapper = document.createElement('div');
+    Object.assign(searchWrapper.style, {
+      position: 'relative',
+      width: '100%'
+    });
+    searchContainer.appendChild(searchWrapper);
+  
     var searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = '地域名を入力...';
+    searchInput.setAttribute('lang', 'en');
     Object.assign(searchInput.style, {
       width: '100%',
-      padding: '5px',
+      padding: '5px 30px 5px 5px',
       border: '1px solid #ccc',
       borderRadius: '3px',
-      fontSize: '14px'
+      fontSize: '14px',
+      imeMode: 'disabled',
+      boxSizing: 'border-box'
     });
-    searchContainer.appendChild(searchInput);
+    searchWrapper.appendChild(searchInput);
+  
+    // クリアボタン（入力欄内部の右端）
+    var clearButton = document.createElement('button');
+    clearButton.textContent = '✕';
+    Object.assign(clearButton.style, {
+      position: 'absolute',
+      right: '5px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      padding: '2px 6px',
+      border: 'none',
+      borderRadius: '3px',
+      background: 'transparent',
+      cursor: 'pointer',
+      fontSize: '16px',
+      lineHeight: '1',
+      color: '#666'
+    });
+    clearButton.addEventListener('mouseenter', function() {
+      this.style.background = '#e0e0e0';
+    });
+    clearButton.addEventListener('mouseleave', function() {
+      this.style.background = 'transparent';
+    });
+    clearButton.addEventListener('click', function() {
+      searchInput.value = '';
+      updateProgress();
+      searchInput.focus();
+    });
+    searchWrapper.appendChild(clearButton);
   
     var progressDisplay = document.createElement('div');
     progressDisplay.id = 'progress-display';
@@ -292,6 +333,12 @@ javascript:(function () {
       fontSize: '15px',
     });
     searchContainer.appendChild(progressDisplay);
+
+    // 検索入力欄にフォーカスしたときに英語入力に強制
+    searchInput.addEventListener('focus', function() {
+      this.style.imeMode = 'disabled';
+      this.setAttribute('inputmode', 'latin');
+    });
 
     // 国リストの開閉状態を保持
     var expandedLists = {};
@@ -326,7 +373,7 @@ javascript:(function () {
       });
 
       if (matchedRegions.length === 0) {
-        progressDisplay.innerHTML = '<div style="color:#999;">該当する地域がありません</div>';
+        progressDisplay.innerHTML = '<div style="color:#999; margin-top:8px;">該当する地域がありません</div>';
         return;
       }
 
