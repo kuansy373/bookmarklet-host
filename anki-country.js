@@ -569,14 +569,9 @@ javascript:(function () {
                 (props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '').trim().toLowerCase();
               var featureCode = (props.state_code || props['ISO3166-1-Alpha-2'] || '').trim().toLowerCase();
       
-              // 名前またはコードでゆるく一致判定（前方一致も許可）
-              if (
-                featureName === countryName ||
-                featureCode === countryName ||
-                featureName.includes(countryName) ||
-                countryName.includes(featureName)
-              ) {
-                if (feature.geometry && feature.geometry.type) {
+              // 名前またはコードで一致判定
+              if (featureName === countryName || featureCode === countryName) {
+              if (feature.geometry && feature.geometry.type) {
                   var centroid = turf.centroid(feature.geometry);
                   var coords = centroid.geometry.coordinates;
                   var area = turf.area(feature.geometry) / 1000000;
