@@ -251,7 +251,6 @@ javascript:(function () {
       }
 
       // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
-      // list（countryRegions） の中の各要素 c を一時的に normalize(c) で正規化し、n（正規化済みのgeojson名）と一致するか比較。
       var name = properties.name || '';
       var n = normalize(name);
       for (const [region, list] of Object.entries(countryRegions)) {
@@ -442,12 +441,12 @@ javascript:(function () {
         });
       }
 
-      var color = regionColors[region] || regionColors.Default;
-      var listId = 'country-list-' + region.replace(/\s+/g, '-');
-      var isExpanded = expandedLists[region] || false;
-      var unfilledCountries = countryList.filter(c => !c.filled);
+        var color = regionColors[region] || regionColors.Default;
+        var listId = 'country-list-' + region.replace(/\s+/g, '-');
+        var isExpanded = expandedLists[region] || false;
+        var unfilledCountries = countryList.filter(c => !c.filled);
         
-      html += `
+       html += `
           <div style="margin-bottom:3px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
               <div class="region-progress" data-region="${region}" style="cursor:${unfilledCountries.length > 0 ? 'pointer' : 'default'};">
@@ -681,11 +680,9 @@ javascript:(function () {
               return;
             }
           }
-
-          // 色塗りに使う
+    
           var featureId = key === 'usaStates' ? props.state_code : (props['name'] || feature.id);
-          // 進捗に使う
-          var id = props['name'] || props.state_code || feature.id;
+          var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
           var fillColor = regionColors[region] || regionColors.Default;
