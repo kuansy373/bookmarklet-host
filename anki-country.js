@@ -528,9 +528,20 @@ javascript:(function () {
       // 各国クリックでズーム
       var countryElements = progressDisplay.querySelectorAll('#progress-display div[id^="country-list-"] div');
       countryElements.forEach(elem => {
+        
         elem.style.cursor = 'pointer';
-        elem.addEventListener('mouseenter', () => { elem.style.color = '#000000'; });
-        elem.addEventListener('mouseleave', () => { elem.style.color = '#aaa'; });
+        elem.addEventListener('mouseenter', () => {
+          // 現在の色を保存しておく（後で戻すため）
+          elem.dataset.originalColor = elem.style.color || window.getComputedStyle(elem).color;
+          elem.style.color = '#000000'; // ホバー中は黒
+        });
+        
+        elem.addEventListener('mouseleave', () => {
+          // 保存していた色に戻す
+          if (elem.dataset.originalColor) {
+            elem.style.color = elem.dataset.originalColor;
+          }
+        });
       
         elem.addEventListener('click', function (e) {
           e.stopPropagation(); // 地域クリックイベントを抑止
