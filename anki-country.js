@@ -285,7 +285,7 @@ javascript:(function () {
     Object.assign(searchInput.style, {
       width: '100%',
       padding: '5px 30px 5px 5px',
-      border: '1px solid #ccc',
+      border: '1px solid #aaa',
       borderRadius: '3px',
       fontSize: '14px',
       boxSizing: 'border-box'
@@ -448,7 +448,7 @@ javascript:(function () {
             </div>
             <div id="${listId}" style="display:${isExpanded ? 'block' : 'none'}; margin-top:5px; padding-left:10px; max-height:200px; overflow-y:auto; font-size:13px; line-height:1.6;">
               ${countryList.map(country => {
-                var countryColor = country.filled ? color : '#ccc';
+                var countryColor = country.filled ? color : '#aaa';
                 return `<div style="color:${countryColor};">${country.name}</div>`;
               }).join('')}
             </div>
@@ -461,93 +461,135 @@ javascript:(function () {
       // 進捗部分のクリックイベント（未塗りつぶし国にズーム）
       var progressElements = progressDisplay.querySelectorAll('.region-progress');
       progressElements.forEach(elem => {
-        elem.addEventListener('click', function() {
+        elem.addEventListener('click', function () {
           var region = this.getAttribute('data-region');
-          
-          if (region === 'Default') {
-            return;
-          }
-          
-          // 未塗りつぶし国を取得（統一処理）
+      
+          if (region === 'Default') return;
+      
+          // 未塗りつぶし国を取得
           var regionCountries = countryRegions[region];
           var unfilledCountries = [];
-          
+      
           regionCountries.forEach(country => {
             var isFilled = Object.keys(filledFeatures).some(id => {
               return normalize(country) === normalize(id) || country === id;
             });
-            
-            if (!isFilled) {
-              unfilledCountries.push(country);
-            }
+            if (!isFilled) unfilledCountries.push(country);
           });
-          
-          if (unfilledCountries.length === 0) {
-            return;
-          }
-          
+      
+          if (unfilledCountries.length === 0) return;
+      
           var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
-          
-          // GeoJSONデータから直接検索
+      
+          // GeoJSONデータから直接検索してズーム
           var sources = region === 'USA States' ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
           var found = false;
-          
+      
           sources.forEach(sourceKey => {
             if (found) return;
-            
             var data = geojsonData[sourceKey];
             if (!data || !data.features) return;
-            
+      
             data.features.forEach(feature => {
               if (found) return;
-              
               var props = feature.properties;
               var featureName = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '';
               var featureCode = props.state_code || props['ISO3166-1-Alpha-2'] || '';
-              
-              if (normalize(featureName) === normalize(randomCountry) || 
-                  featureCode === randomCountry ||
-                  randomCountry === featureName) {
-                
+      
+              if (
+                normalize(featureName) === normalize(randomCountry) ||
+                featureCode === randomCountry ||
+                randomCountry === featureName
+              ) {
                 if (feature.geometry && feature.geometry.type) {
-                  // 面積重心を計算
                   var centroid = turf.centroid(feature.geometry);
                   var coords = centroid.geometry.coordinates;
-                  
-                  // 面積を計算（平方キロメートル）
                   var area = turf.area(feature.geometry) / 1000000;
-                  
-                  // 面積に応じてズームレベルを決定
+      
                   var zoom;
-                  if (area > 5000000) {
-                    zoom = 3; // 超大
-                  } else if (area > 1000000) {
-                    zoom = 4; // 大
-                  } else if (area > 100000) {
-                    zoom = 5; // 中
-                  } else if (area > 10000) {
-                    zoom = 6; // 小
-                  } else if (area > 1000) {
-                    zoom = 7; 
-                  } else if (area > 100) {
-                    zoom = 8;
-                  } else if (area > 10) {
-                    zoom = 9;
-                  } else {
-                    zoom = 15; // 極小
-                  }
-                  
-                  // 固定ズームレベルで中心に移動
-                  map.flyTo({
-                    center: coords,
-                    zoom: zoom,
-                    duration: 1000
-                  });
+                  if (area > 5000000) zoom = 3;
+                  else if (area > 1000000) zoom = 4;
+                  else if (area > 100000) zoom = 5;
+                  else if (area > 10000) zoom = 6;
+                  else if (area > 1000) zoom = 7;
+                  else if (area > 100) zoom = 8;
+                  else if (area > 10) zoom = 9;
+                  else zoom = 15;
+      
+                  map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
                   found = true;
                 }
               }
             });
           });
+        });
+      });
+      
+      // 各国クリックでズーム
+      var countryElements = progressDisplay.querySelectorAll('#progress-display div[id^="country-list-"] div');
+      countryElements.forEach(elem => {
+        elem.style.cursor = 'pointer';
+        elem.addEventListener('mouseenter', () => { elem.style.color = '#000000'; });
+        elem.addEventListener('mouseleave', () => { elem.style.color = '#aaa'; });
+      
+        elem.addEventListener('click', function (e) {
+          e.stopPropagation(); // 地域クリックイベントを抑止
+          var countryName = this.textContent.trim().toLowerCase();
+      
+          // リストタイトル（region）を確実に取得
+          var parentList = this.closest('[id^="country-list-"]');
+          if (!parentList) return;
+          var regionId = parentList.id.replace('country-list-', '').replace(/-/g, ' ');
+          var region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase());
+          if (!region) return;
+      
+          var sources = region === 'USA States' ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
+          var found = false;
+      
+          sources.forEach(sourceKey => {
+            if (found) return;
+            var data = geojsonData[sourceKey];
+            if (!data || !data.features) return;
+      
+            data.features.forEach(feature => {
+              if (found) return;
+              var props = feature.properties;
+              var featureName =
+                (props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '').trim().toLowerCase();
+              var featureCode = (props.state_code || props['ISO3166-1-Alpha-2'] || '').trim().toLowerCase();
+      
+              // 名前またはコードでゆるく一致判定（前方一致も許可）
+              if (
+                featureName === countryName ||
+                featureCode === countryName ||
+                featureName.includes(countryName) ||
+                countryName.includes(featureName)
+              ) {
+                if (feature.geometry && feature.geometry.type) {
+                  var centroid = turf.centroid(feature.geometry);
+                  var coords = centroid.geometry.coordinates;
+                  var area = turf.area(feature.geometry) / 1000000;
+      
+                  var zoom;
+                  if (area > 5000000) zoom = 3;
+                  else if (area > 1000000) zoom = 4;
+                  else if (area > 100000) zoom = 5;
+                  else if (area > 10000) zoom = 6;
+                  else if (area > 1000) zoom = 7;
+                  else if (area > 100) zoom = 8;
+                  else if (area > 10) zoom = 9;
+                  else zoom = 15;
+      
+                  map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
+                  found = true;
+                }
+              }
+            });
+          });
+      
+          if (!found) {
+            console.warn('国を特定できませんでした:', countryName);
+          }
         });
       });
       
