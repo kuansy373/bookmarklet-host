@@ -89,160 +89,156 @@ javascript:(function () {
       'South America': '#a3d3d8',
       Antarctica: '#a5dce9',
       Capitals: '#ff0000',
-      Default: '#000000',
+      'USA States': '#b3ce62',
+      Default: '#000000'
     };
 
     // 判定用リスト
     var countryRegions = {
-     Europe: [
-      'Albania','Andorra','Armenia','Austria','Azerbaijan',
-      'Belarus','Belgium','Bosnia and Herzegovina','Bulgaria',
-      'Croatia','Cyprus','Czechia',
-      'Denmark',
-      'Estonia',
-      'Finland','France',
-      'Georgia','Germany','Greece',
-      'Hungary',
-      'Iceland','Ireland','Italy',
-      'Kosovo',
-      'Latvia','Liechtenstein','Lithuania','Luxembourg',
-      'Malta','Moldova','Monaco','Montenegro',
-      'Netherlands','North Macedonia','Norway',
-      'Poland','Portugal',
-      'Republic of Serbia','Romania','Russia',
-      'San Marino','Slovakia','Slovenia','Spain','Sweden','Switzerland',
-      'Ukraine','United Kingdom',
-      'Vatican'
-    ],
-    Africa: [
-      'Algeria','Angola',
-      'Benin','Botswana','Burkina Faso','Burundi',
-      'Cabo Verde','Cameroon','Central African Republic','Chad','Comoros',
-      'Democratic Republic of the Congo','Djibouti',
-      'Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia',
-      'Gabon','Gambia','Ghana','Guinea','Guinea-Bissau',
-      'Ivory Coast',
-      'Kenya',
-      'Lesotho','Liberia','Libya',
-      'Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique',
-      'Namibia','Niger','Nigeria',
-      'Republic of the Congo','Rwanda',
-      'São Tomé and Principe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan',
-      'Togo','Tunisia',
-      'Uganda','United Republic of Tanzania',
-      'Western Sahara',
-      'Zambia','Zimbabwe'
-    ],
-    'Middle East': [
-      'Afghanistan',
-      'Bahrain',
-      'Iran','Iraq','Israel',
-      'Jordan',
-      'Kuwait',
-      'Lebanon',
-      'Oman',
-      'Palestine',
-      'Qatar',
-      'Saudi Arabia','Syria',
-      'Turkey',
-      'United Arab Mmirates',
-      'Yemen'
-    ],
-    Asia: [
-      'Bangladesh','Bhutan','Brunei',
-      'Cambodia','China',
-      'East Timor',
-      'Hong Kong S.A.R.',
-      'India','Indonesia',
-      'Japan',
-      'Kazakhstan','Kyrgyzstan',
-      'Laos',
-      'Macao S.A.R','Malaysia','Maldives','Mongolia','Myanmar',
-      'Nepal','North Korea',
-      'Pakistan','Philippines',
-      'Singapore','South Korea','Sri Lanka',
-      'Taiwan','Tajikistan','Thailand','Turkmenistan',
-      'Uzbekistan',
-      'Vietnam'
-    ],
-    Oceania: [
-      'Australia',
-      'Federated States of Micronesia','Fiji',
-      'Kiribati',
-      'Marshall Islands',
-      'Nauru','New Caledonia','New Zealand',
-      'Palau','Papua New Guinea',
-      'Samoa','Solomon Islands',
-      'Tonga','Tuvalu',
-      'Vanuatu'
-    ],
-    'North America': [
-      'Antigua and Barbuda',
-      'Barbados','Belize','Bermuda',
-      'Canada','Costa Rica','Cuba',
-      'Dominica','Dominican Republic',
-      'El Salvador',
-      'Grenada','Greenland','Guatemala',
-      'Haiti','Honduras',
-      'Jamaica',
-      'Mexico',
-      'Nicaragua',
-      'Panama','Puerto Rico',
-      'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
-      'The Bahamas','Trinidad and Tobago',
-      'United States of America'
-    ],
-    'South America': [
-      'Argentina',
-      'Bolivia','Brazil',
-      'Chile','Colombia',
-      'Ecuador',
-      'Falklandislands','Frenchguiana',
-      'Guyana',
-      'Paraguay','Peru',
-      'Suriname',
-      'Uruguay',
-      'Venezuela'
-    ],
-    Antarctica: [
-      'Antarctica',
-      'French Southern and Antarctic Lands'
-    ],
-    Capitals: [
-      'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
-      'Seoul',
-      'Tokyo',
-      'District of Columbia'
-    ]
+      Europe: [
+        'Albania','Andorra','Armenia','Austria','Azerbaijan',
+        'Belarus','Belgium','Bosnia and Herzegovina','Bulgaria',
+        'Croatia','Cyprus','Czechia',
+        'Denmark',
+        'Estonia',
+        'Finland','France',
+        'Georgia','Germany','Greece',
+        'Hungary',
+        'Iceland','Ireland','Italy',
+        'Kosovo',
+        'Latvia','Liechtenstein','Lithuania','Luxembourg',
+        'Malta','Moldova','Monaco','Montenegro',
+        'Netherlands','North Macedonia','Norway',
+        'Poland','Portugal',
+        'Republic of Serbia','Romania','Russia',
+        'San Marino','Slovakia','Slovenia','Spain','Sweden','Switzerland',
+        'Ukraine','United Kingdom',
+        'Vatican'
+      ],
+      Africa: [
+        'Algeria','Angola',
+        'Benin','Botswana','Burkina Faso','Burundi',
+        'Cabo Verde','Cameroon','Central African Republic','Chad','Comoros',
+        'Democratic Republic of the Congo','Djibouti',
+        'Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia',
+        'Gabon','Gambia','Ghana','Guinea','Guinea-Bissau',
+        'Ivory Coast',
+        'Kenya',
+        'Lesotho','Liberia','Libya',
+        'Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique',
+        'Namibia','Niger','Nigeria',
+        'Republic of the Congo','Rwanda',
+        'São Tomé and Principe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan',
+        'Togo','Tunisia',
+        'Uganda','United Republic of Tanzania',
+        'Western Sahara',
+        'Zambia','Zimbabwe'
+      ],
+      'Middle East': [
+        'Afghanistan',
+        'Bahrain',
+        'Iran','Iraq','Israel',
+        'Jordan',
+        'Kuwait',
+        'Lebanon',
+        'Oman',
+        'Palestine',
+        'Qatar',
+        'Saudi Arabia','Syria',
+        'Turkey',
+        'United Arab Mmirates',
+        'Yemen'
+      ],
+      Asia: [
+        'Bangladesh','Bhutan','Brunei',
+        'Cambodia','China',
+        'East Timor',
+        'Hong Kong S.A.R.',
+        'India','Indonesia',
+        'Japan',
+        'Kazakhstan','Kyrgyzstan',
+        'Laos',
+        'Macao S.A.R','Malaysia','Maldives','Mongolia','Myanmar',
+        'Nepal','North Korea',
+        'Pakistan','Philippines',
+        'Singapore','South Korea','Sri Lanka',
+        'Taiwan','Tajikistan','Thailand','Turkmenistan',
+        'Uzbekistan',
+        'Vietnam'
+      ],
+      Oceania: [
+        'Australia',
+        'Federated States of Micronesia','Fiji',
+        'Kiribati',
+        'Marshall Islands',
+        'Nauru','New Caledonia','New Zealand',
+        'Palau','Papua New Guinea',
+        'Samoa','Solomon Islands',
+        'Tonga','Tuvalu',
+        'Vanuatu'
+      ],
+      'North America': [
+        'Antigua and Barbuda',
+        'Barbados','Belize','Bermuda',
+        'Canada','Costa Rica','Cuba',
+        'Dominica','Dominican Republic',
+        'El Salvador',
+        'Grenada','Greenland','Guatemala',
+        'Haiti','Honduras',
+        'Jamaica',
+        'Mexico',
+        'Nicaragua',
+        'Panama','Puerto Rico',
+        'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+        'The Bahamas','Trinidad and Tobago',
+        'United States of America'
+      ],
+      'South America': [
+        'Argentina',
+        'Bolivia','Brazil',
+        'Chile','Colombia',
+        'Ecuador',
+        'Falklandislands','Frenchguiana',
+        'Guyana',
+        'Paraguay','Peru',
+        'Suriname',
+        'Uruguay',
+        'Venezuela'
+      ],
+      Antarctica: [
+        'Antarctica',
+        'French Southern and Antarctic Lands'
+      ],
+      Capitals: [
+        'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
+        'Seoul',
+        'Tokyo',
+      ],
+      'USA States': [
+        'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY','NC','RI',
+        'VT','KY','TN','OH','LA','IN','MS','IL','AL','ME',
+        'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
+        'KS','WV','NV','NE','CO','ND','SD','MT','WA','ID',
+        'WY','UT','OK','NM','AZ','AK','HI','DC'
+      ]
     };
-
-    // アメリカ州リスト（state_codeで判定）
-    var usStates = [
-      'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY','NC','RI',
-      'VT','KY','TN','OH','LA','IN','MS','IL','AL','ME',
-      'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
-      'KS','WV','NV','NE','CO','ND','SD','MT','WA','ID',
-      'WY','UT','OK','NM','AZ','AK','HI',
-    ];
     
     // 色塗り管理オブジェクト
     var filledFeatures = {};
-
-    // USA Statesを地域として扱うための設定
-    var usaStatesRegion = 'USA States';
 
     // nameの前後の空白を削除し、小文字に変換する関数
     function normalize(name) {
       return name.trim().toLowerCase();
     }
     
-    // geojsonプロパティにある個別のstate_codeがusStateに登録されている場合はNorth Americaを返す。
+    // 地域判定関数（簡素化版）
     function getRegion(properties) {
-      if (properties.state_code && usStates.includes(properties.state_code)) {
-        return 'North America';
+      // state_codeがあればUSA Statesリストで確認
+      if (properties.state_code && countryRegions['USA States'].includes(properties.state_code)) {
+        return 'USA States';
       }
 
-      // geojsonにプロパティnameがあればnameで、なければISO3166-1-Alpha-2を使ってregionを判定し返す。
+      // ISO3166-1-Alpha-2やnameで判定
       var isoCode = properties['name'] || properties['ISO3166-1-Alpha-2'];
       if (isoCode) {
         for (const [region, list] of Object.entries(countryRegions)) {
@@ -250,7 +246,7 @@ javascript:(function () {
         }
       }
 
-      // nameにproperties.nameを代入して正規化関数を使い正規化し、regionリストの中に同じものがあればその地域を返す。
+      // nameで正規化して判定
       var name = properties.name || '';
       var n = normalize(name);
       for (const [region, list] of Object.entries(countryRegions)) {
@@ -354,7 +350,7 @@ javascript:(function () {
       }
 
       // 地域名の部分一致検索（Defaultも含む）
-      var allRegions = Object.keys(countryRegions).concat(['Default', usaStatesRegion]);
+      var allRegions = Object.keys(countryRegions).concat(['Default']);
       var matchedRegions = [];
       
       searchTerms.forEach(searchTerm => {
@@ -377,76 +373,71 @@ javascript:(function () {
         var countryList = [];
 
         if (region === 'Default') {
-        // GeoJSONデータから直接Defaultに属する地物を取得
-        var defaultFeatures = [];
-        
-        // worldレイヤーから取得
-        if (geojsonData.world && geojsonData.world.features) {
-          geojsonData.world.features.forEach(feature => {
-            var props = feature.properties;
-            var featureRegion = getRegion(props);
+          // GeoJSONデータから直接Defaultに属する地物を取得
+          var defaultFeatures = [];
+          
+          // worldレイヤーから取得
+          if (geojsonData.world && geojsonData.world.features) {
+            geojsonData.world.features.forEach(feature => {
+              var props = feature.properties;
+              var featureRegion = getRegion(props);
+              
+              if (featureRegion === 'Default') {
+                var id = props.name || feature.id;
+                defaultFeatures.push(id);
+              }
+            });
+          }
+          
+          totalCount = defaultFeatures.length;
+          
+          // 各Default地物の塗りつぶし状態をチェック
+          defaultFeatures.forEach(id => {
+            var isFilled = Object.keys(filledFeatures).some(filledId => {
+              return normalize(id) === normalize(filledId) || id === filledId;
+            });
             
-            if (featureRegion === 'Default') {
-              var id = props.name || feature.id;
-              defaultFeatures.push(id);
+            if (isFilled) {
+              filledCount++;
             }
+            
+            countryList.push({ name: id, filled: isFilled });
           });
+        } else {
+          // 通常の地域（USA Statesを含む）
+          var regionCountries = countryRegions[region];
+          totalCount = regionCountries.length;
+        
+          regionCountries.forEach(country => {
+            var isFilled = Object.keys(filledFeatures).some(id => {
+              return normalize(country) === normalize(id) || country === id;
+            });
+            
+            if (isFilled) {
+              filledCount++;
+            }
+          
+            var displayName = country; // デフォルトはコードそのまま
+          
+            // region が USA States の場合、usaStates データから name を取得
+            if (region === 'USA States' && geojsonData.usaStates && geojsonData.usaStates.features) {
+              var match = geojsonData.usaStates.features.find(f => f.properties.state_code === country);
+              if (match && match.properties.name) {
+                displayName = match.properties.name;
+              }
+            }
+          
+            countryList.push({ name: displayName, filled: isFilled });
+          });
+
         }
-        
-        totalCount = defaultFeatures.length;
-        
-        // 各Default地物の塗りつぶし状態をチェック
-        defaultFeatures.forEach(id => {
-          var isFilled = Object.keys(filledFeatures).some(filledId => {
-            return normalize(id) === normalize(filledId) || id === filledId;
-          });
-          
-          if (isFilled) {
-            filledCount++;
-          }
-          
-          countryList.push({ name: id, filled: isFilled });
-        });
-        
-      } else if (region === usaStatesRegion) {
-        // USA Statesの処理
-        totalCount = usStates.length;
-        
-        usStates.forEach(stateCode => {
-          var isFilled = Object.keys(filledFeatures).some(id => {
-            return id === stateCode;
-          });
-          
-          if (isFilled) {
-            filledCount++;
-          }
-          
-          countryList.push({ name: stateCode, filled: isFilled });
-        });
-      } else {
-        var regionCountries = countryRegions[region];
-        totalCount = regionCountries.length;
-      
-        // その地域の国リストを作成
-        regionCountries.forEach(country => {
-          var isFilled = Object.keys(filledFeatures).some(id => {
-            return normalize(country) === normalize(id) || country === id;
-          });
-          
-          if (isFilled) {
-            filledCount++;
-          }
-          
-          countryList.push({ name: country, filled: isFilled });
-        });
-      }
 
         var color = regionColors[region] || regionColors.Default;
         var listId = 'country-list-' + region.replace(/\s+/g, '-');
         var isExpanded = expandedLists[region] || false;
         var unfilledCountries = countryList.filter(c => !c.filled);
         
-       html += `
+        html += `
           <div style="margin-bottom:3px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
               <div class="region-progress" data-region="${region}" style="cursor:${unfilledCountries.length > 0 ? 'pointer' : 'default'};">
@@ -477,32 +468,19 @@ javascript:(function () {
             return;
           }
           
+          // 未塗りつぶし国を取得（統一処理）
+          var regionCountries = countryRegions[region];
           var unfilledCountries = [];
           
-          if (region === usaStatesRegion) {
-            // USA Statesの未塗りつぶし州を取得
-            usStates.forEach(stateCode => {
-              var isFilled = Object.keys(filledFeatures).some(id => {
-                return id === stateCode;
-              });
-              
-              if (!isFilled) {
-                unfilledCountries.push(stateCode);
-              }
+          regionCountries.forEach(country => {
+            var isFilled = Object.keys(filledFeatures).some(id => {
+              return normalize(country) === normalize(id) || country === id;
             });
-          } else {
-            var regionCountries = countryRegions[region];
             
-            regionCountries.forEach(country => {
-              var isFilled = Object.keys(filledFeatures).some(id => {
-                return normalize(country) === normalize(id) || country === id;
-              });
-              
-              if (!isFilled) {
-                unfilledCountries.push(country);
-              }
-            });
-          }
+            if (!isFilled) {
+              unfilledCountries.push(country);
+            }
+          });
           
           if (unfilledCountries.length === 0) {
             return;
@@ -511,7 +489,7 @@ javascript:(function () {
           var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
           
           // GeoJSONデータから直接検索
-          var sources = region === usaStatesRegion ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
+          var sources = region === 'USA States' ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
           var found = false;
           
           sources.forEach(sourceKey => {
@@ -747,7 +725,6 @@ javascript:(function () {
         });
       });
     });
-
 
     // 地図ボタンの親コンテナ作成
     var mapBtnContainer = document.createElement('div');
