@@ -146,7 +146,7 @@ javascript:(function () {
         'Qatar',
         'Saudi Arabia','Syria',
         'Turkey',
-        'United Arab Mmirates',
+        'United Arab Emirates',
         'Yemen'
       ],
       Asia: [
@@ -223,7 +223,7 @@ javascript:(function () {
       ]
     };
     
-    // 色塗り管理オブジェクト
+   // 色塗り管理オブジェクト
     var filledFeatures = {};
 
     // nameの前後の空白を削除し、小文字に変換する関数
@@ -464,9 +464,69 @@ javascript:(function () {
         elem.addEventListener('click', function () {
           var region = this.getAttribute('data-region');
       
-          if (region === 'Default') return;
+          // Default地域の処理を追加
+          if (region === 'Default') {
+            // 未塗りつぶし国を取得
+            var unfilledCountries = [];
+            
+            if (geojsonData.world && geojsonData.world.features) {
+              geojsonData.world.features.forEach(feature => {
+                var props = feature.properties;
+                var featureRegion = getRegion(props);
+                
+                if (featureRegion === 'Default') {
+                  var id = props.name || feature.id;
+                  var isFilled = Object.keys(filledFeatures).some(filledId => {
+                    return normalize(id) === normalize(filledId) || id === filledId;
+                  });
+                  
+                  if (!isFilled) {
+                    unfilledCountries.push(id);
+                  }
+                }
+              });
+            }
+            
+            if (unfilledCountries.length === 0) return;
+            
+            var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
+            
+            // GeoJSONデータから検索してズーム
+            var found = false;
+            var data = geojsonData.world;
+            if (data && data.features) {
+              data.features.forEach(feature => {
+                if (found) return;
+                var props = feature.properties;
+                var featureName = props.name || '';
+                
+                if (normalize(featureName) === normalize(randomCountry) || randomCountry === featureName) {
+                  if (feature.geometry && feature.geometry.type) {
+                    var centroid = turf.centroid(feature.geometry);
+                    var coords = centroid.geometry.coordinates;
+                    var area = turf.area(feature.geometry) / 1000000;
+                    
+                    var zoom;
+                    if (area > 5000000) zoom = 3;
+                    else if (area > 1000000) zoom = 4;
+                    else if (area > 100000) zoom = 5;
+                    else if (area > 10000) zoom = 6;
+                    else if (area > 1000) zoom = 7;
+                    else if (area > 100) zoom = 8;
+                    else if (area > 10) zoom = 9;
+                    else zoom = 15;
+                    
+                    map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
+                    found = true;
+                  }
+                }
+              });
+            }
+            
+            return;
+          }
       
-          // 未塗りつぶし国を取得
+          // 既存の処理（通常の地域）
           var regionCountries = countryRegions[region];
           var unfilledCountries = [];
       
@@ -551,6 +611,47 @@ javascript:(function () {
           var parentList = this.closest('[id^="country-list-"]');
           if (!parentList) return;
           var regionId = parentList.id.replace('country-list-', '').replace(/-/g, ' ');
+          
+          // Defaultの場合の処理
+          if (regionId.toLowerCase() === 'default') {
+            var found = false;
+            var data = geojsonData.world;
+            if (data && data.features) {
+              data.features.forEach(feature => {
+                if (found) return;
+                var props = feature.properties;
+                var featureName = (props.name || '').trim().toLowerCase();
+                
+                if (featureName === countryName) {
+                  if (feature.geometry && feature.geometry.type) {
+                    var centroid = turf.centroid(feature.geometry);
+                    var coords = centroid.geometry.coordinates;
+                    var area = turf.area(feature.geometry) / 1000000;
+                    
+                    var zoom;
+                    if (area > 5000000) zoom = 3;
+                    else if (area > 1000000) zoom = 4;
+                    else if (area > 100000) zoom = 5;
+                    else if (area > 10000) zoom = 6;
+                    else if (area > 1000) zoom = 7;
+                    else if (area > 100) zoom = 8;
+                    else if (area > 10) zoom = 9;
+                    else zoom = 15;
+                    
+                    map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
+                    found = true;
+                  }
+                }
+              });
+            }
+            
+            if (!found) {
+              console.warn('国を特定できませんでした:', countryName);
+            }
+            return;
+          }
+          
+          // 既存の処理（通常の地域）
           var region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase());
           if (!region) return;
       
@@ -773,7 +874,7 @@ javascript:(function () {
         });
       });
     });
-
+    
     // 地図ボタンの親コンテナ作成
     var mapBtnContainer = document.createElement('div');
     Object.assign(mapBtnContainer.style, {
