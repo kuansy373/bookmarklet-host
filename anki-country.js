@@ -458,245 +458,93 @@ javascript:(function () {
 
       progressDisplay.innerHTML = html;
 
-      // 進捗部分のクリックイベント（未塗りつぶし国にズーム）
-      var progressElements = progressDisplay.querySelectorAll('.region-progress');
-      progressElements.forEach(elem => {
-        elem.addEventListener('click', function () {
-          var region = this.getAttribute('data-region');
+      // ▼ 共通ズーム関数
+      function zoomToFeature(feature) {
+        if (!feature || !feature.geometry) return;
+        const centroid = turf.centroid(feature.geometry);
+        const coords = centroid.geometry.coordinates;
+        const area = turf.area(feature.geometry) / 1_000_000;
+        const zoom =
+          area > 5_000_000 ? 3 :
+          area > 1_000_000 ? 4 :
+          area > 100_000 ? 5 :
+          area > 10_000 ? 6 :
+          area > 1_000 ? 7 :
+          area > 100 ? 8 :
+          area > 10 ? 9 : 15;
+        map.flyTo({ center: coords, zoom, duration: 1000 });
+      }
       
-          // Default地域の処理を追加
-          if (region === 'Default') {
-            // 未塗りつぶし国を取得
-            var unfilledCountries = [];
-            
-            if (geojsonData.world && geojsonData.world.features) {
-              geojsonData.world.features.forEach(feature => {
-                var props = feature.properties;
-                var featureRegion = getRegion(props);
-                
-                if (featureRegion === 'Default') {
-                  var id = props.name || feature.id;
-                  var isFilled = Object.keys(filledFeatures).some(filledId => {
-                    return normalize(id) === normalize(filledId) || id === filledId;
-                  });
-                  
-                  if (!isFilled) {
-                    unfilledCountries.push(id);
-                  }
-                }
-              });
-            }
-            
-            if (unfilledCountries.length === 0) return;
-            
-            var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
-            
-            // GeoJSONデータから検索してズーム
-            var found = false;
-            var data = geojsonData.world;
-            if (data && data.features) {
-              data.features.forEach(feature => {
-                if (found) return;
-                var props = feature.properties;
-                var featureName = props.name || '';
-                
-                if (normalize(featureName) === normalize(randomCountry) || randomCountry === featureName) {
-                  if (feature.geometry && feature.geometry.type) {
-                    var centroid = turf.centroid(feature.geometry);
-                    var coords = centroid.geometry.coordinates;
-                    var area = turf.area(feature.geometry) / 1000000;
-                    
-                    var zoom;
-                    if (area > 5000000) zoom = 3;
-                    else if (area > 1000000) zoom = 4;
-                    else if (area > 100000) zoom = 5;
-                    else if (area > 10000) zoom = 6;
-                    else if (area > 1000) zoom = 7;
-                    else if (area > 100) zoom = 8;
-                    else if (area > 10) zoom = 9;
-                    else zoom = 15;
-                    
-                    map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
-                    found = true;
-                  }
-                }
-              });
-            }
-            
-            return;
+      // ▼ 名前またはコードからフィーチャを検索
+      function findFeatureByName(name, sources = ['world', 'usaStates', 'capitals']) {
+        const n = normalize(name);
+        for (const sourceKey of sources) {
+          const data = geojsonData[sourceKey];
+          if (!data || !data.features) continue;
+          for (const feature of data.features) {
+            const props = feature.properties;
+            const names = [
+              props.name, props.NAME, props.ADMIN, props.ADMIN_EN,
+              props.state_code, props['ISO3166-1-Alpha-2']
+            ].map(v => (v || '').trim().toLowerCase());
+            if (names.includes(n)) return feature;
           }
+        }
+        return null;
+      }
       
-          // 既存の処理（通常の地域）
-          var regionCountries = countryRegions[region];
-          var unfilledCountries = [];
+      // ▼ 地域クリック（ランダム未塗り国ズーム）
+      progressDisplay.querySelectorAll('.region-progress').forEach(elem => {
+        elem.addEventListener('click', () => {
+          const region = elem.dataset.region;
+          const unfilled = [];
       
-          regionCountries.forEach(country => {
-            var isFilled = Object.keys(filledFeatures).some(id => {
-              return normalize(country) === normalize(id) || country === id;
-            });
-            if (!isFilled) unfilledCountries.push(country);
-          });
-      
-          if (unfilledCountries.length === 0) return;
-      
-          var randomCountry = unfilledCountries[Math.floor(Math.random() * unfilledCountries.length)];
-      
-          // GeoJSONデータから直接検索してズーム
-          var sources = region === 'USA States' ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
-          var found = false;
-      
-          sources.forEach(sourceKey => {
-            if (found) return;
-            var data = geojsonData[sourceKey];
-            if (!data || !data.features) return;
-      
-            data.features.forEach(feature => {
-              if (found) return;
-              var props = feature.properties;
-              var featureName = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '';
-              var featureCode = props.state_code || props['ISO3166-1-Alpha-2'] || '';
-      
-              if (
-                normalize(featureName) === normalize(randomCountry) ||
-                featureCode === randomCountry ||
-                randomCountry === featureName
-              ) {
-                if (feature.geometry && feature.geometry.type) {
-                  var centroid = turf.centroid(feature.geometry);
-                  var coords = centroid.geometry.coordinates;
-                  var area = turf.area(feature.geometry) / 1000000;
-      
-                  var zoom;
-                  if (area > 5000000) zoom = 3;
-                  else if (area > 1000000) zoom = 4;
-                  else if (area > 100000) zoom = 5;
-                  else if (area > 10000) zoom = 6;
-                  else if (area > 1000) zoom = 7;
-                  else if (area > 100) zoom = 8;
-                  else if (area > 10) zoom = 9;
-                  else zoom = 15;
-      
-                  map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
-                  found = true;
+          if (region === 'Default') {
+            (geojsonData.world?.features || []).forEach(f => {
+              if (getRegion(f.properties) === 'Default') {
+                const id = f.properties.name || f.id;
+                if (!Object.keys(filledFeatures).some(fid => normalize(fid) === normalize(id))) {
+                  unfilled.push(id);
                 }
               }
             });
-          });
+          } else {
+            (countryRegions[region] || []).forEach(c => {
+              if (!Object.keys(filledFeatures).some(fid => normalize(fid) === normalize(c))) {
+                unfilled.push(c);
+              }
+            });
+          }
+      
+          if (unfilled.length === 0) return;
+          const randomName = unfilled[Math.floor(Math.random() * unfilled.length)];
+          const feature = findFeatureByName(randomName, region === 'USA States' ? ['usaStates'] : undefined);
+          if (feature) zoomToFeature(feature);
         });
       });
       
-      // 各国クリックでズーム
-      var countryElements = progressDisplay.querySelectorAll('#progress-display div[id^="country-list-"] div');
-      countryElements.forEach(elem => {
-        
+      // ▼ 各国クリックでズーム
+      progressDisplay.querySelectorAll('#progress-display div[id^="country-list-"] div').forEach(elem => {
         elem.style.cursor = 'pointer';
         elem.addEventListener('mouseenter', () => {
-          // 現在の色を保存しておく（後で戻すため）
-          elem.dataset.originalColor = elem.style.color || window.getComputedStyle(elem).color;
-          elem.style.color = '#000000'; // ホバー中は黒
+          elem.dataset.originalColor = elem.style.color || getComputedStyle(elem).color;
+          elem.style.color = '#000';
         });
-        
         elem.addEventListener('mouseleave', () => {
-          // 保存していた色に戻す
-          if (elem.dataset.originalColor) {
-            elem.style.color = elem.dataset.originalColor;
-          }
+          if (elem.dataset.originalColor) elem.style.color = elem.dataset.originalColor;
         });
+        elem.addEventListener('click', e => {
+          e.stopPropagation();
+          const countryName = elem.textContent.trim();
+          const regionId = elem.closest('[id^="country-list-"]').id.replace('country-list-', '').replace(/-/g, ' ');
+          const region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase()) || 'Default';
       
-        elem.addEventListener('click', function (e) {
-          e.stopPropagation(); // 地域クリックイベントを抑止
-          var countryName = this.textContent.trim().toLowerCase();
-      
-          // リストタイトル（region）を確実に取得
-          var parentList = this.closest('[id^="country-list-"]');
-          if (!parentList) return;
-          var regionId = parentList.id.replace('country-list-', '').replace(/-/g, ' ');
-          
-          // Defaultの場合の処理
-          if (regionId.toLowerCase() === 'default') {
-            var found = false;
-            var data = geojsonData.world;
-            if (data && data.features) {
-              data.features.forEach(feature => {
-                if (found) return;
-                var props = feature.properties;
-                var featureName = (props.name || '').trim().toLowerCase();
-                
-                if (featureName === countryName) {
-                  if (feature.geometry && feature.geometry.type) {
-                    var centroid = turf.centroid(feature.geometry);
-                    var coords = centroid.geometry.coordinates;
-                    var area = turf.area(feature.geometry) / 1000000;
-                    
-                    var zoom;
-                    if (area > 5000000) zoom = 3;
-                    else if (area > 1000000) zoom = 4;
-                    else if (area > 100000) zoom = 5;
-                    else if (area > 10000) zoom = 6;
-                    else if (area > 1000) zoom = 7;
-                    else if (area > 100) zoom = 8;
-                    else if (area > 10) zoom = 9;
-                    else zoom = 15;
-                    
-                    map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
-                    found = true;
-                  }
-                }
-              });
-            }
-            
-            if (!found) {
-              console.warn('国を特定できませんでした:', countryName);
-            }
-            return;
-          }
-          
-          // 既存の処理（通常の地域）
-          var region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase());
-          if (!region) return;
-      
-          var sources = region === 'USA States' ? ['usaStates'] : ['world', 'usaStates', 'capitals'];
-          var found = false;
-      
-          sources.forEach(sourceKey => {
-            if (found) return;
-            var data = geojsonData[sourceKey];
-            if (!data || !data.features) return;
-      
-            data.features.forEach(feature => {
-              if (found) return;
-              var props = feature.properties;
-              var featureName =
-                (props.name || props.NAME || props.ADMIN || props.ADMIN_EN || '').trim().toLowerCase();
-              var featureCode = (props.state_code || props['ISO3166-1-Alpha-2'] || '').trim().toLowerCase();
-      
-              // 名前またはコードで一致判定
-              if (featureName === countryName || featureCode === countryName) {
-              if (feature.geometry && feature.geometry.type) {
-                  var centroid = turf.centroid(feature.geometry);
-                  var coords = centroid.geometry.coordinates;
-                  var area = turf.area(feature.geometry) / 1000000;
-      
-                  var zoom;
-                  if (area > 5000000) zoom = 3;
-                  else if (area > 1000000) zoom = 4;
-                  else if (area > 100000) zoom = 5;
-                  else if (area > 10000) zoom = 6;
-                  else if (area > 1000) zoom = 7;
-                  else if (area > 100) zoom = 8;
-                  else if (area > 10) zoom = 9;
-                  else zoom = 15;
-      
-                  map.flyTo({ center: coords, zoom: zoom, duration: 1000 });
-                  found = true;
-                }
-              }
-            });
-          });
-      
-          if (!found) {
-            console.warn('国を特定できませんでした:', countryName);
-          }
+          const feature = findFeatureByName(
+            countryName,
+            region === 'USA States' ? ['usaStates'] : undefined
+          );
+          if (feature) zoomToFeature(feature);
+          else console.warn('国を特定できませんでした:', countryName);
         });
       });
       
