@@ -199,7 +199,6 @@ javascript:(function () {
         'Bolivia','Brazil',
         'Chile','Colombia',
         'Ecuador',
-        'Falklandislands','Frenchguiana',
         'Guyana',
         'Paraguay','Peru',
         'Suriname',
