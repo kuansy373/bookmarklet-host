@@ -94,7 +94,7 @@ javascript:(function () {
       南極大陸: '#a5dce9',
       首都: '#ff0000',
       アメリカの首都: '#b3ce62',
-      Default: '#000000'
+      未定義: '#000000'
     };
 
     // 日本語名を取得する関数
@@ -261,7 +261,7 @@ javascript:(function () {
         if (list.some(c => normalize(c) === n)) return region;
       }
 
-      return 'Default';
+      return '未定義';
     }
 
     // 検索ボックスとプログレス表示エリア
@@ -364,7 +364,7 @@ javascript:(function () {
       }
 
       // 地域名の部分一致検索（Defaultも含む）
-      var allRegions = Object.keys(countryRegions).concat(['Default']);
+      var allRegions = Object.keys(countryRegions).concat(['未定義']);
       var matchedRegions = [];
       
       searchTerms.forEach(searchTerm => {
@@ -386,7 +386,7 @@ javascript:(function () {
         var filledCount = 0;
         var countryList = [];
 
-        if (region === 'Default') {
+        if (region === '未定義') {
           // GeoJSONデータから直接Defaultに属する地物を取得
           var defaultFeatures = [];
           
@@ -396,7 +396,7 @@ javascript:(function () {
               var props = feature.properties;
               var featureRegion = getRegion(props);
               
-              if (featureRegion === 'Default') {
+              if (featureRegion === '未定義') {
                 var id = props.name || feature.id;
                 defaultFeatures.push(id);
               }
@@ -446,7 +446,7 @@ javascript:(function () {
 
         }
 
-        var color = regionColors[region] || regionColors.Default;
+        var color = regionColors[region] || regionColors.未定義;
         var listId = 'country-list-' + region.replace(/\s+/g, '-');
         var isExpanded = expandedLists[region] || false;
         var unfilledCountries = countryList.filter(c => !c.filled);
@@ -560,9 +560,9 @@ javascript:(function () {
           const region = elem.dataset.region;
           const unfilled = [];
       
-          if (region === 'Default') {
+          if (region === '未定義') {
             (geojsonData.world?.features || []).forEach(f => {
-              if (getRegion(f.properties) === 'Default') {
+              if (getRegion(f.properties) === '未定義') {
                 const id = f.properties.name || f.id;
                 if (!Object.keys(filledFeatures).some(fid => normalize(fid) === normalize(id))) {
                   unfilled.push(id);
@@ -598,7 +598,7 @@ javascript:(function () {
           e.stopPropagation();
           const countryName = elem.textContent.trim();
           const regionId = elem.closest('[id^="country-list-"]').id.replace('country-list-', '').replace(/-/g, ' ');
-          const region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase()) || 'Default';
+          const region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase()) || '未定義';
       
           const feature = findFeatureByName(
             countryName,
@@ -730,7 +730,7 @@ javascript:(function () {
           var id = featureId || props.id || props.name || props.NAME;
           var name = props.name || props.NAME || props.ADMIN || props.ADMIN_EN || 'Unknown';
           var region = getRegion(props);
-          var fillColor = regionColors[region] || regionColors.Default;
+          var fillColor = regionColors[region] || regionColors.未定義;
           
           // 日本語名を取得
           var displayName = getJapaneseName(name);
@@ -747,7 +747,7 @@ javascript:(function () {
           } else {
             var popupContent = `
               <div style="font-size:12px;">
-                <div style="font-weight:600;">${displayName}</div>
+                <div style="font-weight:600; text-shadow: 0 0 black;">${displayName}</div>
                 <div style="display:flex; align-items:center; margin-top:2px; color:#555;">
                   <span>${region}</span>
                   <button id="resetColorBtn" style="padding:0px 3px; margin-left:5px; font-size:12px;">↵</button>
