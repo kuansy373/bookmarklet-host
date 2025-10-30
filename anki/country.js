@@ -207,7 +207,6 @@ javascript:(function () {
       ],
       Antarctica: [
         'Antarctica',
-        'French Southern and Antarctic Lands'
       ],
       Capitals: [
         'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
@@ -368,7 +367,7 @@ javascript:(function () {
       });
 
       if (matchedRegions.length === 0) {
-        progressDisplay.innerHTML = '<div style="color:#999; margin-top:8px;">該当する地域がありません</div>';
+        progressDisplay.innerHTML = '<div style="color:#999; margin-top:8px;">No matching regions.</div>';
         return;
       }
 
