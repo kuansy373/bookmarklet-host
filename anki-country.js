@@ -475,23 +475,58 @@ javascript:(function () {
       // ▼ 共通ズーム関数
       function zoomToFeature(feature) {
         if (!feature || !feature.geometry) return;
-        const centroid = turf.centroid(feature.geometry);
-        const coords = centroid.geometry.coordinates;
+        
+        // 日付変更線を跨ぐ国の検出と補正
+        const bbox = turf.bbox(feature.geometry);
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        
+        let center, zoom;
+        
+        // 経度の差が大きい場合は日付変更線を跨いでいる可能性
+        if (maxLng - minLng > 180) {
+          // 座標を0-360度系に変換して中心を計算
+          const shiftedGeometry = {
+            type: feature.geometry.type,
+            coordinates: shiftGeometry(feature.geometry.coordinates, feature.geometry.type)
+          };
+          const shiftedBbox = turf.bbox(shiftedGeometry);
+          const shiftedCenter = [
+            (shiftedBbox[0] + shiftedBbox[2]) / 2,
+            (shiftedBbox[1] + shiftedBbox[3]) / 2
+          ];
+          // -180〜180度系に戻す
+          center = [
+            shiftedCenter[0] > 180 ? shiftedCenter[0] - 360 : shiftedCenter[0],
+            shiftedCenter[1]
+          ];
+        } else {
+          // 通常の中心点計算
+          const centroid = turf.centroid(feature.geometry);
+          center = centroid.geometry.coordinates;
+        }
+        
         const area = turf.area(feature.geometry) / 1_000_000;
-        const zoom =
-          area > 5_000_000 ? 3 :
-          area > 1_000_000 ? 4 :
-          area > 100_000 ? 5 :
-          area > 10_000 ? 6 :
-          area > 1_000 ? 7 :
-          area > 100 ? 8 :
-          area > 10 ? 9 :
-          area > 5 ? 10 :
-          area > 1 ? 11 :
-          area > 0.5 ? 12 :
-          area > 0.1 ? 13 :
-          area > 0.05 ? 14 : 15;
-        map.flyTo({ center: coords, zoom, duration: 1000 });
+        const zoomLevels = [
+          [5_000_000, 3], [1_000_000, 4], [100_000, 5], [10_000, 6],
+          [1_000, 7], [100, 8], [10, 9], [5, 10], [1, 11],
+          [0.5, 12], [0.1, 13], [0.05, 14]
+        ];
+        zoom = zoomLevels.find(([threshold]) => area > threshold)?.[1] || 15;
+        map.flyTo({ center, zoom, duration: 1000 });
+      }
+      
+      // ▼ 座標を0-360度系にシフトする補助関数
+      function shiftGeometry(coords, type) {
+        if (type === 'Point') {
+          return [coords[0] < 0 ? coords[0] + 360 : coords[0], coords[1]];
+        } else if (type === 'LineString' || type === 'MultiPoint') {
+          return coords.map(c => [c[0] < 0 ? c[0] + 360 : c[0], c[1]]);
+        } else if (type === 'Polygon' || type === 'MultiLineString') {
+          return coords.map(ring => ring.map(c => [c[0] < 0 ? c[0] + 360 : c[0], c[1]]));
+        } else if (type === 'MultiPolygon') {
+          return coords.map(poly => poly.map(ring => ring.map(c => [c[0] < 0 ? c[0] + 360 : c[0], c[1]])));
+        }
+        return coords;
       }
       
       // ▼ 名前またはコードからフィーチャを検索
