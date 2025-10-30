@@ -168,10 +168,11 @@ javascript:(function () {
       ],
       Oceania: [
         'Australia',
+        'Cook Islands',
         'Federated States of Micronesia','Fiji',
         'Kiribati',
         'Marshall Islands',
-        'Nauru','New Caledonia','New Zealand',
+        'Nauru','New Caledonia','New Zealand','Niue',
         'Palau','Papua New Guinea',
         'Samoa','Solomon Islands',
         'Tonga','Tuvalu',
@@ -334,6 +335,12 @@ javascript:(function () {
 
     // 進捗を更新する関数
     function updateProgress() {
+      // 各リストのスクロール位置を保存
+      var scrollPositions = {};
+      progressDisplay.querySelectorAll('[id^="country-list-"]').forEach(list => {
+        scrollPositions[list.id] = list.scrollTop;
+      });
+      
       var searchQuery = searchInput.value.trim();
       
       if (!searchQuery) {
@@ -457,6 +464,13 @@ javascript:(function () {
       });
 
       progressDisplay.innerHTML = html;
+
+      // スクロール位置を復元
+      progressDisplay.querySelectorAll('[id^="country-list-"]').forEach(list => {
+        if (scrollPositions[list.id] !== undefined) {
+          list.scrollTop = scrollPositions[list.id];
+        }
+      });
 
       // ▼ 共通ズーム関数
       function zoomToFeature(feature) {
