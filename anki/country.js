@@ -282,7 +282,7 @@ javascript:(function () {
   
     var searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = '地域名を入力...';
+    searchInput.placeholder = 'Type region names...';
     Object.assign(searchInput.style, {
       width: '100%',
       padding: '5px 30px 5px 5px',
@@ -788,7 +788,7 @@ javascript:(function () {
     
     // 地図ボタン作成
     var mapButton = document.createElement('button');
-    mapButton.innerHTML = '地図';
+    mapButton.innerHTML = 'Maps';
     Object.assign(mapButton.style, {
       padding: '4px 8px',
       background: '#fff',
@@ -1096,7 +1096,7 @@ javascript:(function () {
 
     // 地域ボタン作成
     var regionButton = document.createElement('button');
-    regionButton.innerHTML = '地域';
+    regionButton.innerHTML = 'Regions';
     Object.assign(regionButton.style, {
       padding: '4px 8px',
       background: '#fff',
