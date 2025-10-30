@@ -84,16 +84,16 @@ javascript:(function () {
 
     // 地域別カラー設定
     var regionColors = {
-      Europe: '#3ebbb6',
-      Africa: '#81ca98',
-      'Middle East': '#a5a66a',
-      Asia: '#fa9eaa',
-      Oceania: '#dc7550',
-      'North America': '#b3ce62',
-      'South America': '#a3d3d8',
-      Antarctica: '#a5dce9',
-      Capitals: '#ff0000',
-      'USA States': '#b3ce62',
+      ヨーロッパ: '#3ebbb6',
+      アフリカ: '#81ca98',
+      中東: '#a5a66a',
+      アジア: '#fa9eaa',
+      オセアニア: '#dc7550',
+      北アメリカ: '#b3ce62',
+      南アメリカ: '#a3d3d8',
+      南極大陸: '#a5dce9',
+      首都: '#ff0000',
+      アメリカの首都: '#b3ce62',
       Default: '#000000'
     };
 
@@ -104,7 +104,7 @@ javascript:(function () {
 
     // 判定用リスト
     var countryRegions = {
-      Europe: [
+      ヨーロッパ: [
         'Albania','Andorra','Armenia','Austria','Azerbaijan',
         'Belarus','Belgium','Bosnia and Herzegovina','Bulgaria',
         'Croatia','Cyprus','Czechia',
@@ -124,7 +124,7 @@ javascript:(function () {
         'Ukraine','United Kingdom',
         'Vatican'
       ],
-      Africa: [
+      アフリカ: [
         'Algeria','Angola',
         'Benin','Botswana','Burkina Faso','Burundi',
         'Cabo Verde','Cameroon','Central African Republic','Chad','Comoros',
@@ -143,7 +143,7 @@ javascript:(function () {
         'Western Sahara',
         'Zambia','Zimbabwe'
       ],
-      'Middle East': [
+      中東: [
         'Afghanistan',
         'Bahrain',
         'Iran','Iraq','Israel',
@@ -158,7 +158,7 @@ javascript:(function () {
         'United Arab Emirates',
         'Yemen'
       ],
-      Asia: [
+      アジア: [
         'Bangladesh','Bhutan','Brunei',
         'Cambodia','China',
         'East Timor',
@@ -175,7 +175,7 @@ javascript:(function () {
         'Uzbekistan',
         'Vietnam'
       ],
-      Oceania: [
+      オセアニア: [
         'Australia',
         'Cook Islands',
         'Federated States of Micronesia','Fiji',
@@ -187,7 +187,7 @@ javascript:(function () {
         'Tonga','Tuvalu',
         'Vanuatu'
       ],
-      'North America': [
+      北アメリカ: [
         'Antigua and Barbuda',
         'Barbados','Belize','Bermuda',
         'Canada','Costa Rica','Cuba',
@@ -203,7 +203,7 @@ javascript:(function () {
         'The Bahamas','Trinidad and Tobago',
         'United States of America'
       ],
-      'South America': [
+      南アメリカ: [
         'Argentina',
         'Bolivia','Brazil',
         'Chile','Colombia',
@@ -214,15 +214,15 @@ javascript:(function () {
         'Uruguay',
         'Venezuela'
       ],
-      Antarctica: [
+      南極大陸: [
         'Antarctica',
       ],
-      Capitals: [
+      首都: [
         'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
         'Seoul',
         'Tokyo',
       ],
-      'USA States': [
+      アメリカの首都: [
         'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY','NC','RI',
         'VT','KY','TN','OH','LA','IN','MS','IL','AL','ME',
         'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
@@ -241,9 +241,9 @@ javascript:(function () {
     
     // 地域判定関数（簡素化版）
     function getRegion(properties) {
-      // state_codeがあればUSA Statesリストで確認
-      if (properties.state_code && countryRegions['USA States'].includes(properties.state_code)) {
-        return 'USA States';
+      // state_codeがあればアメリカの首都リストで確認
+      if (properties.state_code && countryRegions['アメリカの首都'].includes(properties.state_code)) {
+        return 'アメリカの首都';
       }
 
       // ISO3166-1-Alpha-2やnameで判定
@@ -356,7 +356,7 @@ javascript:(function () {
       }
 
       // コンマ区切りで複数検索に対応
-      var searchTerms = searchQuery.split(',').map(term => term.trim().toLowerCase()).filter(term => term);
+      var searchTerms = searchQuery.split('、').map(term => term.trim().toLowerCase()).filter(term => term);
       
       if (searchTerms.length === 0) {
         progressDisplay.innerHTML = '';
@@ -418,7 +418,7 @@ javascript:(function () {
             countryList.push({ name: id, filled: isFilled });
           });
         } else {
-          // 通常の地域（USA Statesを含む）
+          // 通常の地域（アメリカの首都を含む）
           var regionCountries = countryRegions[region];
           totalCount = regionCountries.length;
         
@@ -433,8 +433,8 @@ javascript:(function () {
           
             var displayName = country; // デフォルトはコードそのまま
           
-            // region が USA States の場合、usaStates データから name を取得
-            if (region === 'USA States' && geojsonData.usaStates && geojsonData.usaStates.features) {
+            // region が アメリカの首都 の場合、usaStates データから name を取得
+            if (region === 'アメリカの首都' && geojsonData.usaStates && geojsonData.usaStates.features) {
               var match = geojsonData.usaStates.features.find(f => f.properties.state_code === country);
               if (match && match.properties.name) {
                 displayName = match.properties.name;
@@ -579,7 +579,7 @@ javascript:(function () {
       
           if (unfilled.length === 0) return;
           const randomName = unfilled[Math.floor(Math.random() * unfilled.length)];
-          const feature = findFeatureByName(randomName, region === 'USA States' ? ['usaStates'] : undefined);
+          const feature = findFeatureByName(randomName, region === 'アメリカの首都' ? ['usaStates'] : undefined);
           if (feature) zoomToFeature(feature);
         });
       });
@@ -602,7 +602,7 @@ javascript:(function () {
       
           const feature = findFeatureByName(
             countryName,
-            region === 'USA States' ? ['usaStates'] : undefined
+            region === 'アメリカの首都' ? ['usaStates'] : undefined
           );
           if (feature) zoomToFeature(feature);
           else console.warn('国を特定できませんでした:', countryName);
@@ -824,11 +824,11 @@ javascript:(function () {
     });
     
     layerControl.innerHTML = `
-      <label><input type="checkbox" id="layer_world" checked> World</label><br>
-      <label><input type="checkbox" id="layer_capitals"> Capitals</label><br>
-      <label><input type="checkbox" id="layer_usaStates"> USA States</label><br>
-      <label><input type="checkbox" id="layer_meridians"> Meridians</label><br>
-      <label><input type="checkbox" id="layer_parallels"> Parallels</label>
+      <label><input type="checkbox" id="layer_world" checked> 国</label><br>
+      <label><input type="checkbox" id="layer_capitals"> 首都</label><br>
+      <label><input type="checkbox" id="layer_usaStates"> アメリカの州</label><br>
+      <label><input type="checkbox" id="layer_meridians"> 経線</label><br>
+      <label><input type="checkbox" id="layer_parallels"> 緯線</label>
     `;
     
     // layerControl自体のクリックで閉じないようにする
@@ -1197,13 +1197,13 @@ javascript:(function () {
 
       // 地域ごとの中心座標とズーム設定
       var regionView = {
-        'Europe': { center: [14, 52], zoom: 2.7 },
-        'Africa': { center: [17, 5], zoom: 2.4 },
-        'Middle East': { center: [54, 36], zoom: 2.7 },
-        'Asia': { center: [105, 25], zoom: 2.5 },
-        'Oceania': { center: [147, -25], zoom: 2.5 },
-        'North America': { center: [-85, 25], zoom: 3 },
-        'South America': { center: [-60, -18], zoom: 2.4 },
+        'ヨーロッパ': { center: [14, 52], zoom: 2.7 },
+        'アフリカ': { center: [17, 5], zoom: 2.4 },
+        '中東': { center: [54, 36], zoom: 2.7 },
+        'アジア': { center: [105, 25], zoom: 2.5 },
+        'オセアニア': { center: [147, -25], zoom: 2.5 },
+        '北アメリカ': { center: [-85, 25], zoom: 3 },
+        '南アメリカ': { center: [-60, -18], zoom: 2.4 },
       };
       
       // 地域名クリックでフォーカスズーム
