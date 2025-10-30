@@ -208,7 +208,6 @@ javascript:(function () {
         'Bolivia','Brazil',
         'Chile','Colombia',
         'Ecuador',
-        'Falklandislands','Frenchguiana',
         'Guyana',
         'Paraguay','Peru',
         'Suriname',
@@ -217,7 +216,6 @@ javascript:(function () {
       ],
       Antarctica: [
         'Antarctica',
-        'French Southern and Antarctic Lands'
       ],
       Capitals: [
         'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
