@@ -485,7 +485,12 @@ javascript:(function () {
           area > 10_000 ? 6 :
           area > 1_000 ? 7 :
           area > 100 ? 8 :
-          area > 10 ? 9 : 15;
+          area > 10 ? 9 :
+          area > 5 ? 10 :
+          area > 1 ? 11 :
+          area > 0.5 ? 12 :
+          area > 0.1 ? 13 :
+          area > 0.05 ? 14 : 15;
         map.flyTo({ center: coords, zoom, duration: 1000 });
       }
       
