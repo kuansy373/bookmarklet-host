@@ -806,6 +806,9 @@ javascript:(function () {
     var layerControl = document.createElement('div');
     Object.assign(layerControl.style, {
       display: 'none',
+      //overflowY: 'auto',
+      //msOverflowStyle: 'none',
+      //maxHeight: '100px',
       marginTop: '2px',
       background: '#fff',
       boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
@@ -1114,6 +1117,9 @@ javascript:(function () {
     var regionControl = document.createElement('div');
     Object.assign(regionControl.style, {
       display: 'none',
+      //overflowY: 'auto',
+      //msOverflowStyle: 'none',
+      //maxHeight: '200px',
       marginTop: '2px',
       background: '#fff',
       boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
