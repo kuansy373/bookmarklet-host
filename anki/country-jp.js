@@ -93,7 +93,7 @@ javascript:(function () {
       南アメリカ: '#a3d3d8',
       南極大陸: '#a5dce9',
       首都: '#ff0000',
-      アメリカの首都: '#b3ce62',
+      アメリカの州: '#b3ce62',
       未定義: '#000000'
     };
 
@@ -222,7 +222,7 @@ javascript:(function () {
         'Seoul',
         'Tokyo',
       ],
-      アメリカの首都: [
+      アメリカの州: [
         'DE','PA','NJ','GA','CT','MA','MD','SC','NH','VA','NY','NC','RI',
         'VT','KY','TN','OH','LA','IN','MS','IL','AL','ME',
         'MO','AR','MI','FL','TX','IA','WI','CA','MN','OR',
@@ -241,9 +241,9 @@ javascript:(function () {
     
     // 地域判定関数（簡素化版）
     function getRegion(properties) {
-      // state_codeがあればアメリカの首都リストで確認
-      if (properties.state_code && countryRegions['アメリカの首都'].includes(properties.state_code)) {
-        return 'アメリカの首都';
+      // state_codeがあればアメリカの州リストで確認
+      if (properties.state_code && countryRegions['アメリカの州'].includes(properties.state_code)) {
+        return 'アメリカの州';
       }
 
       // ISO3166-1-Alpha-2やnameで判定
@@ -418,7 +418,7 @@ javascript:(function () {
             countryList.push({ name: id, filled: isFilled });
           });
         } else {
-          // 通常の地域（アメリカの首都を含む）
+          // 通常の地域（アメリカの州を含む）
           var regionCountries = countryRegions[region];
           totalCount = regionCountries.length;
         
@@ -433,8 +433,8 @@ javascript:(function () {
           
             var displayName = country; // デフォルトはコードそのまま
           
-            // region が アメリカの首都 の場合、usaStates データから name を取得
-            if (region === 'アメリカの首都' && geojsonData.usaStates && geojsonData.usaStates.features) {
+            // region が アメリカの州 の場合、usaStates データから name を取得
+            if (region === 'アメリカの州' && geojsonData.usaStates && geojsonData.usaStates.features) {
               var match = geojsonData.usaStates.features.find(f => f.properties.state_code === country);
               if (match && match.properties.name) {
                 displayName = match.properties.name;
@@ -579,7 +579,7 @@ javascript:(function () {
       
           if (unfilled.length === 0) return;
           const randomName = unfilled[Math.floor(Math.random() * unfilled.length)];
-          const feature = findFeatureByName(randomName, region === 'アメリカの首都' ? ['usaStates'] : undefined);
+          const feature = findFeatureByName(randomName, region === 'アメリカの州' ? ['usaStates'] : undefined);
           if (feature) zoomToFeature(feature);
         });
       });
@@ -602,7 +602,7 @@ javascript:(function () {
       
           const feature = findFeatureByName(
             countryName,
-            region === 'アメリカの首都' ? ['usaStates'] : undefined
+            region === 'アメリカの州' ? ['usaStates'] : undefined
           );
           if (feature) zoomToFeature(feature);
           else console.warn('国を特定できませんでした:', countryName);
@@ -700,7 +700,6 @@ javascript:(function () {
     map.on('load', function() {
       // 翻訳データを最初に読み込む
       loadTranslations(geoUrls.jpTranslate);
-      
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
       loadLayer('capitals', geoUrls.capitals);
