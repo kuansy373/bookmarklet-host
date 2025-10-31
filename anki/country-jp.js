@@ -1,4 +1,5 @@
 javascript:(function () {
+  // すでに bm-worldmap-overlay が存在する場合は return;
   if (document.getElementById('bm-worldmap-overlay')) return;
 
   // MapLibre GL CSS 読み込み
@@ -21,7 +22,7 @@ javascript:(function () {
   });
   document.body.appendChild(overlay);
 
-  // コンテナ
+  // オーバーレイの中に地図コンテナを作成
   var container = document.createElement('div');
   Object.assign(container.style, {
     position: 'absolute',
@@ -35,7 +36,7 @@ javascript:(function () {
   });
   overlay.appendChild(container);
 
-  // マップ領域
+  // MapLibre GL が地図を描画するマップ領域を作成
   var mapDiv = document.createElement('div');
   mapDiv.id = 'bm-worldmap';
   Object.assign(mapDiv.style, { width: '100%', height: '100%' });
@@ -46,32 +47,32 @@ javascript:(function () {
   script.id = 'bm-maplibre-script';
   script.src = 'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js';
 
-  // Turf.js スクリプト（境界計算用）
+  // Turf.js スクリプト（ズーム計算用）
   var turfScript = document.createElement('script');
   turfScript.src = 'https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js';
   document.head.appendChild(turfScript);
 
+  // MapLibre の読み込み完了後に実行する処理
   script.onload = function () {
+    // 地図オブジェクトを初期化
     var map = new maplibregl.Map({
-      container: mapDiv,
+      container: mapDiv, // 描画先の要素
       style: {
         version: 8,
         sources: {},
         layers: [],
         glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
       },
-      center: [0, 20],
-      zoom: 1,
-      attributionControl: false
+      center: [0, 20],    // 初期表示座標（経度,緯度）
+      zoom: 1,            // 初期ズームレベル
+      attributionControl: false // コピーライト表示を非表示に
     });
-    map.doubleClickZoom.disable();
-    map.dragRotate.disable();
-    map.touchZoomRotate.disableRotation();
+    map.doubleClickZoom.disable(); // ダブルクリックズーム禁止
+    map.dragRotate.disable();      // ドラッグ回転禁止
+    map.touchZoomRotate.disableRotation(); // タッチ回転禁止
 
-    // GeoJSONデータを保持するオブジェクト
+    // データを保持するオブジェクト
     var geojsonData = {};
-    
-    // 翻訳データを保持する変数
     var nameTranslations = {};
 
     // データソース
@@ -239,7 +240,7 @@ javascript:(function () {
       return name.trim().toLowerCase();
     }
     
-    // 地域判定関数（簡素化版）
+    // 地域判定関数
     function getRegion(properties) {
       // state_codeがあればアメリカの州リストで確認
       if (properties.state_code && countryRegions['アメリカの州'].includes(properties.state_code)) {
