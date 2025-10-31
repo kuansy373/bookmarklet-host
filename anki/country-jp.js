@@ -415,10 +415,10 @@ javascript:(function () {
               filledCount++;
             }
             
-            countryList.push({ name: id, filled: isFilled });
+            var displayName = getJapaneseName(id);
+            countryList.push({ name: displayName, filled: isFilled });
           });
         } else {
-          // 通常の地域（アメリカの州を含む）
           var regionCountries = countryRegions[region];
           totalCount = regionCountries.length;
         
@@ -431,19 +431,17 @@ javascript:(function () {
               filledCount++;
             }
           
-            var displayName = country; // デフォルトはコードそのまま
+            var displayName = getJapaneseName(country);
           
-            // region が アメリカの州 の場合、usaStates データから name を取得
             if (region === 'アメリカの州' && geojsonData.usaStates && geojsonData.usaStates.features) {
               var match = geojsonData.usaStates.features.find(f => f.properties.state_code === country);
               if (match && match.properties.name) {
-                displayName = match.properties.name;
+                displayName = getJapaneseName(match.properties.name) || getJapaneseName(country);
               }
             }
           
             countryList.push({ name: displayName, filled: isFilled });
           });
-
         }
 
         var color = regionColors[region] || regionColors.未定義;
@@ -483,15 +481,12 @@ javascript:(function () {
       function zoomToFeature(feature) {
         if (!feature || !feature.geometry) return;
         
-        // 日付変更線を跨ぐ国の検出と補正
         const bbox = turf.bbox(feature.geometry);
         const [minLng, minLat, maxLng, maxLat] = bbox;
         
         let center, zoom;
         
-        // 経度の差が大きい場合は日付変更線を跨いでいる可能性
         if (maxLng - minLng > 180) {
-          // 座標を0-360度系に変換して中心を計算
           const shiftedGeometry = {
             type: feature.geometry.type,
             coordinates: shiftGeometry(feature.geometry.coordinates, feature.geometry.type)
@@ -501,13 +496,11 @@ javascript:(function () {
             (shiftedBbox[0] + shiftedBbox[2]) / 2,
             (shiftedBbox[1] + shiftedBbox[3]) / 2
           ];
-          // -180〜180度系に戻す
           center = [
             shiftedCenter[0] > 180 ? shiftedCenter[0] - 360 : shiftedCenter[0],
             shiftedCenter[1]
           ];
         } else {
-          // 通常の中心点計算
           const centroid = turf.centroid(feature.geometry);
           center = centroid.geometry.coordinates;
         }
@@ -522,7 +515,6 @@ javascript:(function () {
         map.flyTo({ center, zoom, duration: 1000 });
       }
       
-      // ▼ 座標を0-360度系にシフトする補助関数
       function shiftGeometry(coords, type) {
         if (type === 'Point') {
           return [coords[0] < 0 ? coords[0] + 360 : coords[0], coords[1]];
@@ -536,7 +528,6 @@ javascript:(function () {
         return coords;
       }
       
-      // ▼ 名前またはコードからフィーチャを検索
       function findFeatureByName(name, sources = ['world', 'usaStates', 'capitals']) {
         const n = normalize(name);
         for (const sourceKey of sources) {
@@ -554,7 +545,6 @@ javascript:(function () {
         return null;
       }
       
-      // ▼ 地域クリック（ランダム未塗り国ズーム）
       progressDisplay.querySelectorAll('.region-progress').forEach(elem => {
         elem.addEventListener('click', () => {
           const region = elem.dataset.region;
@@ -584,7 +574,6 @@ javascript:(function () {
         });
       });
       
-      // ▼ 各国クリックでズーム
       progressDisplay.querySelectorAll('#progress-display div[id^="country-list-"] div').forEach(elem => {
         elem.style.cursor = 'pointer';
         elem.addEventListener('mouseenter', () => {
@@ -596,20 +585,27 @@ javascript:(function () {
         });
         elem.addEventListener('click', e => {
           e.stopPropagation();
-          const countryName = elem.textContent.trim();
+          const countryNameJa = elem.textContent.trim();
           const regionId = elem.closest('[id^="country-list-"]').id.replace('country-list-', '').replace(/-/g, ' ');
           const region = Object.keys(countryRegions).find(r => r.toLowerCase() === regionId.toLowerCase()) || '未定義';
       
+          var englishName = countryNameJa;
+          for (const [en, ja] of Object.entries(nameTranslations)) {
+            if (ja === countryNameJa) {
+              englishName = en;
+              break;
+            }
+          }
+          
           const feature = findFeatureByName(
-            countryName,
+            englishName,
             region === 'アメリカの州' ? ['usaStates'] : undefined
           );
           if (feature) zoomToFeature(feature);
-          else console.warn('国を特定できませんでした:', countryName);
+          else console.warn('国を特定できませんでした:', countryNameJa, englishName);
         });
       });
       
-      // トグルボタンのイベントを設定
       var toggleButtons = progressDisplay.querySelectorAll('.toggle-list-btn');
       toggleButtons.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -630,7 +626,6 @@ javascript:(function () {
       });
     }
 
-    // 検索ボックスのイベント
     searchInput.addEventListener('input', updateProgress);
 
     // 指定したURLからGeoJSONデータを取得
@@ -638,7 +633,6 @@ javascript:(function () {
       fetch(url)
         .then(res => res.json())
         .then(data => {
-          // GeoJSONデータを保存
           geojsonData[key] = data;
           
           map.addSource(key, {
@@ -647,7 +641,6 @@ javascript:(function () {
             promoteId: key === 'usaStates' ? 'state_code' : 'name'
           });
 
-          // 塗りつぶしレイヤーの追加
           map.addLayer({
             id: key + '-fill',
             type: 'fill',
@@ -663,7 +656,6 @@ javascript:(function () {
             }
           });
 
-          // 境界線レイヤーの追加
           map.addLayer({
             id: key + '-line',
             type: 'line',
@@ -674,7 +666,6 @@ javascript:(function () {
             }
           });
 
-          // 初期表示設定（world初期表示、usaStates初期非表示）
           if (key === 'world') {
             document.getElementById('layer_' + key).checked = true;
           } else {
