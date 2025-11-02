@@ -17,21 +17,21 @@ javascript:(async()=>{
     div.style = `
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: #b5b0ff;
       display: flex; align-items: center; justify-content: center;
       z-index: 999999; font-family: sans-serif;
     `;
 
     div.innerHTML = `
       <div style="background: white; border-radius: 10px; padding: 20px; max-width: 80%; max-height: 80%; overflow: auto;">
-        <h2>CEFR単語一覧</h2>
+        <h2>CEFR英単語</h2>
         <label>レベルを選択:
           <select id="cefr-select">
             <option value="">--選択してください--</option>
             ${levels.map(l=>`<option value="${l}">${l}</option>`).join("")}
           </select>
         </label>
-        <button id="cefr-close" style="float:right;">✕ 閉じる</button>
+        <button id="cefr-close">✕ 閉じる</button>
         <div id="cefr-list" style="margin-top:20px;"></div>
       </div>
     `;
