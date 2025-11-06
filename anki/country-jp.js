@@ -1,4 +1,5 @@
 javascript:(function () {
+  
   // すでに bm-worldmap-overlay が存在する場合は return;
   if (document.getElementById('bm-worldmap-overlay')) return;
 
@@ -287,7 +288,8 @@ javascript:(function () {
       width: '100%'
     });
     searchContainer.appendChild(searchWrapper);
-  
+
+    // 検索ボックス
     var searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = '地域名を入力...';
@@ -690,8 +692,9 @@ javascript:(function () {
 
     // 地図ロード
     map.on('load', function() {
-      // 翻訳データを最初に読み込む
+      // 翻訳データ
       loadTranslations(geoUrls.jpTranslate);
+      // 地図データ
       loadLayer('world', geoUrls.world);
       loadLayer('usaStates', geoUrls.usaStates);
       loadLayer('capitals', geoUrls.capitals);
