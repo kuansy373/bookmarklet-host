@@ -263,6 +263,7 @@ document.querySelectorAll(
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
     will-change: scroll-position;
+    transform: translateZ(0);
   `;
   document.body.appendChild(container);
   
