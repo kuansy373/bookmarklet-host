@@ -316,18 +316,66 @@ Object.assign(scrollSliderLeft.style, {
 });
 document.body.appendChild(scrollSliderLeft);
 
+// === iOS判定 ===
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 // === スクロール処理 ===
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
 
+// iOS用: スクロール位置を固定する処理
+let isScrolling = false;
+
 function forceScroll(timestamp) {
   if (lastTimestamp !== null && scrollSpeed !== 0) {
     const elapsed = timestamp - lastTimestamp;
     scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
+    isScrolling = true;
+  } else {
+    isScrolling = false;
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
+}
+
+// iOS用: touchmoveでのスライダー操作改善
+function addIOSSliderFix(slider) {
+  if (!isIOS) return;
+  
+  let isDragging = false;
+  
+  slider.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    // アドレスバーの表示を防ぐ
+    e.preventDefault();
+  }, { passive: false });
+  
+  slider.addEventListener('touchmove', (e) => {
+    if (isDragging) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  
+  slider.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+}
+
+// 両方のスライダーにiOS対策を適用
+addIOSSliderFix(scrollSliderRight);
+addIOSSliderFix(scrollSliderLeft);
+
+// iOS用: 自動スクロール中のタッチスクロールを防ぐ
+if (isIOS) {
+  document.addEventListener('touchmove', (e) => {
+    if (isScrolling && scrollSpeed !== 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  
+  // アドレスバーの表示を最小限に
+  window.scrollTo(0, 1);
 }
 
 // スライダー入力に応じてスクロール速度を変更
