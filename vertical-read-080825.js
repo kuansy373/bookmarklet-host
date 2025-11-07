@@ -262,7 +262,7 @@ document.querySelectorAll(
     padding: 2em;
     content-visibility: auto;
     contain-intrinsic-size: 1000px;
-    will-change: transform;
+    will-change: scroll-position;
     transform: translateZ(0);
   `;
   document.body.appendChild(container);
@@ -316,80 +316,79 @@ Object.assign(scrollSliderLeft.style, {
 });
 document.body.appendChild(scrollSliderLeft);
 
-// === iOS判定 ===
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
 // === スクロール処理 ===
 const scroller = document.scrollingElement || document.documentElement;
 let scrollSpeed = 0;
 let lastTimestamp = null;
 
-// iOS用: スクロール位置を固定する処理
-let isScrolling = false;
-
 function forceScroll(timestamp) {
   if (lastTimestamp !== null && scrollSpeed !== 0) {
     const elapsed = timestamp - lastTimestamp;
     scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
-    isScrolling = true;
-  } else {
-    isScrolling = false;
   }
   lastTimestamp = timestamp;
   requestAnimationFrame(forceScroll);
 }
 
-// iOS用: touchmoveでのスライダー操作改善
+// スライダー入力に応じてスクロール速度を変更
+// === iOS判定 ===
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+// iOS用: スライダー操作の改善
 function addIOSSliderFix(slider) {
   if (!isIOS) return;
   
-  let isDragging = false;
-  
+  // タッチ操作を滑らかにする
   slider.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    // アドレスバーの表示を防ぐ
-    e.preventDefault();
-  }, { passive: false });
+    // スライダー自体のタッチは許可
+    e.stopPropagation();
+  }, { passive: true });
   
   slider.addEventListener('touchmove', (e) => {
-    if (isDragging) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+    // スライダー上のドラッグは許可
+    e.stopPropagation();
+  }, { passive: true });
   
-  slider.addEventListener('touchend', () => {
-    isDragging = false;
+  // changeイベントも追加で監視（iOSでinputが発火しにくい場合の対策）
+  slider.addEventListener('change', () => {
+    syncScrollSpeed(slider.value);
+    // 両方のスライダーを同期
+    if (slider === scrollSliderRight) {
+      scrollSliderLeft.value = slider.value;
+    } else {
+      scrollSliderRight.value = slider.value;
+    }
   });
-}
-
-// 両方のスライダーにiOS対策を適用
-addIOSSliderFix(scrollSliderRight);
-addIOSSliderFix(scrollSliderLeft);
-
-// iOS用: 自動スクロール中のタッチスクロールを防ぐ
-if (isIOS) {
-  document.addEventListener('touchmove', (e) => {
-    if (isScrolling && scrollSpeed !== 0) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-  
-  // アドレスバーの表示を最小限に
-  window.scrollTo(0, 1);
 }
 
 // スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
   scrollSpeed = parseInt(value, 10) * speedScale;
 }
+
 scrollSliderRight.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderRight.value);
   scrollSliderLeft.value = scrollSliderRight.value;
 });
+
 scrollSliderLeft.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderLeft.value);
   scrollSliderRight.value = scrollSliderLeft.value;
 });
+
+// 両方のスライダーにiOS対策を適用
+addIOSSliderFix(scrollSliderRight);
+addIOSSliderFix(scrollSliderLeft);
+
+// iOS用: 背景のスクロールは防ぐが、スライダーは許可
+if (isIOS) {
+  document.addEventListener('touchmove', (e) => {
+    // スライダー以外のタッチムーブを防ぐ
+    if (!e.target.closest('input[type="range"]') && isScrolling && scrollSpeed !== 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
 requestAnimationFrame(forceScroll);
   
 // ==============================
@@ -411,53 +410,19 @@ Object.assign(scrollUI.style, {
 });
 scrollUI.innerHTML = `
   <div style="font-weight:bold;">< Slider Settings ></div>
-  <label class="sliderSettingLabel">
-    <input id="scrollB" class="settingCheckbox" type="checkbox">
-    <span class="labelText">Border</span>
-  </label>
-  <label class="sliderSettingLabel">
-    <input id="scrollC" class="settingCheckbox" type="checkbox">
-    <span class="labelText">Color in</span>
-  </label>
-  <label class="sliderSettingLabel">
-    Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px
-  </label>
-  <label class="sliderSettingLabel">
-    <input id="scrollBoth" class="settingCheckbox" type="checkbox">
-    <span class="labelText">Both sides</span>
-  </label>
-  <label class="sliderSettingLabel">
-    <input id="scrollRight" class="settingCheckbox" type="checkbox" checked>
-    <span class="labelText">Right side</span>
-  </label>
-  <label class="sliderSettingLabel">
-    <input id="scrollLeft" class="settingCheckbox" type="checkbox">
-    <span class="labelText">Left side</span>
-  </label>
-  <label class="sliderSettingLabel">
-    Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px
-  </label>
-  <label class="sliderSettingLabel">
-    Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px
-  </label>
-  <label class="sliderSettingLabel">
-    Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)
-  </label>
-  <label class="sliderSettingLabel">
-    Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)
-  </label>
-  <label class="sliderSettingLabel">
-    <input id="scrollHide" class="settingCheckbox" type="checkbox">
-    <span class="labelText">Slider ball</span>
-  </label>
+  <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
+  <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
+  <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
+  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
+  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
+  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
+  <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
+  <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
+  <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
+  <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
+  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
 `;
 document.body.appendChild(scrollUI);
-document.querySelectorAll('.sliderSettingLabel').forEach(cb => {
-  Object.assign(cb.style, {
-    display: 'block',
-    marginBottom: '2px',
-  });
-});
 document.querySelectorAll('.settingCheckbox').forEach(cb => {
   Object.assign(cb.style, {
     all: 'revert',
