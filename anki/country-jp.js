@@ -220,7 +220,9 @@ javascript:(function () {
         'Antarctica',
       ],
       首都: [
-        'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
+        'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam','Alger','Ankara','Antananarivo','Andorra la Vella','Amman',
+        'Islamabad',
+        'Vienna',
         'Seoul',
         'Tokyo',
       ],
@@ -400,6 +402,19 @@ javascript:(function () {
               var featureRegion = getRegion(props);
               
               if (featureRegion === '未定義') {
+                var id = props.name || feature.id;
+                defaultFeatures.push(id);
+              }
+            });
+          }
+
+          // capitalsから取得
+          if (geojsonData.capitals && geojsonData.capitals.features) {
+            geojsonData.capitals.features.forEach(feature => {
+              var props = feature.properties;
+              var featureRegion = getRegion(props);  
+          
+              if (featureRegion === 'Default') {
                 var id = props.name || feature.id;
                 defaultFeatures.push(id);
               }
