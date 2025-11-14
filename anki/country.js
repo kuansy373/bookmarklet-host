@@ -395,6 +395,19 @@ javascript:(function () {
               }
             });
           }
+
+          // capitalsから取得
+          if (geojsonData.capitals && geojsonData.capitals.features) {
+            geojsonData.capitals.features.forEach(feature => {
+              var props = feature.properties;
+              var featureRegion = getRegion(props);  
+          
+              if (featureRegion === 'Default') {
+                var id = props.name || feature.id;
+                defaultFeatures.push(id);
+              }
+            });
+          }
           
           totalCount = defaultFeatures.length;
           
