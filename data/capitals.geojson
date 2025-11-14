@@ -268,7 +268,7 @@
 
     {
       "type": "Feature",
-      "generator": "overpass-turbo, mapshaper", "geojson.io",
+      "generator": "overpass-turbo, mapshaper, geojson.io",
       "copyright": "© OpenStreetMap contributors (www.openstreetmap.org/copyright). Data extracted via Overpass Turbo, processed with Mapshaper. Licensed under ODbL.",
       "timestamp": "2025-11-14T13:29:36Z",
       "properties": {"name":"Wellington"},
