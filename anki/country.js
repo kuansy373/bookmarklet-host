@@ -209,7 +209,9 @@ javascript:(function () {
         'Antarctica',
       ],
       Capitals: [
-        'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam',
+        'Accra','Ashgabat','Astana','Asmara','Asuncion','Addis Ababa','Athenes','Apia','Abuja','Abu Dhabi','Amsterdam','Alger','Ankara','Antananarivo','Andorra la Vella','Amman',
+        'Islamabad',
+        'Vienna',
         'Seoul',
         'Tokyo',
       ],
