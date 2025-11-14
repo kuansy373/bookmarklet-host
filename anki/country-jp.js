@@ -414,7 +414,7 @@ javascript:(function () {
               var props = feature.properties;
               var featureRegion = getRegion(props);  
           
-              if (featureRegion === 'Default') {
+              if (featureRegion === '未定義') {
                 var id = props.name || feature.id;
                 defaultFeatures.push(id);
               }
