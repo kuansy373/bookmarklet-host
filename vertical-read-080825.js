@@ -226,7 +226,7 @@ let text = '';
   const parts = [];
   
   let prevEndVisiblePos = 0;  // 前ページの終わり位置を保持
-  const overlap = 7;           // 重複させたい文字数
+  const overlap = 10;           // 重複させたい文字数
   
   for (let i = 0; i < numPages; i++) {
     let startVisiblePos = prevEndVisiblePos;
@@ -259,7 +259,18 @@ let text = '';
     const startHtmlPos = getHtmlPos(posMap, startVisiblePos);
     const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
     
-    const partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
+    let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
+    // 重複文字7文字に透明度を指定
+    if (i > 0 && overlap > 0) {
+        // 重複部分の HTML 位置
+        const overlapStartHtmlPos = getHtmlPos(posMap, startVisiblePos);
+        const overlapEndHtmlPos   = getHtmlPos(posMap, startVisiblePos + overlap);
+        
+        const beforeOverlap = partHTML.slice(0, overlapEndHtmlPos - startHtmlPos);
+        const afterOverlap  = partHTML.slice(overlapEndHtmlPos - startHtmlPos);
+        
+        partHTML = `<span style="opacity:0.5;">${beforeOverlap}</span>${afterOverlap}`;
+    }
     parts.push([partHTML]);
     prevEndVisiblePos = endVisiblePos;
     
