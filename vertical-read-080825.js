@@ -2148,9 +2148,7 @@ async function initApplyButtonStyle() {
         if (data.color) applyBtn.style.color = data.color;
         if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
       }
-    } catch (e) {
-      console.log(`${styleName} の取得に失敗`, e);
-    }
+    } catch (e) {}
   }
 }
 // ページ読み込み時に呼ぶ
