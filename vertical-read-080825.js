@@ -199,20 +199,16 @@
     if (i === numPages - 1) {
       endVisiblePos = fullText.length;
     } else {
-      // 目標位置付近で改行を探す（前後20%の範囲）
-      const searchStart = Math.max(startVisiblePos, endVisiblePos - Math.floor(charsPerPage * 0.2));
+      // 目標位置付近で改行を探す（ページ切り替え位置以降の20%の範囲）
+      const searchStart = endVisiblePos;
       const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.2));
       
       let bestPos = endVisiblePos;
-      let minDiff = Infinity;
       
       for (let j = searchStart; j < searchEnd; j++) {
         if (fullText[j] === '　') {
-          const diff = Math.abs(j - endVisiblePos);
-          if (diff < minDiff) {
-            minDiff = diff;
-            bestPos = j;
-          }
+          bestPos = j;  // 最初の後方改行に合わせる
+          break;
         }
       }
       
