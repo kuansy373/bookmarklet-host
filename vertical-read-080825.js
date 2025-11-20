@@ -1,48 +1,55 @@
 (() => {
-// ==============================
-// Vertical text
-// ==============================
+
 let text = '';
 document.querySelectorAll(
+  
   // 青空文庫
   'body > h1, ' +        // タイトル
   'body > h2, ' +        // サブタイトル
   'body > h3, ' +        // 小見出し
   '.metadata, ' +        // メタ情報（作者名など）
   '.main_text, ' +       // 本文テキスト
+  
   // 小説家になろう
   '.p-novel__title, ' +  // 小説タイトル
   '.p-novel__text, ' +   // 本文テキスト
+  
   // カクヨム
   '.widget-episodeTitle, ' + // エピソードタイトル
   '.widget-episodeBody p, ' +// 本文段落
+  
   // アルファポリス
   '.novel-title, ' +     // 小説タイトル
   '.novel-body p, ' +    // 本文段落
   '.chapter-title, ' +   // 章タイトル
   '.episode-title, ' +   // エピソードタイトル
   '#novelBody'           // 本文全体コンテナ
+  
 )
 .forEach(node => {
   text += node.innerHTML
     .replace(/<br\s*\/?>/gi, '\n')  // <br> を \nに変換
     .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');  // ruby、rb、rp、rt、em、span 以外のタグを削除
     });
+  
   // カクヨムの傍点
   text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
-});
+  });
+  
   // 改行の処理 （ 改行を\nに統一、連続した複数の\nを1つの\nに圧縮、\nを全角スペースに置換、連続した全角スペースを1つに圧縮 ）
   text = text.trim()
     .replace(/(\r\n|\r)+/g, '\n')
     .replace(/\n{2,}/g, '\n')
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
+  
   // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
+  
   // 横スクロールやズームが起きない固定レイアウトにする処理
   let vp = document.querySelector('meta[name="viewport"]');
   if (!vp) {
@@ -331,64 +338,17 @@ function forceScroll(timestamp) {
 }
 
 // スライダー入力に応じてスクロール速度を変更
-// === iOS判定 ===
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-// iOS用: スライダー操作の改善
-function addIOSSliderFix(slider) {
-  if (!isIOS) return;
-  
-  // タッチ操作を滑らかにする
-  slider.addEventListener('touchstart', (e) => {
-    // スライダー自体のタッチは許可
-    e.stopPropagation();
-  }, { passive: true });
-  
-  slider.addEventListener('touchmove', (e) => {
-    // スライダー上のドラッグは許可
-    e.stopPropagation();
-  }, { passive: true });
-  
-  // changeイベントも追加で監視（iOSでinputが発火しにくい場合の対策）
-  slider.addEventListener('change', () => {
-    syncScrollSpeed(slider.value);
-    // 両方のスライダーを同期
-    if (slider === scrollSliderRight) {
-      scrollSliderLeft.value = slider.value;
-    } else {
-      scrollSliderRight.value = slider.value;
-    }
-  });
-}
-
-// スライダー入力に応じてスクロール速度を変更
 function syncScrollSpeed(value) {
   scrollSpeed = parseInt(value, 10) * speedScale;
 }
-
 scrollSliderRight.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderRight.value);
   scrollSliderLeft.value = scrollSliderRight.value;
 });
-
 scrollSliderLeft.addEventListener('input', () => {
   syncScrollSpeed(scrollSliderLeft.value);
   scrollSliderRight.value = scrollSliderLeft.value;
 });
-
-// 両方のスライダーにiOS対策を適用
-addIOSSliderFix(scrollSliderRight);
-addIOSSliderFix(scrollSliderLeft);
-
-// iOS用: 背景のスクロールは防ぐが、スライダーは許可
-if (isIOS) {
-  document.addEventListener('touchmove', (e) => {
-    // スライダー以外のタッチムーブを防ぐ
-    if (!e.target.closest('input[type="range"]') && isScrolling && scrollSpeed !== 0) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-}
 requestAnimationFrame(forceScroll);
   
 // ==============================
