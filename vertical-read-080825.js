@@ -239,9 +239,9 @@ let text = '';
     if (i === numPages - 1) {
       endVisiblePos = fullText.length;
     } else {
-      // 目標位置付近で改行を探す（ページ切り替え位置以降の1%、100文字の範囲）
+      // 目標位置付近で改行を探す（ページ切り替え位置以降の5%、500文字の範囲）
       const searchStart = endVisiblePos;
-      const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.01));
+      const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.05));
       
       let bestPos = endVisiblePos;
       
