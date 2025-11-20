@@ -1,55 +1,48 @@
 (() => {
-
+// ==============================
+// Vertical text
+// ==============================
 let text = '';
 document.querySelectorAll(
-  
   // 青空文庫
   'body > h1, ' +        // タイトル
   'body > h2, ' +        // サブタイトル
   'body > h3, ' +        // 小見出し
   '.metadata, ' +        // メタ情報（作者名など）
   '.main_text, ' +       // 本文テキスト
-  
   // 小説家になろう
   '.p-novel__title, ' +  // 小説タイトル
   '.p-novel__text, ' +   // 本文テキスト
-  
   // カクヨム
   '.widget-episodeTitle, ' + // エピソードタイトル
   '.widget-episodeBody p, ' +// 本文段落
-  
   // アルファポリス
   '.novel-title, ' +     // 小説タイトル
   '.novel-body p, ' +    // 本文段落
   '.chapter-title, ' +   // 章タイトル
   '.episode-title, ' +   // エピソードタイトル
   '#novelBody'           // 本文全体コンテナ
-  
 )
 .forEach(node => {
   text += node.innerHTML
     .replace(/<br\s*\/?>/gi, '\n')  // <br> を \nに変換
     .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');  // ruby、rb、rp、rt、em、span 以外のタグを削除
     });
-  
   // カクヨムの傍点
   text = text.replace(/<em class="emphasisDots">([\s\S]*?)<\/em>/gi, (_, content) => {
   const chars = content.replace(/<\/?span>/gi, '');
   return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
-  });
-  
+});
   // 改行の処理 （ 改行を\nに統一、連続した複数の\nを1つの\nに圧縮、\nを全角スペースに置換、連続した全角スペースを1つに圧縮 ）
   text = text.trim()
     .replace(/(\r\n|\r)+/g, '\n')
     .replace(/\n{2,}/g, '\n')
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
-  
   // body 直下のすべての要素を非表示
   document.querySelectorAll('body > *').forEach(node => {
     node.style.display = 'none'
   });
-  
   // 横スクロールやズームが起きない固定レイアウトにする処理
   let vp = document.querySelector('meta[name="viewport"]');
   if (!vp) {
@@ -194,101 +187,12 @@ document.querySelectorAll(
   renderPart(currentIndex);
 
   //※ページ切り替え 
-  // window.confirm の代わりに使うカスタム確認ダイアログ
-  function createCustomConfirm(message, onConfirm, onCancel) {
-    // 既存の確認ダイアログがあれば削除
-    const existing = document.getElementById('customConfirmDialog');
-    if (existing) existing.remove();
-  
-    const overlay = document.createElement('div');
-    overlay.id = 'customConfirmDialog';
-    Object.assign(overlay.style, {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: '10003',
-    });
-  
-    const dialog = document.createElement('div');
-    Object.assign(dialog.style, {
-      backgroundColor: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      maxWidth: '300px',
-      textAlign: 'center',
-      fontFamily: 'sans-serif',
-    });
-  
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    Object.assign(messageDiv.style, {
-      marginBottom: '20px',
-      fontSize: '16px',
-      color: '#333',
-    });
-  
-    const buttonContainer = document.createElement('div');
-    Object.assign(buttonContainer.style, {
-      display: 'flex',
-      gap: '10px',
-      justifyContent: 'center',
-    });
-  
-    const okButton = document.createElement('button');
-    okButton.textContent = 'OK';
-    Object.assign(okButton.style, {
-      padding: '10px 20px',
-      fontSize: '14px',
-      cursor: 'pointer',
-      backgroundColor: '#007AFF',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-    });
-  
-    const cancelButton = document.createElement('button');
-    cancelButton.textContent = 'キャンセル';
-    Object.assign(cancelButton.style, {
-      padding: '10px 20px',
-      fontSize: '14px',
-      cursor: 'pointer',
-      backgroundColor: '#ccc',
-      color: '#333',
-      border: 'none',
-      borderRadius: '4px',
-    });
-  
-    okButton.addEventListener('click', () => {
-      overlay.remove();
-      if (onConfirm) onConfirm();
-    });
-  
-    cancelButton.addEventListener('click', () => {
-      overlay.remove();
-      if (onCancel) onCancel();
-    });
-  
-    buttonContainer.appendChild(cancelButton);
-    buttonContainer.appendChild(okButton);
-    dialog.appendChild(messageDiv);
-    dialog.appendChild(buttonContainer);
-    overlay.appendChild(dialog);
-    document.body.appendChild(overlay);
-  }
-  
-  // ページ切り替え部分を修正（元のコードの該当部分と置き換え）
-  let promptShownForward = false;
-  let promptShownBackward = false;
-  let isSwitching = false;
+  let promptShownForward = false; // 次へ
+  let promptShownBackward = false; // 前へ
+  let isSwitching = false; // ← 切替中フラグ
   
   window.addEventListener('scroll', () => {
-    if (isSwitching) return;
+    if (isSwitching) return; // ← 切替処理中は無視
   
     const scrollBottom = window.scrollY + window.innerHeight;
     const scrollTop = window.scrollY;
@@ -306,25 +210,16 @@ document.querySelectorAll(
       scrollSpeed = 0;
   
       promptShownForward = true;
-      
-      // window.confirm の代わりにカスタムダイアログを使用
-      createCustomConfirm(
-        "続きを読み込みますか？",
-        () => {
-          // OK押下時
-          isSwitching = true;
-          currentIndex++;
-          renderPart(currentIndex);
-          window.scrollTo(0, 0);
-          setTimeout(() => { isSwitching = false; }, 5000);
-          promptShownForward = false;
-          promptShownBackward = false;
-        },
-        () => {
-          // キャンセル押下時
-          promptShownForward = false;
-        }
-      );
+      const ok = window.confirm("続きを読み込みますか？");
+      if (ok) {
+        isSwitching = true; // ← 切替開始
+        currentIndex++;
+        renderPart(currentIndex);
+        window.scrollTo(0, 0);
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
+        promptShownForward = false;
+        promptShownBackward = false;
+      }
     } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
       promptShownForward = false;
     }
@@ -340,31 +235,22 @@ document.querySelectorAll(
       scrollSpeed = 0;
   
       promptShownBackward = true;
-      
-      // window.confirm の代わりにカスタムダイアログを使用
-      createCustomConfirm(
-        "前の文章に戻りますか?",
-        () => {
-          // OK押下時
-          isSwitching = true;
-          currentIndex--;
-          renderPart(currentIndex);
-          const prevPartHeight = container.scrollHeight;
-          window.scrollTo(0, prevPartHeight - window.innerHeight);
-          setTimeout(() => { isSwitching = false; }, 5000);
-          promptShownForward = false;
-          promptShownBackward = false;
-        },
-        () => {
-          // キャンセル押下時
-          promptShownBackward = false;
-        }
-      );
+      const ok = window.confirm("前の文章に戻りますか？");
+      if (ok) {
+        isSwitching = true; // ← 切替開始
+        currentIndex--;
+        renderPart(currentIndex);
+        const prevPartHeight = container.scrollHeight;
+        window.scrollTo(0, prevPartHeight - window.innerHeight);
+        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
+        promptShownForward = false;
+        promptShownBackward = false;
+      }
     } else if (scrollTop > window.innerHeight / 100) {
       promptShownBackward = false;
     }
   });
-  
+
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
