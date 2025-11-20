@@ -214,13 +214,30 @@ let text = '';
     return map[map.length - 1].htmlPos;
   }
   
-  // 全チャンクを結合
-  const fullHTML = chunks.join('');
-  measurer.innerHTML = fullHTML;
-  const fullText = measurer.textContent;
+  function getHtmlPosFromChunks(chunkMaps, chunks, targetVisiblePos) {
+    let accumulated = 0;
+    for (let i = 0; i < chunkMaps.length; i++) {
+      const map = chunkMaps[i];
+      const chunkLength = map[map.length - 1].visiblePos;
   
-  // 位置マップを作成
-  const posMap = buildPositionMap(fullHTML);
+      if (targetVisiblePos < accumulated + chunkLength) {
+        const relativePos = targetVisiblePos - accumulated;
+        return { chunkIndex: i, htmlPos: getHtmlPos(map, relativePos) };
+      }
+      accumulated += chunkLength;
+    }
+    // 最後のチャンク末尾
+    const lastIndex = chunkMaps.length - 1;
+    return { chunkIndex: lastIndex, htmlPos: chunks[lastIndex].length };
+  }
+  
+  const chunkMaps = chunks.map(chunk => buildPositionMap(chunk));
+
+  // 全体の可視文字列は、チャンクを順に結合して計算
+  const fullText = chunks.map(chunk => {
+    measurer.innerHTML = chunk;
+    return measurer.textContent;
+  }).join('');
   
   // 均等分割でパートを作成
   const parts = [];
@@ -250,10 +267,21 @@ let text = '';
     }
     
     // HTML位置に変換
-    const startHtmlPos = getHtmlPos(posMap, startVisiblePos);
-    const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
+    const startPos = getHtmlPosFromChunks(chunkMaps, chunks, startVisiblePos);
+    const endPos = getHtmlPosFromChunks(chunkMaps, chunks, endVisiblePos);
     
-    const partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
+    let partHTML = '';
+    if (startPos.chunkIndex === endPos.chunkIndex) {
+      // 同一チャンク内
+      partHTML = chunks[startPos.chunkIndex].slice(startPos.htmlPos, endPos.htmlPos);
+    } else {
+      // 複数チャンクに跨る場合
+      partHTML = chunks[startPos.chunkIndex].slice(startPos.htmlPos);
+      for (let i = startPos.chunkIndex + 1; i < endPos.chunkIndex; i++) {
+        partHTML += chunks[i];
+      }
+      partHTML += chunks[endPos.chunkIndex].slice(0, endPos.htmlPos);
+    }
     parts.push([partHTML]);
     
     const actualLen = visibleLength(partHTML);
