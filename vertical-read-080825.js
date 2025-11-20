@@ -2,7 +2,43 @@
 // ==============================
 // Vertical text
 // ==============================
-  let text = '';
+let text = '';
+  
+  // ruby / rb / rp / rt / em / span のみを保持する関数
+  function extractWithRubyTags(node) {
+    let result = '';
+    
+    function traverse(el) {
+      for (const child of el.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          // テキストノードはそのまま追加
+          result += child.textContent;
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          const tagName = child.tagName.toLowerCase();
+          
+          // 保持するタグの場合はタグごと追加
+          if (['ruby', 'rb', 'rp', 'rt', 'em', 'span'].includes(tagName)) {
+            const attrs = Array.from(child.attributes)
+              .map(attr => ` ${attr.name}="${attr.value}"`)
+              .join('');
+            result += `<${tagName}${attrs}>`;
+            traverse(child);
+            result += `</${tagName}>`;
+          } else if (tagName === 'br') {
+            // br タグは改行に変換
+            result += '\n';
+          } else {
+            // それ以外のタグは中身だけ処理
+            traverse(child);
+          }
+        }
+      }
+    }
+    
+    traverse(node);
+    return result;
+  }
+  
   document.querySelectorAll(
     // 青空文庫
     'body > h1, ' +        // タイトル
@@ -24,9 +60,7 @@
     '#novelBody'           // 本文全体コンテナ
   )
   .forEach(node => {
-    text += node.innerHTML
-      .replace(/<br\s*\/?>/gi, '\n')  // <br> を \nに変換
-      .replace(/<(?!\/?(ruby|rb|rp|rt|em|span)\b)[^>]+>/gi, '');  // ruby、rb、rp、rt、em、span 以外のタグを削除
+    text += extractWithRubyTags(node);
   });
   
   // カクヨムの傍点
@@ -85,7 +119,7 @@
   console.log('総文字数:', totalVisibleChars);
   
   // 1ページあたりの上限文字数
-  const MAX_PER_PAGE = 5000;
+  const MAX_PER_PAGE = 10000;
   
   // 必要なページ数を計算（文字数均等分割）
   const numPages = Math.ceil(totalVisibleChars / MAX_PER_PAGE);
