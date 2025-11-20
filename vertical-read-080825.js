@@ -85,7 +85,7 @@
   console.log('総文字数:', totalVisibleChars);
   
   // 1ページあたりの上限文字数
-  const MAX_PER_PAGE = 10000;
+  const MAX_PER_PAGE = 5000;
   
   // 必要なページ数を計算（文字数均等分割）
   const numPages = Math.ceil(totalVisibleChars / MAX_PER_PAGE);
