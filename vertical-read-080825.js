@@ -123,7 +123,7 @@ document.querySelectorAll(
   }
   
   // 1パートあたりの上限（可視文字）
-  const MAX_PER_PART = 10000;
+  const MAX_PER_PART = 7000;
   
   // chunks を走査して、可視文字で約 MAX_PER_PART ごとに parts に分割する
   const parts = [];
@@ -170,22 +170,17 @@ document.querySelectorAll(
   
   // レンダリング関数（DocumentFragment を使ってまとめて追加）
   function renderPart(index) {
-  // 明示的にクリーンアップ
-  container.innerHTML = '';  // 前パートを全部消す（負荷軽減）
-  
-  // 少し待ってからレンダリング（GC時間を確保）
-  requestAnimationFrame(() => {
+    container.innerHTML = ''; // 前パートを全部消す（負荷軽減）
     const frag = document.createDocumentFragment();
     const list = parts[index] || [];
-
+  
     for (const html of list) {
       const span = document.createElement('span');
-      span.innerHTML = html;  // ルビ等を正しく解釈させるため innerHTML
+      span.innerHTML = html; // ルビ等を正しく解釈させるため innerHTML
       frag.appendChild(span);
     }
     container.appendChild(frag);
-  });
-}
+  }
   
   // 初回表示
   let currentIndex = 0;
