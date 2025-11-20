@@ -225,17 +225,23 @@ let text = '';
   // 均等分割でパートを作成
   const parts = [];
   
+  let prevEndVisiblePos = 0;  // 前ページの終わり位置を保持
+  const overlap = 7;           // 重複させたい文字数
+  
   for (let i = 0; i < numPages; i++) {
-    const startVisiblePos = i * charsPerPage;
-    let endVisiblePos = (i + 1) * charsPerPage;
+    let startVisiblePos = prevEndVisiblePos;
+    if (i > 0) {
+        startVisiblePos = Math.max(0, prevEndVisiblePos - overlap);
+    }
+    let endVisiblePos = startVisiblePos + charsPerPage;
     
     // 最後のページは残り全部
     if (i === numPages - 1) {
       endVisiblePos = fullText.length;
     } else {
-      // 目標位置付近で改行を探す（ページ切り替え位置以降の20%の範囲）
+      // 目標位置付近で改行を探す（ページ切り替え位置以降の1%、100文字の範囲）
       const searchStart = endVisiblePos;
-      const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.2));
+      const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.01));
       
       let bestPos = endVisiblePos;
       
@@ -255,6 +261,7 @@ let text = '';
     
     const partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
     parts.push([partHTML]);
+    prevEndVisiblePos = endVisiblePos;
     
     const actualLen = visibleLength(partHTML);
     console.log(`パート${i + 1}: ${actualLen}文字`);
