@@ -194,12 +194,101 @@ document.querySelectorAll(
   renderPart(currentIndex);
 
   //※ページ切り替え 
-  let promptShownForward = false; // 次へ
-  let promptShownBackward = false; // 前へ
-  let isSwitching = false; // ← 切替中フラグ
+  // window.confirm の代わりに使うカスタム確認ダイアログ
+  function createCustomConfirm(message, onConfirm, onCancel) {
+    // 既存の確認ダイアログがあれば削除
+    const existing = document.getElementById('customConfirmDialog');
+    if (existing) existing.remove();
+  
+    const overlay = document.createElement('div');
+    overlay.id = 'customConfirmDialog';
+    Object.assign(overlay.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '10003',
+    });
+  
+    const dialog = document.createElement('div');
+    Object.assign(dialog.style, {
+      backgroundColor: 'white',
+      padding: '20px',
+      borderRadius: '8px',
+      maxWidth: '300px',
+      textAlign: 'center',
+      fontFamily: 'sans-serif',
+    });
+  
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+    Object.assign(messageDiv.style, {
+      marginBottom: '20px',
+      fontSize: '16px',
+      color: '#333',
+    });
+  
+    const buttonContainer = document.createElement('div');
+    Object.assign(buttonContainer.style, {
+      display: 'flex',
+      gap: '10px',
+      justifyContent: 'center',
+    });
+  
+    const okButton = document.createElement('button');
+    okButton.textContent = 'OK';
+    Object.assign(okButton.style, {
+      padding: '10px 20px',
+      fontSize: '14px',
+      cursor: 'pointer',
+      backgroundColor: '#007AFF',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+    });
+  
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'キャンセル';
+    Object.assign(cancelButton.style, {
+      padding: '10px 20px',
+      fontSize: '14px',
+      cursor: 'pointer',
+      backgroundColor: '#ccc',
+      color: '#333',
+      border: 'none',
+      borderRadius: '4px',
+    });
+  
+    okButton.addEventListener('click', () => {
+      overlay.remove();
+      if (onConfirm) onConfirm();
+    });
+  
+    cancelButton.addEventListener('click', () => {
+      overlay.remove();
+      if (onCancel) onCancel();
+    });
+  
+    buttonContainer.appendChild(cancelButton);
+    buttonContainer.appendChild(okButton);
+    dialog.appendChild(messageDiv);
+    dialog.appendChild(buttonContainer);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+  }
+  
+  // ページ切り替え部分を修正（元のコードの該当部分と置き換え）
+  let promptShownForward = false;
+  let promptShownBackward = false;
+  let isSwitching = false;
   
   window.addEventListener('scroll', () => {
-    if (isSwitching) return; // ← 切替処理中は無視
+    if (isSwitching) return;
   
     const scrollBottom = window.scrollY + window.innerHeight;
     const scrollTop = window.scrollY;
@@ -217,16 +306,25 @@ document.querySelectorAll(
       scrollSpeed = 0;
   
       promptShownForward = true;
-      const ok = window.confirm("続きを読み込みますか？");
-      if (ok) {
-        isSwitching = true; // ← 切替開始
-        currentIndex++;
-        renderPart(currentIndex);
-        window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
-        promptShownForward = false;
-        promptShownBackward = false;
-      }
+      
+      // window.confirm の代わりにカスタムダイアログを使用
+      createCustomConfirm(
+        "続きを読み込みますか？",
+        () => {
+          // OK押下時
+          isSwitching = true;
+          currentIndex++;
+          renderPart(currentIndex);
+          window.scrollTo(0, 0);
+          setTimeout(() => { isSwitching = false; }, 5000);
+          promptShownForward = false;
+          promptShownBackward = false;
+        },
+        () => {
+          // キャンセル押下時
+          promptShownForward = false;
+        }
+      );
     } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
       promptShownForward = false;
     }
@@ -242,22 +340,31 @@ document.querySelectorAll(
       scrollSpeed = 0;
   
       promptShownBackward = true;
-      const ok = window.confirm("前の文章に戻りますか？");
-      if (ok) {
-        isSwitching = true; // ← 切替開始
-        currentIndex--;
-        renderPart(currentIndex);
-        const prevPartHeight = container.scrollHeight;
-        window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 5000); // 5秒待って解除
-        promptShownForward = false;
-        promptShownBackward = false;
-      }
+      
+      // window.confirm の代わりにカスタムダイアログを使用
+      createCustomConfirm(
+        "前の文章に戻りますか?",
+        () => {
+          // OK押下時
+          isSwitching = true;
+          currentIndex--;
+          renderPart(currentIndex);
+          const prevPartHeight = container.scrollHeight;
+          window.scrollTo(0, prevPartHeight - window.innerHeight);
+          setTimeout(() => { isSwitching = false; }, 5000);
+          promptShownForward = false;
+          promptShownBackward = false;
+        },
+        () => {
+          // キャンセル押下時
+          promptShownBackward = false;
+        }
+      );
     } else if (scrollTop > window.innerHeight / 100) {
       promptShownBackward = false;
     }
   });
-
+  
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
