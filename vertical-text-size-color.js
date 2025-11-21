@@ -266,8 +266,8 @@ let text = '';
         
         partHTML = `<span style="opacity:0.5;">${beforeOverlap}</span>${afterOverlap}`;
     }
-    // partHTML を 300文字ごとの小チャンクに分割
-    const smallChunks = chunkHTMLSafe(partHTML, 300);
+    // partHTML を 100文字ごとの小チャンクに分割
+    const smallChunks = chunkHTMLSafe(partHTML, 100);
     parts.push(smallChunks); // parts[ページ番号][小チャンク番号]
     prevEndVisiblePos = endVisiblePos;
     
