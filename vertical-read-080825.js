@@ -388,6 +388,7 @@ let text = '';
   overflow-x: hidden;
 `;
 document.body.style.cssText = initialBodyStyle;
+  
 // === 右スライダー ===
 const scrollSliderRight = document.createElement('input');
 scrollSliderRight.type = 'range';
@@ -395,7 +396,7 @@ scrollSliderRight.min = 0;
 scrollSliderRight.max = 25;
 scrollSliderRight.value = 0;
 Object.assign(scrollSliderRight.style, {
-  all: 'unset',
+  appearance: 'unset',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
@@ -412,7 +413,7 @@ scrollSliderLeft.min = 0;
 scrollSliderLeft.max = 25;
 scrollSliderLeft.value = 0;
 Object.assign(scrollSliderLeft.style, {
-  all: 'unset',
+  appearance: 'unset',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
