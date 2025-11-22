@@ -2105,9 +2105,10 @@ Object.assign(buttonsContainer.style, {
 const buttons = straddleUI.querySelectorAll('.button');
 buttons.forEach(btn => {
   Object.assign(btn.style, {
+    fontSize: '14px',
+    color: 'unset',
     padding: '2px 4px',
-    borderWidth: '2px',
-    borderStyle: 'outset',
+    border: '1px solid',
   });
 });
 // 数字ラベルのスタイル
