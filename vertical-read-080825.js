@@ -396,7 +396,8 @@ scrollSliderRight.min = 0;
 scrollSliderRight.max = 25;
 scrollSliderRight.value = 0;
 Object.assign(scrollSliderRight.style, {
-  appearance: 'unset',
+  appearance: 'none',
+  border: 'none',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
@@ -413,7 +414,8 @@ scrollSliderLeft.min = 0;
 scrollSliderLeft.max = 25;
 scrollSliderLeft.value = 0;
 Object.assign(scrollSliderLeft.style, {
-  appearance: 'unset',
+  appearance: 'none',
+  border: 'none',
   position: 'fixed',
   height: '210vh',
   bottom: '-108vh',
