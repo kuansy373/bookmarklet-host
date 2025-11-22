@@ -276,18 +276,18 @@ let text = '';
   }
   
   // レンダリング関数
-  function renderPart(pageIndex){
-      while(container.firstChild)
-          container.removeChild(container.firstChild);
+  function renderPart(pageIndex) {
+    container.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    const pageChunks = parts[pageIndex] || [];
   
-      const frag = document.createDocumentFragment();
-      const pageChunks = parts[pageIndex] || [];
-      for(const chunkHTML of pageChunks){
-          const span = document.createElement('span');
-          span.innerHTML = chunkHTML; // small safe
-          frag.appendChild(span);
-      }
-      container.appendChild(frag);
+    for (const chunkHTML of pageChunks) {
+      const span = document.createElement('span');
+      span.innerHTML = chunkHTML;
+      frag.appendChild(span);
+    }
+  
+    container.appendChild(frag);
   }
   
   // 初回表示
