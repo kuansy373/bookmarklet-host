@@ -2106,6 +2106,7 @@ const buttons = straddleUI.querySelectorAll('.button');
 buttons.forEach(btn => {
   Object.assign(btn.style, {
     padding: '2px 4px',
+    borderWidth: '2px',
     borderStyle: 'outset',
   });
 });
