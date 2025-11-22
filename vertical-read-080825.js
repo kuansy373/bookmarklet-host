@@ -255,7 +255,7 @@ let text = '';
     const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
     
     let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
-    // 重複文字7文字に透明度を指定
+    // 重複文字10文字に透明度を指定
     if (i > 0 && overlap > 0) {
         // 重複部分の HTML 位置
         const overlapStartHtmlPos = getHtmlPos(posMap, startVisiblePos);
@@ -2055,30 +2055,30 @@ straddleUI.innerHTML = `
     <!-- 1セット目 -->
     <div class="button-set">
       <span class="label">1.</span>
-      <button id="saveBtn1" style="padding: 2px 4px;">SAVE</button>
+      <button id="saveBtn1" class="button">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn1" style="padding: 2px 4px;">APPLY</button>
+      <button id="applyBtn1" class="button">APPLY</button>
     </div>
     <!-- 2セット目 -->
     <div class="button-set">
       <span class="label">2.</span>
-      <button id="saveBtn2" style="padding: 2px 4px;">SAVE</button>
+      <button id="saveBtn2" class="button">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn2" style="padding: 2px 4px;">APPLY</button>
+      <button id="applyBtn2" class="button">APPLY</button>
     </div>
     <!-- 3セット目 -->
     <div class="button-set">
       <span class="label">3.</span>
-      <button id="saveBtn3" style="padding: 2px 4px;">SAVE</button>
+      <button id="saveBtn3" class="button">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn3" style="padding: 2px 4px;">APPLY</button>
+      <button id="applyBtn3" class="button">APPLY</button>
     </div>
     <!-- 4セット目 -->
     <div class="button-set">
       <span class="label">4.</span>
-      <button id="saveBtn4" style="padding: 2px 4px;">SAVE</button>
+      <button id="saveBtn4" class="button">SAVE</button>
       <span class="label">⇒</span>
-      <button id="applyBtn4" style="padding: 2px 4px;">APPLY</button>
+      <button id="applyBtn4" class="button">APPLY</button>
     </div>
   </div>
 `;
@@ -2092,8 +2092,8 @@ Object.assign(header.style, {
   marginBottom: '8px', // 下にスペースを追加
 });
 // ボタン群のスタイル
-const buttons = straddleUI.querySelector('.ui-buttons');
-Object.assign(buttons.style, {
+const buttonsContainer = straddleUI.querySelector('.ui-buttons');
+Object.assign(buttonsContainer.style, {
   display: 'flex',
   flexDirection: 'column',
   marginLeft: '5px',
@@ -2101,12 +2101,23 @@ Object.assign(buttons.style, {
   borderRadius: '2px',
   fontSize: '14px',
 });
-  //label
-  document.querySelectorAll('.label').forEach(span => {
-  span.style.all = 'initial',
-  span.style.color = 'inherit';
-  span.style.background = 'inherit';
-  span.style.fontSize = '14px';
+// ボタンのスタイル
+const buttons = straddleUI.querySelectorAll('.button');
+buttons.forEach(btn => {
+  Object.assign(btn.style, {
+    padding: '2px 4px',
+    borderStyle: 'outset',
+  });
+});
+// 数字ラベルのスタイル
+const labels = straddleUI.querySelectorAll('.label');
+labels.forEach(span => {
+  Object.assign(span.style, {
+    all: 'initial',
+    color: 'inherit',
+    background: 'inherit',
+    fontSize: '14px',
+  });
 });
 // ☆ ボタン
 const toggleBtn = document.createElement('button');
