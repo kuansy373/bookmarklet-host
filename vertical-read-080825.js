@@ -2080,6 +2080,34 @@ straddleUI.innerHTML = `
       <span class="label">⇒</span>
       <button id="applyBtn4" class="button">APPLY</button>
     </div>
+    <!-- 5セット目 -->
+    <div class="button-set">
+      <span class="label">5.</span>
+      <button id="saveBtn5" class="button">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn5" class="button">APPLY</button>
+    </div>
+    <!-- 6セット目 -->
+    <div class="button-set">
+      <span class="label">6.</span>
+      <button id="saveBtn6" class="button">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn6" class="button">APPLY</button>
+    </div>
+    <!-- 7セット目 -->
+    <div class="button-set">
+      <span class="label">7.</span>
+      <button id="saveBtn7" class="button">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn7" class="button">APPLY</button>
+    </div>
+    <!-- 8セット目 -->
+    <div class="button-set">
+      <span class="label">8.</span>
+      <button id="saveBtn8" class="button">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn8" class="button">APPLY</button>
+    </div>
   </div>
 `;
 // ヘッダーのスタイル
@@ -2089,7 +2117,7 @@ Object.assign(header.style, {
   alignItems: 'center',
   justifyContent: 'space-between',
   fontWeight: 'bold',
-  marginBottom: '8px', // 下にスペースを追加
+  marginBottom: '10px', // 下にスペースを追加
 });
 // ボタン群のスタイル
 const buttonsContainer = straddleUI.querySelector('.ui-buttons');
@@ -2140,18 +2168,14 @@ document.body.appendChild(toggleBtn);
 document.body.appendChild(straddleUI);
 
 // --- ボタンごとのイベント登録 ---
-document.getElementById('saveBtn1').onclick = () => saveStyle('style1');
-document.getElementById('applyBtn1').onclick = () => applyStyleByName('style1');
-document.getElementById('saveBtn2').onclick = () => saveStyle('style2');
-document.getElementById('applyBtn2').onclick = () => applyStyleByName('style2');
-document.getElementById('saveBtn3').onclick = () => saveStyle('style3');
-document.getElementById('applyBtn3').onclick = () => applyStyleByName('style3');
-document.getElementById('saveBtn4').onclick = () => saveStyle('style4');
-document.getElementById('applyBtn4').onclick = () => applyStyleByName('style4');
+for (let i = 1; i <= 8; i++) {
+  document.getElementById(`saveBtn${i}`).onclick  = () => saveStyle(`style${i}`);
+  document.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`style${i}`);
+}
   
 // APPLYボタンの色を先に取得
 async function initApplyButtonStyle() {
-  const styles = ['style1', 'style2', 'style3', 'style4'];
+  const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6','style7','style8'];
 
   for (const styleName of styles) {
     try {
@@ -2221,17 +2245,17 @@ async function saveStyle(name) {
     hideBall: document.getElementById('scrollHide').checked,
   };
 // --- ユーザーに確認 ---
-  const confirmMessage =
-    `☆ http://localhost:3000 に保存しますか？\n\n` +
-    `--- スタイル設定 ---\n` +
-    `BG: ${backgroundColor}\n` +
-    `FG: ${color}\n` +
-    `FontSize: ${fontSize}\n` +
-    `FontWeight: ${fontWeight}\n` +
-    `FontShadow: ${blur}px\n` +
-    `FontFamily: ${fontFamily}\n\n` +
-    `--- スライダー設定 ---\n` +
-    JSON.stringify(scrollSettings, null, 2);
+const confirmMessage =
+  `☆ http://localhost:3000 に保存しますか？\n\n` +
+  `--- スタイル設定 ---\n` +
+  `BG: ${backgroundColor}\n` +
+  `FG: ${color}\n` +
+  `FontSize: ${fontSize}\n` +
+  `FontWeight: ${fontWeight}\n` +
+  `FontShadow: ${blur}px\n` +
+  `FontFamily: ${fontFamily}\n\n` +
+  `--- スライダー設定 ---\n` +
+  JSON.stringify(scrollSettings, null, 2);
 
   if (!confirm(confirmMessage)) {
     return; // 「いいえ」の場合は中断
@@ -2253,16 +2277,13 @@ async function saveStyle(name) {
       })
     });
     // 保存成功後にAPPLYボタンに色を反映
-    const applyBtn = document.getElementById(
-    name === 'style1' ? 'applyBtn1' :
-    name === 'style2' ? 'applyBtn2' :
-    name === 'style3' ? 'applyBtn3' :
-    'applyBtn4'
-  );
-  if (applyBtn) {
-    applyBtn.style.color = color;
-    applyBtn.style.backgroundColor = backgroundColor;
-  }
+    const num = name.replace('style', '');
+    const applyBtn = document.getElementById(`applyBtn${num}`);
+
+    if (applyBtn) {
+      applyBtn.style.color = color;
+      applyBtn.style.backgroundColor = backgroundColor;
+    }
     alert(`☆ ${name} を保存しました！`);
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
