@@ -76,9 +76,9 @@ let text = '';
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
   
-  // body 直下のすべての要素を非表示
+  // body 直下のすべての要素を削除
   document.querySelectorAll('body > *').forEach(node => {
-    node.style.display = 'none'
+    node.remove();
   });
   
   // 横スクロールやズームが起きない固定レイアウトにする処理
@@ -90,18 +90,10 @@ let text = '';
   }
   vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
   
-  // ページトップ、ヘッダー、フッターなどを非表示に
-  const hideStyle = document.createElement('style');
-  hideStyle.textContent = `
-    #pageTop,
-    .c-navigater,
-    .js-navigater-totop,
-    .global-header,
-    .global-footer {
-      display: none !important;
-    }
-  `;
-  document.head.appendChild(hideStyle);
+  // ページトップ、ヘッダー、フッターなどを削除
+  document.querySelectorAll(
+    '#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer'
+  ).forEach(el => el.remove());
   
   const container = document.createElement('div');
   container.id = 'novelDisplay';
