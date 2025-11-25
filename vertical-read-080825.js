@@ -2259,6 +2259,12 @@ straddleUI.innerHTML = `
       <span class="label">⇒</span>
       <button id="applyBtn8" class="button">APPLY</button>
     </div>
+    <!-- JSON入力欄 -->
+    <div class="button-set">
+      <input id="jsonInput" class="json-input" placeholder="JSONを貼り付け" />
+      <span class="label">⇒</span>
+      <button id="applyJsonBtn" class="button">APPLY</button>
+    </div>
   </div>
 `;
 // ヘッダーのスタイル
@@ -2290,7 +2296,17 @@ buttons.forEach(btn => {
     border: '1px solid',
   });
 });
-// 数字ラベルのスタイル
+// JSON入力欄のスタイル
+const jsonInput = straddleUI.querySelector('.json-input');
+Object.assign(jsonInput.style, {
+  fontSize: '12px',
+  padding: '4px',
+  border: '1px solid',
+  borderRadius: '2px',
+  width: '100px',
+  fontFamily: 'monospace',
+});
+// 数字、矢印のスタイル
 const labels = straddleUI.querySelectorAll('.label');
 labels.forEach(span => {
   Object.assign(span.style, {
@@ -2447,11 +2463,97 @@ async function saveStyle(name) {
     }
   };
 
+// 共通のスタイル適用関数
+function applyStyleData(data) {
+  const target = document.getElementById('novelDisplay');
+  if (!target) {
+    alert('対象要素が見つかりません');
+    return false;
+  }
+
+  // --- 文字スタイル反映 ---
+  if (data.color) {
+    applyStyle('color', data.color);
+    const fgHex = document.getElementById('fgHex');
+    if (fgHex) fgHex.value = data.color;
+  }
+  if (data.backgroundColor) {
+    applyStyle('background-color', data.backgroundColor);
+    const bgHex = document.getElementById('bgHex');
+    if (bgHex) bgHex.value = data.backgroundColor;
+  }
+  if (data.fontSize) target.style.fontSize = data.fontSize;
+  if (data.fontWeight) target.style.fontWeight = data.fontWeight;
+  if (data.textShadow !== null && data.textShadow !== undefined) {
+    target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
+    target.dataset.textShadow = data.textShadow;
+  }
+  if (data.fontFamily && fontSelect) {
+    fontSelect.value = data.fontFamily;
+    fontSelect.dispatchEvent(new Event('change'));
+  }
+
+  // --- スクロールUIを反映 ---
+  if (data.scrollSettings) {
+    const s = data.scrollSettings;
+
+    document.getElementById('scrollB').checked = s.border;
+    document.getElementById('scrollC').checked = s.colorIn;
+    document.getElementById('scrollS').value = s.shadow;
+    document.getElementById('scrollBoth').checked = s.both;
+    document.getElementById('scrollRight').checked = s.right;
+    document.getElementById('scrollLeft').checked = s.left;
+    document.getElementById('scrollX').value = s.position;
+    document.getElementById('scrollW').value = s.width;
+    document.getElementById('scrollO').value = s.opacity;
+    document.getElementById('scrollSpeedScale').value = s.speedScale;
+    document.getElementById('scrollHide').checked = s.hideBall;
+
+    // イベント強制発火
+    document.getElementById('scrollB').dispatchEvent(new Event('change'));
+    document.getElementById('scrollC').dispatchEvent(new Event('change'));
+    document.getElementById('scrollS').dispatchEvent(new Event('input'));
+    document.getElementById('scrollRight').dispatchEvent(new Event('change'));
+    document.getElementById('scrollLeft').dispatchEvent(new Event('change'));
+    document.getElementById('scrollBoth').dispatchEvent(new Event('change'));
+    document.getElementById('scrollX').dispatchEvent(new Event('input'));
+    document.getElementById('scrollW').dispatchEvent(new Event('input'));
+    document.getElementById('scrollO').dispatchEvent(new Event('input'));
+    document.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
+    document.getElementById('scrollHide').dispatchEvent(new Event('change'));
+  }
+
+  updateControls();
+  return true;
+}
+
+// JSON APPLYボタン
+document.getElementById('applyJsonBtn').onclick = async () => {
+  const jsonInput = document.getElementById('jsonInput');
+  const jsonText = jsonInput.value.trim();
+  
+  if (!jsonText) {
+    alert('JSONデータを入力してください');
+    return;
+  }
+
+  try {
+    const data = JSON.parse(jsonText);
+    
+    const proceed = confirm(`☆ JSONデータを反映します！`);
+    if (!proceed) return;
+
+    if (applyStyleData(data)) {
+      straddleUI.style.display = 'none';
+      jsonInput.value = ''; // 入力欄をクリア
+    }
+  } catch(e) {
+    alert('JSONの解析に失敗しました:\n' + e.message);
+  }
+};
+
 // APPLYボタン
 async function applyStyleByName(name) {
-  const target = document.getElementById('novelDisplay');
-  if (!target) return alert('対象要素が見つかりません');
-
   // --- ユーザーに確認 ---
   const proceed = confirm(`☆ ${name} を反映します！`);
   if (!proceed) return;
@@ -2461,60 +2563,9 @@ async function applyStyleByName(name) {
     const data = await res.json();
     if (!data) return alert(`${name} は保存されていません`);
     
-    // --- 文字スタイル反映 ---
-    if (data.color) {
-      applyStyle('color', data.color);
-      const fgHex = document.getElementById('fgHex');
-      if (fgHex) fgHex.value = data.color;
+    if (applyStyleData(data)) {
+      straddleUI.style.display = 'none';
     }
-    if (data.backgroundColor) {
-      applyStyle('background-color', data.backgroundColor);
-      const bgHex = document.getElementById('bgHex');
-      if (bgHex) bgHex.value = data.backgroundColor;
-    }
-    if (data.fontSize) target.style.fontSize = data.fontSize;
-    if (data.fontWeight) target.style.fontWeight = data.fontWeight;
-    if (data.textShadow !== null && data.textShadow !== undefined) {
-      target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
-      target.dataset.textShadow = data.textShadow;
-    }
-    if (data.fontFamily && fontSelect) {
-      fontSelect.value = data.fontFamily;
-      fontSelect.dispatchEvent(new Event('change'));
-    }
-
-    // --- スクロールUIを反映 ---
-    if (data.scrollSettings) {
-      const s = data.scrollSettings;
-
-      document.getElementById('scrollB').checked = s.border;
-      document.getElementById('scrollC').checked = s.colorIn;
-      document.getElementById('scrollS').value = s.shadow;
-      document.getElementById('scrollBoth').checked = s.both;
-      document.getElementById('scrollRight').checked = s.right;
-      document.getElementById('scrollLeft').checked = s.left;
-      document.getElementById('scrollX').value = s.position;
-      document.getElementById('scrollW').value = s.width;
-      document.getElementById('scrollO').value = s.opacity;
-      document.getElementById('scrollSpeedScale').value = s.speedScale;
-      document.getElementById('scrollHide').checked = s.hideBall;
-
-      // イベント強制発火
-      document.getElementById('scrollB').dispatchEvent(new Event('change'));
-      document.getElementById('scrollC').dispatchEvent(new Event('change'));
-      document.getElementById('scrollS').dispatchEvent(new Event('input'));
-      document.getElementById('scrollRight').dispatchEvent(new Event('change'));
-      document.getElementById('scrollLeft').dispatchEvent(new Event('change'));
-      document.getElementById('scrollBoth').dispatchEvent(new Event('change'));
-      document.getElementById('scrollX').dispatchEvent(new Event('input'));
-      document.getElementById('scrollW').dispatchEvent(new Event('input'));
-      document.getElementById('scrollO').dispatchEvent(new Event('input'));
-      document.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
-      document.getElementById('scrollHide').dispatchEvent(new Event('change'));
-    }
-
-    updateControls();
-    straddleUI.style.display = 'none';
   } catch(e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
