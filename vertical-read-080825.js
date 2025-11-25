@@ -340,9 +340,9 @@ let text = '';
     
     const pageLabel = document.createElement('span');
     pageLabel.textContent = 'ページ目に移動しますか？';
+    pageLabel.id = 'pageLabel';
     pageLabel.style.cssText = `
       font-size: 18px;
-      font-family: 
       color: unset;
     `;
     
@@ -358,6 +358,7 @@ let text = '';
     
     const yesButton = document.createElement('button');
     yesButton.textContent = 'はい';
+    yesButton.id = 'yesButton';
     yesButton.style.cssText = `
       padding: 10px 30px;
       font-size: 16px;
@@ -370,10 +371,11 @@ let text = '';
     
     const noButton = document.createElement('button');
     noButton.textContent = 'いいえ';
+    noButton.id = 'noButton';
     noButton.style.cssText = `
       padding: 10px 30px;
       font-size: 16px;
-      background: rgb(50,50,50,50.5);
+      background: rgb(50,50,50,0.5);
       color: unset;
       border: none;
       border-radius: 5px;
@@ -1136,17 +1138,25 @@ const fontSelect = document.createElement('select');
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
+  // target以外の適用先をIDで取得する
+  const pageLabel = document.getElementById('pageLabel');
+  const yesButton = document.getElementById('yesButton');
+  const noButton = document.getElementById('noButton');
+  // 適用対象を配列にまとめる
+  const elements = [target, pageLabel, yesButton, noButton];
   
   if (font === '游明朝') {
     document.body.style.cssText = initialBodyStyle;
     if (target) target.style.fontFamily = '';
+    if (pageLabel) pageLabel.style.fontFamily = '';
     return;
   }
   if (font === 'sans-serif') {
     if (target) target.style.fontFamily = 'sans-serif';
+    if (pageLabel) pageLabel.style.fontFamily = 'sans-serif';
     return;
   }
-  
+  // Google Fonts 読み込み
   const id = "gf-font-" + font.replace(/\s+/g, '-');
   if (!document.getElementById(id)) {
     const link = document.createElement('link');
@@ -1155,10 +1165,9 @@ fontSelect.addEventListener('change', () => {
     link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
     document.head.appendChild(link);
   }
-
-  if (target) {
-    target.style.fontFamily = `'${font}', sans-serif`;
-  }
+  elements.forEach(el => {
+    if (el) el.style.fontFamily = `'${font}', sans-serif`;
+  });
 });
 fontFamilyContainer.appendChild(fontSelect);
 
