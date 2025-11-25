@@ -282,6 +282,159 @@ let text = '';
     container.appendChild(frag);
   }
   
+  // オーバーレイUIの作成
+  function createOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'page-switch-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+    `;
+    
+    const message = document.createElement('p');
+    message.id = 'overlay-message';
+    message.style.cssText = `
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+    `;
+    
+    const inputContainer = document.createElement('div');
+    inputContainer.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 20px;
+    `;
+    
+    const pageInput = document.createElement('input');
+    pageInput.type = 'number';
+    pageInput.min = '1';
+    pageInput.id = 'page-input';
+    pageInput.style.cssText = `
+      width: 30px;
+      padding: 8px;
+      font-size: 18px;
+      border-radius: 5px;
+    `;
+    
+    const pageLabel = document.createElement('span');
+    pageLabel.textContent = 'ページ目に移動しますか？';
+    pageLabel.style.cssText = `
+      font-size: 18px;
+      font-family: 
+      color: unset;
+    `;
+    
+    inputContainer.appendChild(pageInput);
+    inputContainer.appendChild(pageLabel);
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    `;
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = 'はい';
+    yesButton.style.cssText = `
+      padding: 10px 30px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    `;
+    yesButton.onmouseover = () => yesButton.style.background = '#0056b3';
+    yesButton.onmouseout = () => yesButton.style.background = '#007bff';
+    
+    const noButton = document.createElement('button');
+    noButton.textContent = 'いいえ';
+    noButton.style.cssText = `
+      padding: 10px 30px;
+      font-size: 16px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    `;
+    noButton.onmouseover = () => noButton.style.background = '#545b62';
+    noButton.onmouseout = () => noButton.style.background = '#6c757d';
+    
+    buttonContainer.appendChild(yesButton);
+    buttonContainer.appendChild(noButton);
+    dialog.appendChild(message);
+    dialog.appendChild(inputContainer);
+    dialog.appendChild(buttonContainer);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+    
+    return { overlay, message, pageInput, yesButton, noButton };
+  }
+  
+  const overlayElements = createOverlay();
+  
+  function showOverlay(defaultPage, maxPage, onYes) {
+    overlayElements.message.textContent = '';
+    overlayElements.pageInput.value = defaultPage;
+    overlayElements.pageInput.max = maxPage;
+    overlayElements.overlay.style.display = 'flex';
+    overlayElements.pageInput.focus();
+    overlayElements.pageInput.select();
+    
+    const handleYes = () => {
+      const targetPage = parseInt(overlayElements.pageInput.value);
+      if (targetPage >= 1 && targetPage <= maxPage) {
+        overlayElements.overlay.style.display = 'none';
+        cleanup();
+        onYes(targetPage);
+      } else {
+        alert(`1から${maxPage}の範囲で入力してください`);
+      }
+    };
+    
+    const handleNo = () => {
+      overlayElements.overlay.style.display = 'none';
+      cleanup();
+    };
+    
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') {
+        handleYes();
+      }
+    };
+    
+    const cleanup = () => {
+      overlayElements.yesButton.removeEventListener('click', handleYes);
+      overlayElements.noButton.removeEventListener('click', handleNo);
+      overlayElements.pageInput.removeEventListener('keypress', handleEnter);
+    };
+    
+    overlayElements.yesButton.addEventListener('click', handleYes);
+    overlayElements.noButton.addEventListener('click', handleNo);
+    overlayElements.pageInput.addEventListener('keypress', handleEnter);
+  }
+  
   // 初回表示
   let currentIndex = 0;
   renderPart(currentIndex);
@@ -310,16 +463,16 @@ let text = '';
       if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
   
       promptShownForward = true;
-      const ok = window.confirm("続きを読み込みますか？");
-      if (ok) {
+      const nextPage = currentIndex + 2;
+      showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
-        currentIndex++;
+        currentIndex = targetPage - 1; // ページ番号をインデックスに変換
         renderPart(currentIndex);
         window.scrollTo(0, 0);
         setTimeout(() => { isSwitching = false; }, 5000);
         promptShownForward = false;
         promptShownBackward = false;
-      }
+      });
     } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
       promptShownForward = false;
     }
@@ -335,17 +488,17 @@ let text = '';
       if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
   
       promptShownBackward = true;
-      const ok = window.confirm("前の文章に戻りますか？");
-      if (ok) {
+      const prevPage = currentIndex;
+      showOverlay(prevPage, numPages, (targetPage) => {
         isSwitching = true;
-        currentIndex--;
+        currentIndex = targetPage - 1; // ページ番号をインデックスに変換
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
         setTimeout(() => { isSwitching = false; }, 5000);
         promptShownForward = false;
         promptShownBackward = false;
-      }
+      });
     } else if (scrollTop > window.innerHeight / 100) {
       promptShownBackward = false;
     }
@@ -394,7 +547,7 @@ Object.assign(scrollSliderRight.style, {
   height: '210vh',
   bottom: '-108vh',
   right: '30px',
-  zIndex: '9999',
+  zIndex: '9998',
   width: '80px',
   opacity: '1',
 });
@@ -412,7 +565,7 @@ Object.assign(scrollSliderLeft.style, {
   height: '210vh',
   bottom: '-108vh',
   left: '30px',
-  zIndex: '9999',
+  zIndex: '9998',
   width: '80px',
   opacity: '1',
   direction: 'rtl', // 左用は増加方向反転
