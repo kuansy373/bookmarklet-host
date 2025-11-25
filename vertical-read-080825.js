@@ -2395,55 +2395,57 @@ async function saveStyle(name) {
     speedScale: parseFloat(document.getElementById('scrollSpeedScale').value),
     hideBall: document.getElementById('scrollHide').checked,
   };
-// --- ユーザーに確認 ---
-const confirmMessage =
-  `☆ http://localhost:3000 に保存しますか？\n\n` +
-  `--- スタイル設定 ---\n` +
-  `BG: ${backgroundColor}\n` +
-  `FG: ${color}\n` +
-  `FontSize: ${fontSize}\n` +
-  `FontWeight: ${fontWeight}\n` +
-  `FontShadow: ${blur}px\n` +
-  `FontFamily: ${fontFamily}\n\n` +
-  `--- スライダー設定 ---\n` +
-  JSON.stringify(scrollSettings, null, 2);
-
-  if (!confirm(confirmMessage)) {
-    return; // 「いいえ」の場合は中断
-  }
-
-  try {
-    await fetch('http://localhost:3000/save', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ 
-        name,
-        color, 
-        backgroundColor, 
-        fontSize, 
-        fontWeight, 
-        textShadow: blur,
-        fontFamily,
-        scrollSettings
-      })
-    });
-    // 保存成功後にAPPLYボタンに色を反映
-    const num = name.replace('style', '');
-    const applyBtn = document.getElementById(`applyBtn${num}`);
-
-    if (applyBtn) {
-      applyBtn.style.color = color;
-      applyBtn.style.backgroundColor = backgroundColor;
+  // --- 確認用オブジェクト ---
+  const savePreview = {
+    color,
+    backgroundColor,
+    fontSize,
+    fontWeight,
+    textShadow: blur,
+    fontFamily,
+    scrollSettings
+  };
+  // --- ユーザーに確認 ---
+  const confirmMessage =
+    `☆ http://localhost:3000 に保存しますか？\n\n` +
+    JSON.stringify(savePreview, null, 2);
+  
+    if (!confirm(confirmMessage)) {
+      return; // 「いいえ」の場合は中断
     }
-    alert(`☆ ${name} を保存しました！`);
-  } catch(e) {
-    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
-    } else {
-      alert('保存に失敗しました: ' + e);
+  
+    try {
+      await fetch('http://localhost:3000/save', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ 
+          name,
+          color, 
+          backgroundColor, 
+          fontSize, 
+          fontWeight, 
+          textShadow: blur,
+          fontFamily,
+          scrollSettings
+        })
+      });
+      // 保存成功後にAPPLYボタンに色を反映
+      const num = name.replace('style', '');
+      const applyBtn = document.getElementById(`applyBtn${num}`);
+  
+      if (applyBtn) {
+        applyBtn.style.color = color;
+        applyBtn.style.backgroundColor = backgroundColor;
+      }
+      alert(`☆ ${name} を保存しました！`);
+    } catch(e) {
+      if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+        alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+      } else {
+        alert('保存に失敗しました: ' + e);
+      }
     }
-  }
-};
+  };
 
 // APPLYボタン
 async function applyStyleByName(name) {
