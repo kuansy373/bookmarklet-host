@@ -302,7 +302,7 @@ let text = '';
     const dialog = document.createElement('div');
     dialog.style.cssText = `
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 6px;
       text-align: center;
       max-width: 400px;
     `;
@@ -333,6 +333,8 @@ let text = '';
       width: 30px;
       padding: 8px;
       font-size: 18px;
+      border-color: unset;
+      border-style: solid;
       border-radius: 5px;
     `;
     
