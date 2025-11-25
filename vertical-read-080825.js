@@ -282,7 +282,7 @@ let text = '';
     container.appendChild(frag);
   }
   
-  // オーバーレイUIの作成
+  // ページ切り替えオーバーレイの作成
   function createOverlay() {
     const overlay = document.createElement('div');
     overlay.id = 'page-switch-overlay';
@@ -334,6 +334,9 @@ let text = '';
       font-size: 18px;
       border-radius: 5px;
     `;
+    pageInput.addEventListener('focus', () => {
+    pageInput.select();
+  });
     
     const pageLabel = document.createElement('span');
     pageLabel.textContent = 'ページ目に移動しますか？';
@@ -358,28 +361,24 @@ let text = '';
     yesButton.style.cssText = `
       padding: 10px 30px;
       font-size: 16px;
-      background: #007bff;
-      color: white;
+      background: rgb(120,120,120,0.3);
+      color: unset;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     `;
-    yesButton.onmouseover = () => yesButton.style.background = '#0056b3';
-    yesButton.onmouseout = () => yesButton.style.background = '#007bff';
     
     const noButton = document.createElement('button');
     noButton.textContent = 'いいえ';
     noButton.style.cssText = `
       padding: 10px 30px;
       font-size: 16px;
-      background: #6c757d;
-      color: white;
+      background: rgb(50,50,50,50.5);
+      color: unset;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     `;
-    noButton.onmouseover = () => noButton.style.background = '#545b62';
-    noButton.onmouseout = () => noButton.style.background = '#6c757d';
     
     buttonContainer.appendChild(yesButton);
     buttonContainer.appendChild(noButton);
@@ -399,8 +398,6 @@ let text = '';
     overlayElements.pageInput.value = defaultPage;
     overlayElements.pageInput.max = maxPage;
     overlayElements.overlay.style.display = 'flex';
-    overlayElements.pageInput.focus();
-    overlayElements.pageInput.select();
     
     const handleYes = () => {
       const targetPage = parseInt(overlayElements.pageInput.value);
