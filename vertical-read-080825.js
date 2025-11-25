@@ -2098,42 +2098,16 @@ Promise.all([
     container.style.display = 'none';
     style.disabled = true;
     window.__pickrLoaded = false;
-    // □ ボタンを作成して表示
-    const pickrOpen = document.createElement('div');
-    pickrOpen.id = 'pickrOpen';
-    pickrOpen.innerHTML = `
-    <svg width="14" height="14" viewBox="0 0 24 24">
-      <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
-    </svg>
-    `;
-    Object.assign(pickrOpen.style, {
-      all: 'initial',
-      cursor: 'pointer',
-      position: 'fixed',
-      top: '80px',
-      right: '18px',
-      opacity: '0.3',
-      color: 'unset',
-      zIndex: '999999'
-    });
-    document.body.appendChild(pickrOpen);
-    // □ をクリックしたら Pickr UI を表示
-    pickrOpen.onclick = () => {
-      container.style.display = 'block';
-      style.disabled = false;
-      pickrOpen.remove();
-      window.__pickrLoaded = true;
-    };
-    // Pickr の閉じるボタンの処理
-    document.getElementById('pickrClose').onclick = () => {
-      // □ ボタンを再生成
+    // □ ボタン作成関数（スタイルも内部に集約）
+    function createPickrOpenButton() {
       const pickrOpen = document.createElement('div');
       pickrOpen.id = 'pickrOpen';
       pickrOpen.innerHTML = `
         <svg width="14" height="14" viewBox="0 0 24 24">
           <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
         </svg>
-        `;
+      `;
+    
       Object.assign(pickrOpen.style, {
         all: 'initial',
         cursor: 'pointer',
@@ -2144,18 +2118,31 @@ Promise.all([
         color: 'unset',
         zIndex: '999999'
       });
-      document.body.appendChild(pickrOpen);
-      // Pickr UI を非表示
-      container.style.display = 'none';
-      style.disabled = true;
-      window.__pickrLoaded = false;
-      // □ をクリックしたら Pickr UI を復元
+    
+      // UI を開く
       pickrOpen.onclick = () => {
         container.style.display = 'block';
         style.disabled = false;
         pickrOpen.remove();
         window.__pickrLoaded = true;
       };
+    
+      document.body.appendChild(pickrOpen);
+      return pickrOpen;
+    }
+    
+    // 最初の □ ボタンを作成
+    createPickrOpenButton();
+    
+    // Pickr の閉じるボタンの処理
+    document.getElementById('pickrClose').onclick = () => {
+      // UI を閉じる
+      container.style.display = 'none';
+      style.disabled = true;
+      window.__pickrLoaded = false;
+    
+      // □ ボタンを再生成
+      createPickrOpenButton();
     };
   document.querySelectorAll(".copy-btn").forEach(function(button){
     button.addEventListener("click", function(){
