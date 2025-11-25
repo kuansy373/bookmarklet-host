@@ -318,6 +318,7 @@ let text = '';
     const inputContainer = document.createElement('div');
     inputContainer.style.cssText = `
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 5px;
@@ -334,9 +335,6 @@ let text = '';
       font-size: 18px;
       border-radius: 5px;
     `;
-    pageInput.addEventListener('focus', () => {
-    pageInput.select();
-  });
     
     const pageLabel = document.createElement('span');
     pageLabel.textContent = 'ページ目に移動しますか？';
