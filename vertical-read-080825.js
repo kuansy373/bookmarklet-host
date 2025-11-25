@@ -1136,25 +1136,32 @@ const fontSelect = document.createElement('select');
   fontSelect.appendChild(opt);
 });
 
+// グローバル変数として現在のフォントを保持
+let currentFont = '游明朝';
+
 // セレクト切り替え時にフォント適用
 fontSelect.addEventListener('change', () => {
   const font = fontSelect.value;
+  currentFont = font; // 現在のフォントを保存
   // target以外の適用先をIDで取得する
   const pageLabel = document.getElementById('pageLabel');
   const yesButton = document.getElementById('yesButton');
   const noButton = document.getElementById('noButton');
+  const title = document.getElementById('title');
+  const prettyLabel = document.getElementById('prettyLabel');
+  const copyBtn = document.getElementById('copyBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const saveBtn = document.getElementById('saveBtn');
   // 適用対象を配列にまとめる
-  const elements = [target, pageLabel, yesButton, noButton];
+  const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, copyBtn, cancelBtn, saveBtn];
   
   if (font === '游明朝') {
     document.body.style.cssText = initialBodyStyle;
-    if (target) target.style.fontFamily = '';
-    if (pageLabel) pageLabel.style.fontFamily = '';
+    elements.forEach(el => { if (el) el.style.fontFamily = ''; });
     return;
   }
   if (font === 'sans-serif') {
-    if (target) target.style.fontFamily = 'sans-serif';
-    if (pageLabel) pageLabel.style.fontFamily = 'sans-serif';
+    elements.forEach(el => { if (el) el.style.fontFamily = 'sans-serif'; });
     return;
   }
   // Google Fonts 読み込み
@@ -2484,6 +2491,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     // タイトル
     const title = document.createElement('h3');
     title.textContent = `☆ http://localhost:3000 に保存しますか？`;
+    title.id = 'title';
     title.style.cssText = `
       margin: 0 0 16px 0;
       font-size: 16px;
@@ -2510,6 +2518,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     const prettyLabel = document.createElement('label');
     prettyLabel.htmlFor = 'prettyPrintCheckbox';
     prettyLabel.textContent = 'プリティプリント';
+    prettyLabel.id = 'prettyLabel';
     prettyLabel.style.cssText = `
       cursor: pointer;
       font-size: 14px;
@@ -2519,6 +2528,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     // コピーボタン
     const copyBtn = document.createElement('button');
     copyBtn.textContent = '📋 コピー';
+    copyBtn.id = 'copyBtn';
     copyBtn.style.cssText = `
       padding: 6px 12px;
       margin-left: auto;
@@ -2593,6 +2603,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     // キャンセルボタン
     const cancelBtn = document.createElement('button');
     cancelBtn.textContent = 'キャンセル';
+    cancelBtn.id = 'cancelBtn';
     cancelBtn.style.cssText = `
       padding: 8px 20px;
       background: rgba(120, 120, 120, 0.3);
@@ -2610,6 +2621,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     // 保存ボタン
     const saveBtn = document.createElement('button');
     saveBtn.textContent = '保存する';
+    saveBtn.id = 'saveBtn';
     saveBtn.style.cssText = `
       padding: 8px 20px;
       background: rgba(120, 120, 120, 0.3);
@@ -2635,6 +2647,25 @@ function showSaveConfirmOverlay(name, savePreview) {
     box.appendChild(buttonContainer);
     overlay.appendChild(box);
     document.body.appendChild(overlay);
+
+    // 現在のフォントを新しく作られた要素に適用
+    const overlayElements = [
+      document.getElementById('title'),
+      document.getElementById('prettyLabel'),
+      document.getElementById('copyBtn'),
+      document.getElementById('cancelBtn'),
+      document.getElementById('saveBtn')
+    ];
+    
+    if (currentFont && currentFont !== '游明朝') {
+      const fontFamily = currentFont === 'sans-serif' 
+        ? 'sans-serif' 
+        : `'${currentFont}', sans-serif`;
+      
+      overlayElements.forEach(el => {
+        if (el) el.style.fontFamily = fontFamily;
+      });
+    }
     
     // オーバーレイクリックで閉じる
     overlay.onclick = (e) => {
