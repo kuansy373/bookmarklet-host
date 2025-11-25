@@ -292,7 +292,7 @@ let text = '';
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.6);
       display: none;
       justify-content: center;
       align-items: center;
@@ -375,7 +375,7 @@ let text = '';
     noButton.style.cssText = `
       padding: 10px 30px;
       font-size: 16px;
-      background: rgb(50,50,50,0.5);
+      background: rgba(120, 120, 120, 0.3);
       color: unset;
       border: none;
       border-radius: 5px;
@@ -2336,13 +2336,13 @@ document.body.appendChild(straddleUI);
 
 // --- ボタンごとのイベント登録 ---
 for (let i = 1; i <= 8; i++) {
-  document.getElementById(`saveBtn${i}`).onclick  = () => saveStyle(`style${i}`);
+  document.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`style${i}`);
   document.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`style${i}`);
 }
-  
+
 // APPLYボタンの色を先に取得
 async function initApplyButtonStyle() {
-  const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6','style7','style8'];
+  const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6', 'style7', 'style8'];
 
   for (const styleName of styles) {
     try {
@@ -2353,12 +2353,11 @@ async function initApplyButtonStyle() {
         if (data.color) applyBtn.style.color = data.color;
         if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 // ページ読み込み時に呼ぶ
 initApplyButtonStyle();
-
 
 // ☆ UIを開く
 toggleBtn.onclick = () => {
@@ -2382,11 +2381,9 @@ function rgbToHex(rgb) {
 async function saveStyle(name) {
   const target = document.getElementById('novelDisplay');
   if (!target) return alert('対象要素が見つかりません');
-  
   const computed = window.getComputedStyle(target);
   let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
   const fontFamily = fontSelect.value;
-
   // blur 値を抽出
   let blur = null;
   const match = textShadow.match(/(-?\d+)px$/);
@@ -2396,7 +2393,6 @@ async function saveStyle(name) {
   // HEX に変換
   color = rgbToHex(color);
   backgroundColor = rgbToHex(backgroundColor);
-
   // === スクロールUIの値を取得 ===
   const scrollSettings = {
     border: document.getElementById('scrollB').checked,
@@ -2421,47 +2417,215 @@ async function saveStyle(name) {
     fontFamily,
     scrollSettings
   };
-  // --- ユーザーに確認 ---
-  const confirmMessage =
-    `☆ http://localhost:3000 に保存しますか？\n\n` +
-    JSON.stringify(savePreview, null, 2);
   
-    if (!confirm(confirmMessage)) {
-      return; // 「いいえ」の場合は中断
+  // --- オーバーレイUIで確認 ---
+  const confirmed = await showSaveConfirmOverlay(name, savePreview);
+  if (!confirmed) return;
+  
+  try {
+    await fetch('http://localhost:3000/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        color,
+        backgroundColor,
+        fontSize,
+        fontWeight,
+        textShadow: blur,
+        fontFamily,
+        scrollSettings
+      })
+    });
+    // 保存成功後にAPPLYボタンに色を反映
+    const num = name.replace('style', '');
+    const applyBtn = document.getElementById(`applyBtn${num}`);
+    if (applyBtn) {
+      applyBtn.style.color = color;
+      applyBtn.style.backgroundColor = backgroundColor;
     }
-  
-    try {
-      await fetch('http://localhost:3000/save', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ 
-          name,
-          color, 
-          backgroundColor, 
-          fontSize, 
-          fontWeight, 
-          textShadow: blur,
-          fontFamily,
-          scrollSettings
-        })
-      });
-      // 保存成功後にAPPLYボタンに色を反映
-      const num = name.replace('style', '');
-      const applyBtn = document.getElementById(`applyBtn${num}`);
-  
-      if (applyBtn) {
-        applyBtn.style.color = color;
-        applyBtn.style.backgroundColor = backgroundColor;
-      }
-      alert(`☆ ${name} を保存しました！`);
-    } catch(e) {
-      if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-        alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
-      } else {
-        alert('保存に失敗しました: ' + e);
-      }
+    alert(`☆ ${name} を保存しました！`);
+  } catch (e) {
+    if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+      alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+    } else {
+      alert('保存に失敗しました: ' + e);
     }
-  };
+  }
+}
+
+// オーバーレイ確認UIを表示する関数
+function showSaveConfirmOverlay(name, savePreview) {
+  return new Promise((resolve) => {
+    // オーバーレイを作成
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    `;
+    
+    // コンテンツボックス
+    const box = document.createElement('div');
+    box.style.cssText = `
+      color: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    `;
+    
+    // タイトル
+    const title = document.createElement('h3');
+    title.textContent = `☆ http://localhost:3000 に保存しますか？`;
+    title.style.cssText = `
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: bold;
+    `;
+    
+    // プリティプリントチェックボックスコンテナ
+    const checkboxContainer = document.createElement('div');
+    checkboxContainer.style.cssText = `
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    `;
+    
+    const prettyCheckbox = document.createElement('input');
+    prettyCheckbox.type = 'checkbox';
+    prettyCheckbox.id = 'prettyPrintCheckbox';
+    prettyCheckbox.checked = true;
+    prettyCheckbox.style.cssText = `
+      cursor: pointer;
+    `;
+    
+    const prettyLabel = document.createElement('label');
+    prettyLabel.htmlFor = 'prettyPrintCheckbox';
+    prettyLabel.textContent = 'プリティプリント';
+    prettyLabel.style.cssText = `
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+      white-space: nowrap;
+    `;
+
+    // コピーボタン
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '📋 コピー';
+    copyBtn.style.cssText = `
+      padding: 6px 12px;
+      margin-left: auto;
+      color: unset;
+      border: 1px solid;
+      border-color: currentColor;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.2s;
+    `;
+    copyBtn.onclick = async () => {
+      try {
+        // チェックボックスの状態に応じてコピーする内容を切り替え
+        const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
+        await navigator.clipboard.writeText(textToCopy);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✓ コピー完了！';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        alert('コピーに失敗しました: ' + err);
+      }
+    };
+    
+    checkboxContainer.appendChild(prettyCheckbox);
+    checkboxContainer.appendChild(prettyLabel);
+    checkboxContainer.appendChild(copyBtn);
+    
+    // プレビューコンテナ
+    const previewContainer = document.createElement('div');
+    previewContainer.style.cssText = `
+      position: relative;
+      margin: 0 0 20px 0;
+    `;
+    
+    // プレビュー内容
+    const preview = document.createElement('pre');
+    const jsonTextFormatted = JSON.stringify(savePreview, null, 2);
+    const jsonTextCompressed = JSON.stringify(savePreview);
+    preview.textContent = jsonTextFormatted;
+    preview.style.cssText = `
+      padding: 12px;
+      border: 1px solid;
+      border-color: currentColor;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+      margin: 0;
+      white-space: pre-wrap;
+    `;
+    
+    // チェックボックスの変更イベント
+    prettyCheckbox.onchange = () => {
+      preview.textContent = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
+    };
+    
+    // ボタンコンテナ
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    `;
+    
+    // 保存ボタン
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = '保存する';
+    saveBtn.style.cssText = `
+      padding: 8px 20px;
+      background: rgba(120, 120, 120, 0.3);
+      color: unset;
+      border: 1px solid;
+      border-color: currentColor;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    `;
+    saveBtn.onclick = () => {
+      document.body.removeChild(overlay);
+      resolve(true);
+    };
+    
+    // 組み立て
+    previewContainer.appendChild(preview);
+    buttonContainer.appendChild(saveBtn);
+    box.appendChild(title);
+    box.appendChild(checkboxContainer);
+    box.appendChild(previewContainer);
+    box.appendChild(buttonContainer);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    
+    // オーバーレイクリックで閉じる
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        document.body.removeChild(overlay);
+        resolve(false);
+      }
+    };
+  });
+}
 
 // 共通のスタイル適用関数
 function applyStyleData(data) {
@@ -2531,7 +2695,7 @@ function applyStyleData(data) {
 document.getElementById('applyJsonBtn').onclick = async () => {
   const jsonInput = document.getElementById('jsonInput');
   const jsonText = jsonInput.value.trim();
-  
+
   if (!jsonText) {
     alert('JSONデータを入力してください');
     return;
@@ -2539,7 +2703,7 @@ document.getElementById('applyJsonBtn').onclick = async () => {
 
   try {
     const data = JSON.parse(jsonText);
-    
+
     const proceed = confirm(`☆ JSONデータを反映します！`);
     if (!proceed) return;
 
@@ -2547,7 +2711,7 @@ document.getElementById('applyJsonBtn').onclick = async () => {
       straddleUI.style.display = 'none';
       jsonInput.value = ''; // 入力欄をクリア
     }
-  } catch(e) {
+  } catch (e) {
     alert('JSONの解析に失敗しました:\n' + e.message);
   }
 };
@@ -2562,11 +2726,11 @@ async function applyStyleByName(name) {
     const res = await fetch(`http://localhost:3000/get/${name}`);
     const data = await res.json();
     if (!data) return alert(`${name} は保存されていません`);
-    
+
     if (applyStyleData(data)) {
       straddleUI.style.display = 'none';
     }
-  } catch(e) {
+  } catch (e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
       alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
     } else {
