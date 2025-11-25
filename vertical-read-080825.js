@@ -546,7 +546,7 @@ Object.assign(scrollSliderRight.style, {
   height: '210vh',
   bottom: '-108vh',
   right: '30px',
-  zIndex: '9998',
+  zIndex: '9999',
   width: '80px',
   opacity: '1',
 });
@@ -564,7 +564,7 @@ Object.assign(scrollSliderLeft.style, {
   height: '210vh',
   bottom: '-108vh',
   left: '30px',
-  zIndex: '9998',
+  zIndex: '9999',
   width: '80px',
   opacity: '1',
   direction: 'rtl', // 左用は増加方向反転
@@ -613,7 +613,7 @@ Object.assign(scrollUI.style, {
   border: '1px solid',
   borderRadius: '4px',
   fontSize: '14px',
-  zIndex: '10002',
+  zIndex: '10003',
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
@@ -830,7 +830,7 @@ document.getElementById('scrollHide').addEventListener('change', e => {
     scrollSliderLeft.style.bottom = '-108vh';
   }
 });
-// ===開閉ボタン ===
+// ===開閉ボタン△ ===
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.innerHTML = `
 <svg width="14" height="14" viewBox="0 0 24 24">
@@ -846,7 +846,7 @@ Object.assign(scrollUIToggle.style, {
     color: 'unset',
     opacity: '0.3',
     cursor: 'pointer',
-    zIndex: '10001',
+    zIndex: '10002',
     display: 'block'
 });
 document.body.appendChild(scrollUIToggle);
@@ -901,7 +901,7 @@ Object.assign(panel.style, {
   heighr: '50px', 
   border: '1px solid',
   borderRadius: '4px',
-  zIndex: '10000',
+  zIndex: '10003',
   display: 'none',
   fontFamily: 'sans-serif'
 });
@@ -1174,7 +1174,7 @@ fontFamilyContainer.appendChild(fontSelect);
 // controlArea に追加
 controlArea.appendChild(fontFamilyContainer);
 
-// 開閉ボタン
+// 開閉ボタン〇
 const openBtn = document.createElement('div');
 openBtn.id = 'fontOpenBtn';
 openBtn.innerHTML = `
@@ -1190,7 +1190,7 @@ Object.assign(openBtn.style, {
   opacity: '0.3',
   color: 'unset',
   cursor: 'pointer',
-  zIndex: '10001'
+  zIndex: '10002'
 });
 openBtn.addEventListener('click', () => {
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -1256,7 +1256,7 @@ Promise.all([
         position: fixed;
         top: 10px;
         right: 10px;
-        z-index: 999999;
+        z-index: 20000;
         color: unset;
         background: unset;
         padding: 7px;
@@ -1445,7 +1445,7 @@ Promise.all([
         padding: 10px !important;
         width: 310px !important;
         height: 150px !important;
-        z-index: 1000000 !important;
+        z-index: 20001 !important;
         background: unset !important;
         border: 1px solid !important;
       }
@@ -2116,7 +2116,7 @@ Promise.all([
         right: '18px',
         opacity: '0.3',
         color: 'unset',
-        zIndex: '999999'
+        zIndex: '20000'
       });
     
       // UI を開く
@@ -2179,7 +2179,7 @@ Object.assign(straddleUI.style, {
   borderRadius: '4px',
   fontSize: '14px',
   background: 'inherit',
-  zIndex: '10002',
+  zIndex: '10001',
   fontFamily: 'sans-serif',
   display: 'none',
 });
@@ -2294,6 +2294,14 @@ Object.assign(jsonInput.style, {
   width: '100px',
   fontFamily: 'monospace',
 });
+const style = document.createElement('style');
+style.textContent = `
+  #jsonInput::placeholder {
+    color: unset;
+    opacity: 0.7;
+  }
+`;
+document.head.appendChild(style);
 // 数字、矢印のスタイル
 const labels = straddleUI.querySelectorAll('.label');
 labels.forEach(span => {
@@ -2316,7 +2324,7 @@ Object.assign(toggleBtn.style, {
   position: 'fixed',
   top: '80px',
   left: '18px',
-  zIndex: '10001',
+  zIndex: '10000',
   opacity: '0.3',
 });
 document.body.appendChild(toggleBtn);
@@ -2457,18 +2465,18 @@ function showSaveConfirmOverlay(name, savePreview) {
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 10000;
+      z-index: 10001;
     `;
     
     // コンテンツボックス
     const box = document.createElement('div');
     box.style.cssText = `
-      color: #fff;
       padding: 24px;
       border-radius: 8px;
       max-width: 500px;
       max-height: 50vh;
       overflow-y: auto;
+      z-index: 10002
     `;
     
     // タイトル
