@@ -478,17 +478,19 @@ let text = '';
   
     // 上方向: 最上部で前パート
     if (
-      currentIndex > 0 &&
       scrollTop <= 5 &&
       !promptShownBackward
     ) {
       if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
       if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
       if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
-  
+    
       promptShownBackward = true;
-      const prevPage = currentIndex;
-      showOverlay(prevPage, numPages, (targetPage) => {
+      
+      // 1ページ目なら最後のページ、それ以外は前のページ
+      const targetPageForPrompt = currentIndex === 0 ? numPages : currentIndex;
+      
+      showOverlay(targetPageForPrompt, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1; // ページ番号をインデックスに変換
         renderPart(currentIndex);
