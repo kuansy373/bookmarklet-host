@@ -296,7 +296,7 @@ let text = '';
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
+      z-index: 10001;
     `;
     
     const dialog = document.createElement('div');
@@ -637,6 +637,7 @@ document.querySelectorAll('.settingCheckbox').forEach(cb => {
     height: '15px',
     width: '15px',
     verticalAlign: 'middle',
+    userSelect: 'none',
   });
 });
 document.querySelectorAll('.settingInputbox').forEach(cb => {
@@ -2262,7 +2263,6 @@ Object.assign(header.style, {
   justifyContent: 'space-between',
   fontWeight: 'bold',
   marginBottom: '10px',
-  userSelect: 'none',
 });
 // ボタン群のスタイル
 const buttonsContainer = straddleUI.querySelector('.ui-buttons');
@@ -2324,6 +2324,7 @@ Object.assign(toggleBtn.style, {
   position: 'fixed',
   top: '80px',
   left: '18px',
+  cursor: 'pointer',
   zIndex: '10000',
   opacity: '0.3',
 });
