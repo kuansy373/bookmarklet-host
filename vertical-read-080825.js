@@ -2274,7 +2274,8 @@ Object.assign(header.style, {
   alignItems: 'center',
   justifyContent: 'space-between',
   fontWeight: 'bold',
-  marginBottom: '10px', // 下にスペースを追加
+  marginBottom: '10px',
+  userSelect: 'none',
 });
 // ボタン群のスタイル
 const buttonsContainer = straddleUI.querySelector('.ui-buttons');
@@ -2479,7 +2480,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       padding: 24px;
       border-radius: 8px;
       max-width: 500px;
-      max-height: 80vh;
+      max-height: 50vh;
       overflow-y: auto;
     `;
     
@@ -2504,7 +2505,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     const prettyCheckbox = document.createElement('input');
     prettyCheckbox.type = 'checkbox';
     prettyCheckbox.id = 'prettyPrintCheckbox';
-    prettyCheckbox.checked = true;
+    prettyCheckbox.checked = false;
     prettyCheckbox.style.cssText = `
       cursor: pointer;
     `;
@@ -2516,7 +2517,6 @@ function showSaveConfirmOverlay(name, savePreview) {
       cursor: pointer;
       font-size: 14px;
       user-select: none;
-      white-space: nowrap;
     `;
 
     // コピーボタン
@@ -2563,7 +2563,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     const preview = document.createElement('pre');
     const jsonTextFormatted = JSON.stringify(savePreview, null, 2);
     const jsonTextCompressed = JSON.stringify(savePreview);
-    preview.textContent = jsonTextFormatted;
+    preview.textContent = jsonTextCompressed;
     preview.style.cssText = `
       padding: 12px;
       border: 1px solid;
@@ -2572,12 +2572,18 @@ function showSaveConfirmOverlay(name, savePreview) {
       overflow-x: auto;
       font-size: 12px;
       margin: 0;
-      white-space: pre-wrap;
+      white-space: nowrap;
     `;
     
     // チェックボックスの変更イベント
     prettyCheckbox.onchange = () => {
-      preview.textContent = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
+      if (prettyCheckbox.checked) {
+        preview.textContent = jsonTextFormatted;
+        preview.style.whiteSpace = 'pre-wrap';
+      } else {
+        preview.textContent = jsonTextCompressed;
+        preview.style.whiteSpace = 'nowrap';
+      }
     };
     
     // ボタンコンテナ
@@ -2587,6 +2593,22 @@ function showSaveConfirmOverlay(name, savePreview) {
       gap: 12px;
       justify-content: flex-end;
     `;
+    // キャンセルボタン
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'キャンセル';
+    cancelBtn.style.cssText = `
+      padding: 8px 20px;
+      background: rgba(120, 120, 120, 0.3);
+      color: unset;
+      border: 1px solid;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    `;
+    cancelBtn.onclick = () => {
+      document.body.removeChild(overlay);
+      resolve(false);
+    };
     
     // 保存ボタン
     const saveBtn = document.createElement('button');
@@ -2600,7 +2622,6 @@ function showSaveConfirmOverlay(name, savePreview) {
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
-      font-weight: bold;
     `;
     saveBtn.onclick = () => {
       document.body.removeChild(overlay);
@@ -2609,6 +2630,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     
     // 組み立て
     previewContainer.appendChild(preview);
+    buttonContainer.appendChild(cancelBtn);
     buttonContainer.appendChild(saveBtn);
     box.appendChild(title);
     box.appendChild(checkboxContainer);
