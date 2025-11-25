@@ -2280,6 +2280,7 @@ buttons.forEach(btn => {
   Object.assign(btn.style, {
     fontSize: '14px',
     color: 'unset',
+    background: 'initial',
     padding: '2px 4px',
     border: '1px solid',
   });
@@ -2538,7 +2539,7 @@ function showSaveConfirmOverlay(name, savePreview) {
         copyBtn.textContent = '✓ コピー完了！';
         setTimeout(() => {
           copyBtn.textContent = originalText;
-        }, 2000);
+        }, 1000);
       } catch (err) {
         alert('コピーに失敗しました: ' + err);
       }
