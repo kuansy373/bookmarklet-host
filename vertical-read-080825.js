@@ -884,13 +884,11 @@ scrollSCloseBtn.addEventListener('click', () => {
   const el = document.getElementById(id);
   if (el) el.remove();
 });
-
 // 操作対象は #novelDisplay
 let target = document.getElementById('novelDisplay');
 if (!target) {
   console.error('#novelDisplay が見つかりません');
 }
-
 // パネルコンテナ
 const panel = document.createElement('div');
 panel.id = 'fontPanel';
@@ -910,11 +908,9 @@ Object.assign(panel.style, {
   display: 'none',
   fontFamily: 'sans-serif'
 });
-
 // モードボタン
 const modes = ['Font shadow','Font weight','Font size'];
 let currentMode = 'Font size';
-
 const modeContainer = document.createElement('div');
 Object.assign(modeContainer.style, {
   display: 'block',
@@ -922,6 +918,11 @@ Object.assign(modeContainer.style, {
   gap: '4px',
   marginBottom: '8px'
 });
+// 選択切り替えスタイル制御
+const setActive = (btn, isActive) => {
+  btn.style.opacity = isActive ? '1' : '0.5';
+  btn.style.boxShadow = isActive ? 'inset 0 0 3px' : 'none';
+};
 
 modes.forEach(mode => {
   const btn = document.createElement('button');
@@ -933,28 +934,17 @@ modes.forEach(mode => {
     border: '1px solid',
     borderRadius: '4px',
     color: 'unset',
-    opacity: '0.5',
     cursor: 'pointer',
     textAlign: 'left',
   });
-  if (mode === 'Font weight') {
-    btn.style.margin = '0 4px';
-  }
-  if (mode === currentMode) {
-    btn.style.border = '1px solid';   // 初期選択のスタイル
-    btn.style.opacity = '1';
-    btn.style.boxShadow = 'inset 0 0 3px';
-  }
+  if (mode === 'Font weight') btn.style.margin = '0 4px';
+  
+  setActive(btn, mode === currentMode);
+  
   btn.addEventListener('click', () => {
     currentMode = mode;
-    [...modeContainer.children].forEach(c => {
-      c.style.border = '1px solid';   // 他のボタンに付ける
-      c.style.opacity = '0.6';
-      c.style.boxShadow = 'none';
-    });
-    btn.style.border = ' 1px solid';
-    btn.style.opacity = '1';
-    btn.style.boxShadow = 'inset 0 0 3px'; // 選択中に付ける
+    [...modeContainer.children].forEach(c => setActive(c, false));
+    setActive(btn, true);
     updateControls();
   });
   modeContainer.appendChild(btn);
@@ -1231,7 +1221,7 @@ updateControls();
 
 // ==============================
 // Color Pickr
-// ============================== 
+// ==============================
 if (window.__pickrLoaded) return;
 window.__pickrLoaded = true;
 
