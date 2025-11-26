@@ -401,15 +401,12 @@
     overlayElements.pageInput.value = defaultPage;
     overlayElements.pageInput.max = maxPage;
     overlayElements.overlay.style.display = 'flex';
-    // bodyのスクロールを無効化
-    document.body.style.overflow = 'hidden';
     
     // はい
     const handleYes = () => {
       const targetPage = parseInt(overlayElements.pageInput.value);
       if (targetPage >= 1 && targetPage <= maxPage) {
         overlayElements.overlay.style.display = 'none';
-        document.body.style.overflow = '';
         cleanup();
         onYes(targetPage);
       } else {
@@ -419,9 +416,8 @@
     // いいえ
     const handleNo = () => {
       overlayElements.overlay.style.display = 'none';
-      document.body.style.overflow = '';
       cleanup();
-      setTimeout(() => { isSwitching = false; }, 3000);
+      setTimeout(() => { isSwitching = false; }, 100);
       promptShownForward = false;
       promptShownBackward = false;
     };
@@ -485,12 +481,12 @@
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 3000);
+        setTimeout(() => { isSwitching = false; }, 100);
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollBottom < bodyHeight - window.innerHeight / 10) {
-      // 最上部から（10%）離れたらフラグON
+    } else if (scrollBottom < bodyHeight - window.innerHeight / 5) {
+      // 最上部から（20%）離れたらフラグON
       promptShownForward = true;
     }
   
@@ -511,12 +507,12 @@
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 3000);
+        setTimeout(() => { isSwitching = false; }, 100);
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollTop > (currentIndex === 0 ? window.innerHeight / 1.5625 : window.innerHeight / 10)) {
-      // 最上部から（1ページ目:64%、それ以外:10%）離れたらフラグON
+    } else if (scrollTop > (currentIndex === 0 ? window.innerHeight / 1.5625 : window.innerHeight / 5)) {
+      // 最上部から（1ページ目:64%、それ以外:20%）離れたらフラグON
       promptShownBackward = true;
     }
   });
@@ -2398,10 +2394,9 @@ function showSaveConfirmOverlay(name, savePreview) {
   // 既にオーバーレイが開いていれば二重表示を防ぐ
   if (__saveConfirmOpen) return Promise.resolve(false);
   __saveConfirmOpen = true;
+  isSwitching = true;
   
   return new Promise((resolve) => {
-    // bodyのスクロールを無効化
-    document.body.style.overflow = 'hidden';
     // オーバーレイを作成
     const overlay = document.createElement('div');
     overlay.style.cssText = `
@@ -2545,8 +2540,8 @@ function showSaveConfirmOverlay(name, savePreview) {
     // 操作の処理まとめ
     const cleanupAndResolve = (result) => {
       if (overlay.parentNode) document.body.removeChild(overlay);
-      document.body.style.overflow = '';
       __saveConfirmOpen = false;
+      isSwitching = false;
       resolve(result);
     };
     
