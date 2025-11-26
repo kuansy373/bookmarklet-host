@@ -415,6 +415,9 @@ let text = '';
     const handleNo = () => {
       overlayElements.overlay.style.display = 'none';
       cleanup();
+      setTimeout(() => { isSwitching = false; }, 3000);
+      promptShownForward = false;
+      promptShownBackward = false;
     };
     
     const handleEnter = (e) => {
@@ -438,9 +441,10 @@ let text = '';
   let currentIndex = 0;
   renderPart(currentIndex);
   
-  // ページ切り替え
+  // ページ切り替え可能フラグ
   let promptShownForward = false;
   let promptShownBackward = false;
+  // 切り替え中フラグ
   let isSwitching = false;
   
   window.addEventListener('scroll', () => {
@@ -450,61 +454,59 @@ let text = '';
     const scrollTop = window.scrollY;
     const bodyHeight = document.body.offsetHeight;
   
-    // 下方向: 最下部で次パート
+    // 下方向・最下部で次ページ
     if (
       totalVisibleChars > 10000 &&
       scrollBottom >= bodyHeight - 5 &&
       currentIndex < parts.length - 1 &&
-      !promptShownForward
+      promptShownForward
     ) {
       if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
       if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
       if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
   
-      promptShownForward = true;
       const nextPage = currentIndex + 2;
       showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
-        currentIndex = targetPage - 1; // ページ番号をインデックスに変換
+        currentIndex = targetPage - 1;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 5000);
+        setTimeout(() => { isSwitching = false; }, 3000);
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollBottom < bodyHeight - window.innerHeight / 100) {
-      promptShownForward = false;
+    } else if (scrollBottom < bodyHeight - window.innerHeight / 10) {
+      // 最上部から（10%）離れたらフラグON
+      promptShownForward = true;
     }
   
-    // 上方向: 最上部で前パート
+    // 上方向・最上部で前ページ
     if (
       scrollTop <= 5 &&
-      !promptShownBackward
+      promptShownBackward
     ) {
       if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
       if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
       if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
     
-      promptShownBackward = true;
-      
-      // 1ページ目なら最後のページ、それ以外は前のページ
       const targetPageForPrompt = currentIndex === 0 ? numPages : currentIndex;
       
       showOverlay(targetPageForPrompt, numPages, (targetPage) => {
         isSwitching = true;
-        currentIndex = targetPage - 1; // ページ番号をインデックスに変換
+        currentIndex = targetPage - 1;
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 5000);
+        setTimeout(() => { isSwitching = false; }, 3000);
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollTop > window.innerHeight / 100) {
-      promptShownBackward = false;
+    } else if (scrollTop > (currentIndex === 0 ? window.innerHeight / 1.5625 : window.innerHeight / 10)) {
+      // 最上部から（1ページ目:64%、それ以外:10%）離れたらフラグON
+      promptShownBackward = true;
     }
   });
-
+  
   // スタイル
   container.style.cssText = `
     writing-mode: vertical-rl;
