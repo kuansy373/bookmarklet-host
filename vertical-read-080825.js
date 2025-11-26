@@ -417,15 +417,9 @@
     const handleNo = () => {
       overlayElements.overlay.style.display = 'none';
       cleanup();
-      setTimeout(() => { isSwitching = false; }, 100);
+      isSwitching = false;
       promptShownForward = false;
       promptShownBackward = false;
-    };
-    // エンター
-    const handleEnter = (e) => {
-      if (e.key === 'Enter') {
-        handleYes();
-      }
     };
     // オーバーレイ背景クリックで閉じる
     const handleOverlayClick = (e) => {
@@ -437,13 +431,11 @@
     const cleanup = () => {
       overlayElements.yesButton.removeEventListener('click', handleYes);
       overlayElements.noButton.removeEventListener('click', handleNo);
-      overlayElements.pageInput.removeEventListener('keypress', handleEnter);
       overlayElements.overlay.removeEventListener('click', handleOverlayClick);
     };
     // イベントリスナー追加
     overlayElements.yesButton.addEventListener('click', handleYes);
     overlayElements.noButton.addEventListener('click', handleNo);
-    overlayElements.pageInput.addEventListener('keypress', handleEnter);
     overlayElements.overlay.addEventListener('click', handleOverlayClick);
   }
   
@@ -481,12 +473,12 @@
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 100);
+        isSwitching = false;
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollBottom < bodyHeight - window.innerHeight / 5) {
-      // 最上部から（20%）離れたらフラグON
+    } else if (scrollBottom < bodyHeight - window.innerHeight / 4) {
+      // 最上部から（25%）離れたらフラグON
       promptShownForward = true;
     }
   
@@ -507,12 +499,12 @@
         renderPart(currentIndex);
         const prevPartHeight = container.scrollHeight;
         window.scrollTo(0, prevPartHeight - window.innerHeight);
-        setTimeout(() => { isSwitching = false; }, 100);
+        isSwitching = false;
         promptShownForward = false;
         promptShownBackward = false;
       });
-    } else if (scrollTop > (currentIndex === 0 ? window.innerHeight / 1.5625 : window.innerHeight / 5)) {
-      // 最上部から（1ページ目:64%、それ以外:20%）離れたらフラグON
+    } else if (scrollTop > (currentIndex === 0 ? window.innerHeight / 1.5625 : window.innerHeight / 4)) {
+      // 最上部から（1ページ目:64%、それ以外:25%）離れたらフラグON
       promptShownBackward = true;
     }
   });
