@@ -2,7 +2,7 @@
 // ==============================
 // Vertical text
 // ==============================
-let text = '';
+  let text = '';
   
   // ruby / rb / rp / rt / em / span のみを保持する関数
   function extractWithRubyTags(node) {
@@ -80,6 +80,11 @@ let text = '';
   document.querySelectorAll('body > *').forEach(node => {
     node.remove();
   });
+
+  // ページトップ、ヘッダー、フッターなどを削除
+  document.querySelectorAll(
+    '#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer'
+  ).forEach(el => el.remove());
   
   // 横スクロールやズームが起きない固定レイアウトにする処理
   let vp = document.querySelector('meta[name="viewport"]');
@@ -89,12 +94,8 @@ let text = '';
     document.head.appendChild(vp)
   }
   vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-  
-  // ページトップ、ヘッダー、フッターなどを削除
-  document.querySelectorAll(
-    '#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer'
-  ).forEach(el => el.remove());
-  
+
+  // 親コンテナ作成
   const container = document.createElement('div');
   container.id = 'novelDisplay';
   
@@ -2182,9 +2183,9 @@ Promise.all([
   
 // ==============================
 // ローカルサーバーで各値を保存/反映
-// ============================== 
-const straddleUI = document.createElement('div');
-Object.assign(straddleUI.style, {
+// ==============================
+const onetapUI = document.createElement('div');
+Object.assign(onetapUI.style, {
   all: 'unset',
   position: 'fixed',
   top: '80px',
@@ -2199,69 +2200,23 @@ Object.assign(straddleUI.style, {
   display: 'none',
 });
 
-straddleUI.innerHTML = `
+// ボタンセットを生成
+const buttonSets = Array.from({ length: 8 }, (_, i) => 
+  `<div class="button-set">
+    <span class="label">${i + 1}.</span>
+    <button id="saveBtn${i + 1}" class="button">SAVE</button>
+    <span class="label">⇒</span>
+    <button id="applyBtn${i + 1}" class="button">APPLY</button>
+  </div>`
+).join('');
+
+onetapUI.innerHTML = `
   <div class="ui-header">
     <span>Apply Style with One Tap</span>
     <button id="closeUIBtn" style="border:none; padding-left:10px;">✕</button>
   </div>
   <div class="ui-buttons">
-    <!-- 1セット目 -->
-    <div class="button-set">
-      <span class="label">1.</span>
-      <button id="saveBtn1" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn1" class="button">APPLY</button>
-    </div>
-    <!-- 2セット目 -->
-    <div class="button-set">
-      <span class="label">2.</span>
-      <button id="saveBtn2" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn2" class="button">APPLY</button>
-    </div>
-    <!-- 3セット目 -->
-    <div class="button-set">
-      <span class="label">3.</span>
-      <button id="saveBtn3" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn3" class="button">APPLY</button>
-    </div>
-    <!-- 4セット目 -->
-    <div class="button-set">
-      <span class="label">4.</span>
-      <button id="saveBtn4" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn4" class="button">APPLY</button>
-    </div>
-    <!-- 5セット目 -->
-    <div class="button-set">
-      <span class="label">5.</span>
-      <button id="saveBtn5" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn5" class="button">APPLY</button>
-    </div>
-    <!-- 6セット目 -->
-    <div class="button-set">
-      <span class="label">6.</span>
-      <button id="saveBtn6" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn6" class="button">APPLY</button>
-    </div>
-    <!-- 7セット目 -->
-    <div class="button-set">
-      <span class="label">7.</span>
-      <button id="saveBtn7" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn7" class="button">APPLY</button>
-    </div>
-    <!-- 8セット目 -->
-    <div class="button-set">
-      <span class="label">8.</span>
-      <button id="saveBtn8" class="button">SAVE</button>
-      <span class="label">⇒</span>
-      <button id="applyBtn8" class="button">APPLY</button>
-    </div>
-    <!-- JSON入力欄 -->
+    ${buttonSets}
     <div class="button-set">
       <input id="jsonInput" class="json-input" placeholder="JSONを貼り付け" />
       <span class="label">⇒</span>
@@ -2269,8 +2224,9 @@ straddleUI.innerHTML = `
     </div>
   </div>
 `;
+
 // ヘッダーのスタイル
-const header = straddleUI.querySelector('.ui-header');
+const header = onetapUI.querySelector('.ui-header');
 Object.assign(header.style, {
   display: 'flex',
   alignItems: 'center',
@@ -2279,7 +2235,7 @@ Object.assign(header.style, {
   marginBottom: '10px',
 });
 // ボタン群のスタイル
-const buttonsContainer = straddleUI.querySelector('.ui-buttons');
+const buttonsContainer = onetapUI.querySelector('.ui-buttons');
 Object.assign(buttonsContainer.style, {
   display: 'flex',
   flexDirection: 'column',
@@ -2289,7 +2245,7 @@ Object.assign(buttonsContainer.style, {
   fontSize: '14px',
 });
 // ボタンのスタイル
-const buttons = straddleUI.querySelectorAll('.button');
+const buttons = onetapUI.querySelectorAll('.button');
 buttons.forEach(btn => {
   Object.assign(btn.style, {
     fontSize: '14px',
@@ -2300,7 +2256,7 @@ buttons.forEach(btn => {
   });
 });
 // JSON入力欄のスタイル
-const jsonInput = straddleUI.querySelector('.json-input');
+const jsonInput = onetapUI.querySelector('.json-input');
 Object.assign(jsonInput.style, {
   fontSize: '12px',
   padding: '4px',
@@ -2318,7 +2274,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 // 数字、矢印のスタイル
-const labels = straddleUI.querySelectorAll('.label');
+const labels = onetapUI.querySelectorAll('.label');
 labels.forEach(span => {
   Object.assign(span.style, {
     all: 'initial',
@@ -2344,7 +2300,7 @@ Object.assign(toggleBtn.style, {
   opacity: '0.3',
 });
 document.body.appendChild(toggleBtn);
-document.body.appendChild(straddleUI);
+document.body.appendChild(onetapUI);
 
 // --- ボタンごとのイベント登録 ---
 for (let i = 1; i <= 8; i++) {
@@ -2373,11 +2329,11 @@ initApplyButtonStyle();
 
 // ☆ UIを開く
 toggleBtn.onclick = () => {
-  straddleUI.style.display = 'block';
+  onetapUI.style.display = 'block';
 };
 // ✕ UIを閉じる
 document.getElementById('closeUIBtn').onclick = () => {
-  straddleUI.style.display = 'none';
+  onetapUI.style.display = 'none';
 };
 
 // RGB → HEX 変換関数
@@ -2771,7 +2727,7 @@ document.getElementById('applyJsonBtn').onclick = async () => {
     if (!proceed) return;
 
     if (applyStyleData(data)) {
-      straddleUI.style.display = 'none';
+      onetapUI.style.display = 'none';
       jsonInput.value = ''; // 入力欄をクリア
     }
   } catch (e) {
@@ -2791,7 +2747,7 @@ async function applyStyleByName(name) {
     if (!data) return alert(`${name} は保存されていません`);
 
     if (applyStyleData(data)) {
-      straddleUI.style.display = 'none';
+      onetapUI.style.display = 'none';
     }
   } catch (e) {
     if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
