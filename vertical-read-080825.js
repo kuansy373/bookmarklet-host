@@ -292,7 +292,7 @@ let text = '';
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       justify-content: center;
       align-items: center;
@@ -400,41 +400,54 @@ let text = '';
     overlayElements.pageInput.value = defaultPage;
     overlayElements.pageInput.max = maxPage;
     overlayElements.overlay.style.display = 'flex';
+    // bodyのスクロールを無効化
+    document.body.style.overflow = 'hidden';
     
+    // はい
     const handleYes = () => {
       const targetPage = parseInt(overlayElements.pageInput.value);
       if (targetPage >= 1 && targetPage <= maxPage) {
         overlayElements.overlay.style.display = 'none';
+        document.body.style.overflow = '';
         cleanup();
         onYes(targetPage);
       } else {
         alert(`1から${maxPage}の範囲で入力してください`);
       }
     };
-    
+    // いいえ
     const handleNo = () => {
       overlayElements.overlay.style.display = 'none';
+      document.body.style.overflow = '';
       cleanup();
       setTimeout(() => { isSwitching = false; }, 3000);
       promptShownForward = false;
       promptShownBackward = false;
     };
-    
+    // エンター
     const handleEnter = (e) => {
       if (e.key === 'Enter') {
         handleYes();
       }
     };
-    
+    // オーバーレイ背景クリックで閉じる
+    const handleOverlayClick = (e) => {
+      if (e.target === overlayElements.overlay) {
+        handleNo();
+      }
+    };
+    // イベントリスナー削除
     const cleanup = () => {
       overlayElements.yesButton.removeEventListener('click', handleYes);
       overlayElements.noButton.removeEventListener('click', handleNo);
       overlayElements.pageInput.removeEventListener('keypress', handleEnter);
+      overlayElements.overlay.removeEventListener('click', handleOverlayClick);
     };
-    
+    // イベントリスナー追加
     overlayElements.yesButton.addEventListener('click', handleYes);
     overlayElements.noButton.addEventListener('click', handleNo);
     overlayElements.pageInput.addEventListener('keypress', handleEnter);
+    overlayElements.overlay.addEventListener('click', handleOverlayClick);
   }
   
   // 初回表示
@@ -2456,6 +2469,8 @@ async function saveStyle(name) {
 // オーバーレイ確認UIを表示する関数
 function showSaveConfirmOverlay(name, savePreview) {
   return new Promise((resolve) => {
+    // bodyのスクロールを無効化
+    document.body.style.overflow = 'hidden';
     // オーバーレイを作成
     const overlay = document.createElement('div');
     overlay.style.cssText = `
@@ -2479,6 +2494,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       max-width: 500px;
       max-height: 50vh;
       overflow-y: auto;
+      overscroll-behavior: contain;
       z-index: 10002
     `;
     
@@ -2609,6 +2625,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     `;
     cancelBtn.onclick = () => {
       document.body.removeChild(overlay);
+      document.body.style.overflow = '';
       resolve(false);
     };
     
@@ -2628,6 +2645,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     `;
     saveBtn.onclick = () => {
       document.body.removeChild(overlay);
+      document.body.style.overflow = '';
       resolve(true);
     };
     
@@ -2665,6 +2683,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     overlay.onclick = (e) => {
       if (e.target === overlay) {
         document.body.removeChild(overlay);
+        document.body.style.overflow = '';
         resolve(false);
       }
     };
