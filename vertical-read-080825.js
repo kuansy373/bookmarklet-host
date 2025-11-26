@@ -297,7 +297,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 10001;
+      z-index: 10005;
     `;
     
     const dialog = document.createElement('div');
@@ -631,7 +631,7 @@ Object.assign(scrollUI.style, {
   border: '1px solid',
   borderRadius: '4px',
   fontSize: '14px',
-  zIndex: '10003',
+  zIndex: '10007',
   fontFamily: 'sans-serif',
 });
 scrollUI.innerHTML = `
@@ -689,7 +689,7 @@ document.getElementById('scrollC').addEventListener('change', e => {
   if (e.target.checked) {
     if (scrollB.checked) scrollB.checked = false;
     scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
-    const borderColor = 'currentColor'; // border と同じ色
+    const borderColor = 'currentColor';
     scrollSliderRight.style.setProperty("background", borderColor, "important");
     scrollSliderLeft.style.setProperty("background", borderColor, "important");
   } else {
@@ -715,60 +715,28 @@ scrollS.addEventListener('input', () => {
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
 const bothbox = document.getElementById('scrollBoth');
+// 表示を更新する関数
+function updateDisplay() {
+  scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
+  scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
+}
+// 他のチェックボックスを外す関数
+function uncheckOthers(current) {
+  [rightbox, leftbox, bothbox].forEach(box => {
+    if (box !== current) box.checked = false;
+  });
+}
 // 最初に「Right side」にチェック
 rightbox.checked = true;
-scrollSliderRight.style.display = 'block';
-scrollSliderLeft.style.display = 'none';
-// Rightチェックイベント
-rightbox.addEventListener('change', e => {
-  if (e.target.checked) {
-    if (bothbox.checked) {
-      bothbox.checked = false;
+updateDisplay();
+// イベントリスナーを一括設定
+[rightbox, leftbox, bothbox].forEach(box => {
+  box.addEventListener('change', e => {
+    if (e.target.checked) {
+      uncheckOthers(box);
     }
-    if (leftbox.checked) {
-        leftbox.checked = false;
-      }
-    scrollSliderRight.style.display = 'block';
-    scrollSliderLeft.style.display = 'none';
-  }else {
-    scrollSliderRight.style.display = 'none';
-    scrollSliderLeft.style.display = 'none';
-  }
-});
-// Leftチェックイベント
-leftbox.addEventListener('change', e => {
-  if (e.target.checked) {
-    if (bothbox.checked) {
-      bothbox.checked = false;
-    }
-    if (rightbox.checked) {
-      rightbox.checked = false;
-    }
-    scrollSliderRight.style.display = 'none';
-    scrollSliderLeft.style.display = 'block';
-  } else {
-    scrollSliderRight.style.display = 'none';
-    scrollSliderLeft.style.display = 'none';
-  }
-});
-// Bothチェックイベント
-bothbox.addEventListener('change', e => {
-  if (e.target.checked) {
-    if (rightbox.checked) {
-      rightbox.checked = false;
-    }
-    if (leftbox.checked) {
-      leftbox.checked = false;
-    }
-    scrollSliderLeft.style.display = 'block';
-    scrollSliderRight.style.display = 'block';
-  } else if (!leftbox.checked) {
-    scrollSliderLeft.style.display = 'none';
-    scrollSliderRight.style.display = 'none';
-  } else {
-    scrollSliderLeft.style.display = 'none';
-    scrollSliderRight.style.display = 'none';
-  } 
+    updateDisplay();
+  });
 });
 // 位置、長さ、透明度
 document.getElementById('scrollX').addEventListener('input', e => {
@@ -865,7 +833,7 @@ Object.assign(scrollUIToggle.style, {
     color: 'unset',
     opacity: '0.3',
     cursor: 'pointer',
-    zIndex: '10002',
+    zIndex: '10006',
     display: 'block'
 });
 document.body.appendChild(scrollUIToggle);
@@ -915,10 +883,9 @@ Object.assign(panel.style, {
   paddingBottom: '8px',
   width: '270px',
   height: '87px',
-  heighr: '50px', 
   border: '1px solid',
   borderRadius: '4px',
-  zIndex: '10003',
+  zIndex: '10007',
   display: 'none',
   fontFamily: 'sans-serif'
 });
@@ -1206,7 +1173,7 @@ Object.assign(openBtn.style, {
   opacity: '0.3',
   color: 'unset',
   cursor: 'pointer',
-  zIndex: '10002'
+  zIndex: '10006'
 });
 openBtn.addEventListener('click', () => {
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -2345,6 +2312,7 @@ function rgbToHex(rgb) {
   let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
   return `#${r}${g}${b}`;
 }
+
 // SAVEボタン
 async function saveStyle(name) {
   const target = document.getElementById('novelDisplay');
@@ -2405,6 +2373,7 @@ async function saveStyle(name) {
         scrollSettings
       })
     });
+    
     // 保存成功後にAPPLYボタンに色を反映
     const num = name.replace('style', '');
     const applyBtn = document.getElementById(`applyBtn${num}`);
@@ -2422,8 +2391,14 @@ async function saveStyle(name) {
   }
 }
 
-// オーバーレイ確認UIを表示する関数
+let __saveConfirmOpen = false;
+// オーバーレイを表示する関数
 function showSaveConfirmOverlay(name, savePreview) {
+  
+  // 既にオーバーレイが開いていれば二重表示を防ぐ
+  if (__saveConfirmOpen) return Promise.resolve(false);
+  __saveConfirmOpen = true;
+  
   return new Promise((resolve) => {
     // bodyのスクロールを無効化
     document.body.style.overflow = 'hidden';
@@ -2439,9 +2414,9 @@ function showSaveConfirmOverlay(name, savePreview) {
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 10001;
+      z-index: 10005;
     `;
-    
+  
     // コンテンツボックス
     const box = document.createElement('div');
     box.style.cssText = `
@@ -2451,7 +2426,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       max-height: 50vh;
       overflow-y: auto;
       overscroll-behavior: contain;
-      z-index: 10002
+      z-index: 10008
     `;
     
     // タイトル
@@ -2548,7 +2523,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       white-space: nowrap;
     `;
     
-    // チェックボックスの変更イベント
+    // プリティプリントチェックイベント
     prettyCheckbox.onchange = () => {
       if (prettyCheckbox.checked) {
         preview.textContent = jsonTextFormatted;
@@ -2566,6 +2541,15 @@ function showSaveConfirmOverlay(name, savePreview) {
       gap: 12px;
       justify-content: flex-end;
     `;
+
+    // 操作の処理まとめ
+    const cleanupAndResolve = (result) => {
+      if (overlay.parentNode) document.body.removeChild(overlay);
+      document.body.style.overflow = '';
+      __saveConfirmOpen = false;
+      resolve(result);
+    };
+    
     // キャンセルボタン
     const cancelBtn = document.createElement('button');
     cancelBtn.textContent = 'キャンセル';
@@ -2579,11 +2563,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       cursor: pointer;
       font-size: 14px;
     `;
-    cancelBtn.onclick = () => {
-      document.body.removeChild(overlay);
-      document.body.style.overflow = '';
-      resolve(false);
-    };
+    cancelBtn.onclick = () => cleanupAndResolve(false);
     
     // 保存ボタン
     const saveBtn = document.createElement('button');
@@ -2599,11 +2579,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       cursor: pointer;
       font-size: 14px;
     `;
-    saveBtn.onclick = () => {
-      document.body.removeChild(overlay);
-      document.body.style.overflow = '';
-      resolve(true);
-    };
+    saveBtn.onclick = () => cleanupAndResolve(true);
     
     // 組み立て
     previewContainer.appendChild(preview);
@@ -2635,13 +2611,12 @@ function showSaveConfirmOverlay(name, savePreview) {
       });
     }
     
-    // オーバーレイクリックで閉じる
+    /// フォーカスをオーバーレイに移してキーボードの影響を抑える
+    overlay.tabIndex = -1;
+    overlay.focus();
+    // オーバーレイ領域をクリックで閉じる
     overlay.onclick = (e) => {
-      if (e.target === overlay) {
-        document.body.removeChild(overlay);
-        document.body.style.overflow = '';
-        resolve(false);
-      }
+      if (e.target === overlay) cleanupAndResolve(false);
     };
   });
 }
