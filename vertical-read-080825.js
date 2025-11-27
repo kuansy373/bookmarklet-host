@@ -854,6 +854,7 @@ scrollSCloseBtn.addEventListener('click', () => {
   const el = document.getElementById(id);
   if (el) el.remove();
 });
+
 // 操作対象は #novelDisplay
 let target = document.getElementById('novelDisplay');
 if (!target) {
@@ -958,21 +959,16 @@ Object.assign(increaseBtn.style, {
   border: '1px solid',
   cursor: 'pointer'
 });
-decreaseBtn.addEventListener('click', () => {
-  let value = parseInt(slider.value) - parseInt(slider.step || 1);
-  if (value >= parseInt(slider.min)) {
+// 増減ボタンの共通処理
+function adjustSlider(delta) {
+  let value = parseInt(slider.value) + delta * parseInt(slider.step || 1);
+  if (value >= parseInt(slider.min) && value <= parseInt(slider.max)) {
     slider.value = value;
-    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
+    slider.dispatchEvent(new Event('input'));
   }
-});
-
-increaseBtn.addEventListener('click', () => {
-  let value = parseInt(slider.value) + parseInt(slider.step || 1);
-  if (value <= parseInt(slider.max)) {
-    slider.value = value;
-    slider.dispatchEvent(new Event('input')); // スライダーの処理を呼び出す
-  }
-});
+}
+decreaseBtn.addEventListener('click', () => adjustSlider(-1));
+increaseBtn.addEventListener('click', () => adjustSlider(1));
   
 // スライダー
 const slider = document.createElement('input');
