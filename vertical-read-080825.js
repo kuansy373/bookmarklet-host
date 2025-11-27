@@ -462,17 +462,18 @@
       currentIndex < parts.length - 1 &&
       promptShownForward
     ) {
-      if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-      if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-      if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
-  
       const nextPage = currentIndex + 2;
       showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        setTimeout(() => { isSwitching = false; }, 50);
+        setTimeout(() => {
+          if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
+          if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
+          if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+          isSwitching = false;
+        }, 50);
         promptShownForward = false;
         promptShownBackward = false;
       });
@@ -487,26 +488,23 @@
       scrollTop <= 5 &&
       promptShownBackward
     ) {
-      if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-      if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-      if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
-    
       const targetPageForPrompt = currentIndex === 0 ? numPages : currentIndex;
-      
       showOverlay(targetPageForPrompt, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
-        
-        // 最後のページへ移動なら先頭、それ以外は最下部
         if (currentIndex === parts.length - 1) {
           window.scrollTo(0, 0);
         } else {
           const prevPartHeight = container.scrollHeight;
           window.scrollTo(0, prevPartHeight - window.innerHeight);
         }
-        
-        setTimeout(() => { isSwitching = false; }, 50);
+        setTimeout(() => {
+          if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
+          if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
+          if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+          isSwitching = false;
+        }, 50);
         promptShownForward = false;
         promptShownBackward = false;
       });
