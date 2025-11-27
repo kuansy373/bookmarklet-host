@@ -660,151 +660,149 @@ document.querySelectorAll('.labelText').forEach(span => {
     paddingTop: '1.5px',
   });
 });
+
 // === イベント ===
-// Border
-document.getElementById('scrollB').addEventListener('change', e => {
-if (e.target.checked) {
-    if (scrollC.checked) scrollC.checked = false;
-    scrollSliderRight.style.border = scrollSliderLeft.style.border = '1px solid';
-    scrollSliderRight.style.setProperty("background", "transparent", "important");
-    scrollSliderLeft.style.setProperty("background", "transparent", "important");
-  } else {
-    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
-  }
+// 共通のスタイル適用関数
+const applyToSliders = (fn) => {
+  fn(scrollSliderRight);
+  fn(scrollSliderLeft);
+};
+
+// Border & Color
+['scrollB', 'scrollC'].forEach((id, i) => {
+  document.getElementById(id).addEventListener('change', e => {
+    if (e.target.checked) {
+      document.getElementById(i ? 'scrollB' : 'scrollC').checked = false;
+      applyToSliders(el => {
+        el.style.border = i ? 'none' : '1px solid';
+        el.style.setProperty("background", i ? "currentColor" : "transparent", "important");
+      });
+    } else {
+      applyToSliders(el => {
+        el.style.border = 'none';
+        el.style.setProperty("background", "transparent", "important");
+      });
+    }
+  });
 });
-// Color in
-document.getElementById('scrollC').addEventListener('change', e => {
-  if (e.target.checked) {
-    if (scrollB.checked) scrollB.checked = false;
-    scrollSliderRight.style.border = scrollSliderLeft.style.border = 'none';
-    const borderColor = 'currentColor';
-    scrollSliderRight.style.setProperty("background", borderColor, "important");
-    scrollSliderLeft.style.setProperty("background", borderColor, "important");
-  } else {
-    scrollSliderRight.style.setProperty("background", "transparent", "important");
-    scrollSliderLeft.style.setProperty("background", "transparent", "important");
-  }
-});
+
 // Shadow
 const scrollS = document.getElementById('scrollS');
 scrollS.addEventListener('input', () => {
-  let val = Number(scrollS.value) || 0;
-  if (val < 0) {
-    // マイナス値のときは inset にして、値は絶対値に直す
-    scrollSliderRight.style.boxShadow = `inset 0 0 ${Math.abs(val)}px`;
-    scrollSliderLeft.style.boxShadow  = `inset 0 0 ${Math.abs(val)}px`;
-  } else {
-    // プラス値のときは通常
-    scrollSliderRight.style.boxShadow = `0 0 ${val}px`;
-    scrollSliderLeft.style.boxShadow  = `0 0 ${val}px`;
+  const val = Number(scrollS.value) || 0;
+  const shadow = val < 0 ? `inset 0 0 ${Math.abs(val)}px` : `0 0 ${val}px`;
+  applyToSliders(el => el.style.boxShadow = shadow);
+});
+scrollS.addEventListener('blur', e => {
+  if (e.target.value === '') {
+    e.target.value = '0';
+    applyToSliders(el => el.style.boxShadow = '0 0 0px');
   }
 });
-// 右側、左側、両側
+
+// Right/Left/Both
 const rightbox = document.getElementById('scrollRight');
 const leftbox = document.getElementById('scrollLeft');
 const bothbox = document.getElementById('scrollBoth');
-// 表示を更新する関数
+
 function updateDisplay() {
   scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
   scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
 }
-// 他のチェックボックスを外す関数
+
 function uncheckOthers(current) {
   [rightbox, leftbox, bothbox].forEach(box => {
     if (box !== current) box.checked = false;
   });
 }
-// 最初に「Right side」にチェック
+
 rightbox.checked = true;
 updateDisplay();
-// イベントリスナーを一括設定
+
 [rightbox, leftbox, bothbox].forEach(box => {
   box.addEventListener('change', e => {
-    if (e.target.checked) {
-      uncheckOthers(box);
-    }
+    if (e.target.checked) uncheckOthers(box);
     updateDisplay();
   });
 });
-// 位置、長さ、透明度
-document.getElementById('scrollX').addEventListener('input', e => {
-  const val = parseInt(e.target.value, 10);
-  scrollSliderRight.style.right = scrollSliderLeft.style.left = `${val}px`;
-});
-document.getElementById('scrollW').addEventListener('input', e => {
-  const val = parseInt(e.target.value, 10);
-  scrollSliderRight.style.width = scrollSliderLeft.style.width = `${val}px`;
-});
-document.getElementById('scrollO').addEventListener('input', e => {
-  const val = parseFloat(e.target.value);
-  scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = val;
-});
+
+// Position & Width
+setupXWInput('scrollX', val => applyToSliders(el => {
+  el.style[el === scrollSliderRight ? 'right' : 'left'] = `${val}px`;
+}));
+setupXWInput('scrollW', val => applyToSliders(el => el.style.width = `${val}px`));
+
+function setupXWInput(inputId, applyStyle) {
+  const input = document.getElementById(inputId);
+  input.addEventListener('input', e => {
+    const val = parseFloat(e.target.value);
+    if (!isNaN(val)) applyStyle(val);
+  });
+  input.addEventListener('blur', e => {
+    if (e.target.value === '') {
+      e.target.value = '0';
+      applyStyle(0);
+    }
+  });
+}
+
+// Opacity
 const opacityInput = document.getElementById('scrollO');
-let lastValue = opacityInput.value; // 直前の値を保持
+let lastValue = opacityInput.value;
+
 opacityInput.addEventListener('input', e => {
-  const currentValue = e.target.value;
-  // 一瞬だけ「0」→「0.」に補完
-  if (currentValue === '0' && lastValue !== '0.') {
+  if (e.target.value === '0' && lastValue !== '0.') {
     e.target.value = '0.';
   }
   const num = parseFloat(e.target.value);
   if (!isNaN(num) && num >= 0 && num <= 1) {
-    scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = num;
+    applyToSliders(el => el.style.opacity = num);
   }
-  lastValue = e.target.value; // 今の値を保存
+  lastValue = e.target.value;
 });
-// フォーカス時に 0 → 0. に補完（あれば）
+
 opacityInput.addEventListener('focus', e => {
-  if (e.target.value === '0') {
-    e.target.value = '0.';
-  }
+  if (e.target.value === '0') e.target.value = '0.';
 });
-// フォーカスが外れたときに 0. → 0
+
 opacityInput.addEventListener('blur', e => {
   if (e.target.value === '0.' || e.target.value === '') {
     e.target.value = '0';
-    scrollSliderRight.style.opacity = scrollSliderLeft.style.opacity = 0;
+    applyToSliders(el => el.style.opacity = 0);
   }
-}); 
-// スピードスケール  
+});
+
+// Speed Scale
 const speedScaleInput = document.getElementById('scrollSpeedScale');
 let speedScale = parseFloat(speedScaleInput.value);
 
 speedScaleInput.addEventListener('input', e => {
-  const num = parseFloat(e.target.value);
+  let num = parseFloat(e.target.value);
   if (!isNaN(num)) {
+    num = Math.max(0, Math.min(20, num)); // 0-20に制限
+    if (num !== parseFloat(e.target.value)) e.target.value = num;
     speedScale = num;
     syncScrollSpeed(scrollSliderRight.value);
   }
 });
-// 入力値を 0 ～ 20 に制限
-speedScaleInput.addEventListener('input', e => {
-  let num = parseFloat(e.target.value);
-  if (isNaN(num)) return;
-  if (num > 20) {
-    num = 20;
-    e.target.value = 20;
-  } else if (num < 0) {
-    num = 0;
-    e.target.value = 0;
+
+speedScaleInput.addEventListener('blur', e => {
+  if (e.target.value === '') {
+    e.target.value = '0';
+    speedScale = 0;
+    syncScrollSpeed(scrollSliderRight.value);
   }
-  speedScale = num;
-  syncScrollSpeed(scrollSliderRight.value);
 });
+
 // Slider ball 
 document.getElementById('scrollHide').addEventListener('change', e => {
-  if (e.target.checked) {
-    scrollSliderRight.style.height = '200vh';
-    scrollSliderRight.style.bottom = '-98vh';
-    scrollSliderLeft.style.height = '200vh';
-    scrollSliderLeft.style.bottom = '-98vh';
-  } else {
-    scrollSliderRight.style.height = '210vh';
-    scrollSliderRight.style.bottom = '-108vh';
-    scrollSliderLeft.style.height = '210vh';
-    scrollSliderLeft.style.bottom = '-108vh';
-  }
+  const [height, bottom] = e.target.checked ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
+  applyToSliders(el => {
+    el.style.height = height;
+    el.style.bottom = bottom;
+  });
 });
+
 // ===開閉ボタン△ ===
 const scrollUIToggle = document.createElement('button');
 scrollUIToggle.innerHTML = `
