@@ -334,8 +334,7 @@
       width: 30px;
       padding: 8px;
       font-size: 18px;
-      border-color: unset;
-      border-style: solid;
+      border: 2px solid hsl(from currentColor h s l / 0.7);
       border-radius: 5px;
     `;
     
@@ -473,7 +472,7 @@
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
         window.scrollTo(0, 0);
-        isSwitching = false;
+        setTimeout(() => { isSwitching = false; }, 50);
         promptShownForward = false;
         promptShownBackward = false;
       });
@@ -484,6 +483,7 @@
   
     // 上方向・最上部で前ページ
     if (
+      totalVisibleChars > 10000 &&
       scrollTop <= 5 &&
       promptShownBackward
     ) {
@@ -497,9 +497,16 @@
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
-        const prevPartHeight = container.scrollHeight;
-        window.scrollTo(0, prevPartHeight - window.innerHeight);
-        isSwitching = false;
+        
+        // 最後のページへ移動なら先頭、それ以外は最下部
+        if (currentIndex === parts.length - 1) {
+          window.scrollTo(0, 0);
+        } else {
+          const prevPartHeight = container.scrollHeight;
+          window.scrollTo(0, prevPartHeight - window.innerHeight);
+        }
+        
+        setTimeout(() => { isSwitching = false; }, 50);
         promptShownForward = false;
         promptShownBackward = false;
       });
@@ -1731,9 +1738,9 @@ Promise.all([
                 vertical-align: middle;
                 display: inline-block;
                 padding: 0px 4px 3px 4px;
+                border: 1px solid #aaa;
                 border-radius: 4px;
                 background: #F4F4F4;
-                border: 1px solid #aaa;
                 height: 22px;
                 width: 28px;
                 text-align: center;
@@ -2190,7 +2197,6 @@ Object.assign(buttonsContainer.style, {
   flexDirection: 'column',
   marginLeft: '5px',
   gap: '10px',
-  borderRadius: '2px',
   fontSize: '14px',
 });
 // ボタンのスタイル
@@ -2449,18 +2455,16 @@ function showSaveConfirmOverlay(name, savePreview) {
 
     // コピーボタン
     const copyBtn = document.createElement('button');
-    copyBtn.textContent = '📋 コピー';
+    copyBtn.textContent = 'コピー';
     copyBtn.id = 'copyBtn';
     copyBtn.style.cssText = `
       padding: 6px 12px;
       margin-left: auto;
       color: unset;
-      border: 1px solid;
-      border-color: currentColor;
+      border: 1px solid currentcolor;
       border-radius: 4px;
       cursor: pointer;
       font-size: 12px;
-      transition: background 0.2s;
     `;
     copyBtn.onclick = async () => {
       try {
@@ -2468,7 +2472,7 @@ function showSaveConfirmOverlay(name, savePreview) {
         const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
         await navigator.clipboard.writeText(textToCopy);
         const originalText = copyBtn.textContent;
-        copyBtn.textContent = '✓ コピー完了！';
+        copyBtn.textContent = 'コピー完了！';
         setTimeout(() => {
           copyBtn.textContent = originalText;
         }, 1000);
@@ -2495,8 +2499,7 @@ function showSaveConfirmOverlay(name, savePreview) {
     preview.textContent = jsonTextCompressed;
     preview.style.cssText = `
       padding: 12px;
-      border: 1px solid;
-      border-color: currentColor;
+      border: 1px solid currentColor;
       border-radius: 4px;
       overflow-x: auto;
       font-size: 12px;
@@ -2554,8 +2557,7 @@ function showSaveConfirmOverlay(name, savePreview) {
       padding: 8px 20px;
       background: rgba(120, 120, 120, 0.3);
       color: unset;
-      border: 1px solid;
-      border-color: currentColor;
+      border: 1px solid currentColor;
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
