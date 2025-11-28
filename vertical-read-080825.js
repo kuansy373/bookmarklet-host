@@ -25,7 +25,7 @@
             traverse(child);
             result += `</${tagName}>`;
           } else if (tagName === 'br') {
-            // br タグは改行に変換
+            // br タグは \n に統一
             result += '\n';
           } else {
             // それ以外のタグは中身だけ処理
@@ -69,7 +69,7 @@
     return `<ruby><rb>${chars}</rb><rp>（</rp><rt>・・・</rt><rp>）</rp></ruby>`;
   });
   
-  // 改行の処理
+  //  \n の処理
   text = text.trim()
     .replace(/(\r\n|\r)+/g, '\n')
     .replace(/\n{2,}/g, '\n')
@@ -101,6 +101,8 @@
   
   // 可視文字長を測るための要素
   const measurer = document.createElement('div');
+  measurer.style.cssText = 'position:absolute; visibility:hidden; pointer-events:none;';
+  document.body.appendChild(measurer);
   
   function visibleLength(html) {
     measurer.innerHTML = html;
@@ -227,7 +229,7 @@
     if (i === numPages - 1) {
       endVisiblePos = fullText.length;
     } else {
-      // 目標位置付近で改行を探す（ページ切り替え位置以降の5%、500文字の範囲）
+      // 目標位置付近で全角スペースを探す（ページ切り替え位置以降の5%、500文字の範囲）
       const searchStart = endVisiblePos;
       const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.05));
       
@@ -235,7 +237,7 @@
       
       for (let j = searchStart; j < searchEnd; j++) {
         if (fullText[j] === '　') {
-          bestPos = j;  // 最初の後方改行に合わせる
+          bestPos = j;  // 後方にある最初の全角スペースに合わせる
           break;
         }
       }
@@ -248,20 +250,29 @@
     const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
     
     let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
-    // 重複文字10文字に透明度を指定
+
+    // 重複処理
     if (i > 0 && overlap > 0) {
-        // 重複部分の HTML 位置
-        const overlapStartHtmlPos = getHtmlPos(posMap, startVisiblePos);
-        const overlapEndHtmlPos   = getHtmlPos(posMap, startVisiblePos + overlap);
-        
-        const beforeOverlap = partHTML.slice(0, overlapEndHtmlPos - startHtmlPos);
-        const afterOverlap  = partHTML.slice(overlapEndHtmlPos - startHtmlPos);
-        
-        partHTML = `<span style="opacity:0.5;">${beforeOverlap}</span>${afterOverlap}`;
+      const overlapEndHtmlPos = getHtmlPos(posMap, startVisiblePos + overlap);
+      const overlapLengthInHTML = overlapEndHtmlPos - startHtmlPos;
+      
+      const overlapPart = partHTML.slice(0, overlapLengthInHTML);
+      const mainPart = partHTML.slice(overlapLengthInHTML);
+      
+      // メイン部分のみ50文字チャンク分割
+      const mainChunks = chunkHTMLSafe(mainPart, 50);
+      
+      parts.push({
+        overlap: [overlapPart],
+        main: mainChunks
+      });
+    } else {
+      const chunks = chunkHTMLSafe(partHTML, 50);
+      parts.push({
+        overlap: [],
+        main: chunks
+      });
     }
-    // partHTML を 50文字ごとの小チャンクに分割
-    const smallChunks = chunkHTMLSafe(partHTML, 50);
-    parts.push(smallChunks); // parts[ページ番号][小チャンク番号]
     prevEndVisiblePos = endVisiblePos;
     
     const actualLen = visibleLength(partHTML);
@@ -272,9 +283,18 @@
   function renderPart(pageIndex) {
     container.innerHTML = '';
     const frag = document.createDocumentFragment();
-    const pageChunks = parts[pageIndex] || [];
+    const page = parts[pageIndex] || { overlap: [], main: [] };
   
-    for (const chunkHTML of pageChunks) {
+    // 透明度付き重複部分をレンダリング
+    for (const chunkHTML of page.overlap) {
+      const span = document.createElement('span');
+      span.style.opacity = '0.5';
+      span.innerHTML = chunkHTML;
+      frag.appendChild(span);
+    }
+  
+    // メイン部分をレンダリング
+    for (const chunkHTML of page.main) {
       const span = document.createElement('span');
       span.innerHTML = chunkHTML;
       frag.appendChild(span);
