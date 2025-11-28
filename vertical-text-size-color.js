@@ -197,12 +197,14 @@
   
   // 可視文字位置からHTML位置を取得
   function getHtmlPos(map, targetVisiblePos) {
-    for (let i = 0; i < map.length; i++) {
-      if (map[i].visiblePos >= targetVisiblePos) {
-        return map[i].htmlPos;
-      }
+    // map は visiblePos 昇順である想定
+    let lo = 0, hi = map.length - 1;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      if (map[mid].visiblePos < targetVisiblePos) lo = mid + 1;
+      else hi = mid;
     }
-    return map[map.length - 1].htmlPos;
+    return map[lo] ? map[lo].htmlPos : (map.length ? map[map.length - 1].htmlPos : 0);
   }
   
   const fullHTML = text;
@@ -1516,7 +1518,6 @@ Promise.all([
         transform: translateY(1px);
       }
     `;
-
 
     document.head.appendChild(style);
     const container = document.createElement('div');
