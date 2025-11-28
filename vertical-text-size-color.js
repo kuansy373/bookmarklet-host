@@ -231,17 +231,24 @@
     if (i === numPages - 1) {
       endVisiblePos = fullText.length;
     } else {
-      // 切り替え目標位置より後方5%の範囲（500文字）で全角スペースを探す
+      // 切り替え目標位置より先方5%の範囲で区切りのいい文字を探す
       const searchStart = endVisiblePos;
       const searchEnd = Math.min(fullText.length, endVisiblePos + Math.floor(charsPerPage * 0.05));
       
       let bestPos = endVisiblePos;
       
-      for (let j = searchStart; j < searchEnd; j++) {
-        if (fullText[j] === '　') {
-          bestPos = j;  // 最初の全角スペースに合わせる
-          break;
+      const delimiters = ['　','。','」','…'];
+      let found = false;
+      
+      for (const delimiter of delimiters) {
+        for (let j = searchStart; j < searchEnd; j++) {
+          if (fullText[j] === delimiter) {
+            bestPos = j + 1;
+            found = true;
+            break;
+          }
         }
+        if (found) break;
       }
       
       endVisiblePos = bestPos;
