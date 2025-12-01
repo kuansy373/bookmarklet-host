@@ -4,7 +4,7 @@
   // ==============================
   let text = '';
   
-   // HTMLエスケープ用関数（属性値を安全にする）
+  // HTMLエスケープ用関数（属性値を安全にする）
   function escapeHTML(str) {
     return str.replace(/[&<>"']/g, function (m) {
       return ({
@@ -20,7 +20,7 @@
   // 許可する属性（ホワイトリスト）
   const ALLOWED_ATTRS = ['class', 'id', 'lang', 'title', 'dir'];
   
-   // rubyタグなどを保持したままテキストを抽出する関数
+  // rubyタグなどを保持したままテキストを抽出する関数
   function extractWithRubyTags(node) {
     let result = '';
   
@@ -28,9 +28,9 @@
     function traverse(el) {
       for (const child of el.childNodes) {
   
-        // テキストノードはそのまま追加
+        // テキストノードを追加
         if (child.nodeType === Node.TEXT_NODE) {
-          result += child.textContent;
+          result += escapeHTML(child.textContent);
   
         // 要素ノードの場合
         } else if (child.nodeType === Node.ELEMENT_NODE) {
@@ -64,7 +64,6 @@
       }
     }
   
-    // 指定ノードから処理開始
     traverse(node);
     return result;
   }
