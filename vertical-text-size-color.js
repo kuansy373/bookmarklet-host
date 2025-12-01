@@ -243,7 +243,8 @@
   const parts = [];
   
   let prevEndVisiblePos = 0;  // 前ページの終わり位置を保持
-  const overlap = 10;           // 重複させたい文字数
+  const overlap = 10;         // 重複させたい文字数
+  const pageCharCounts = [];  // 各ページの実際の文字数を保存する配列
   
   for (let i = 0; i < numPages; i++) {
     let startVisiblePos = prevEndVisiblePos;
@@ -311,11 +312,22 @@
     const actualStartPos = i > 0 ? Math.max(0, prevEndVisiblePos - overlap) : 0;
     const actualLen = endVisiblePos - actualStartPos;
     console.log(`パート${i + 1}: ${actualLen}文字`);
+    pageCharCounts.push(actualLen);   // 文字数を配列に追加
     
     prevEndVisiblePos = endVisiblePos;
   }
   
   measurer.remove();
+
+  // ページが有効かチェックする関数
+  function isValidPage(pageIndex) {
+    return pageIndex >= 0 && 
+           pageIndex < parts.length && 
+           pageCharCounts[pageIndex] > 0;
+  }
+
+  // 有効なページ数を計算
+  const validPageCount = pageCharCounts.filter(count => count > 0).length;
   
   // レンダリング関数
   function renderPart(pageIndex) {
@@ -462,14 +474,22 @@
     // はい
     const handleYes = () => {
       const targetPage = parseInt(overlayElements.pageInput.value);
-      if (targetPage >= 1 && targetPage <= maxPage) {
+      const targetIndex = targetPage - 1;
+      
+      // 範囲チェックを先に実行
+      if (targetPage < 1 || targetPage > maxPage) {
+        alert(`1から${maxPage}の範囲で入力してください`);  // クロージャ（関数スコープ）で maxPage はスクロールロジックの validPageCount を引いている
+      } else if (!isValidPage(targetIndex)) {
+        // 範囲内だが無効なページ
+        alert(`ページ${targetPage}は空のため移動できません`);
+      } else {
+        // 有効なページへ移動
         overlayElements.overlay.style.display = 'none';
         cleanup();
         onYes(targetPage);
-      } else {
-        alert(`1から${maxPage}の範囲で入力してください`);
       }
     };
+    
     // いいえ
     const handleNo = () => {
       overlayElements.overlay.style.display = 'none';
@@ -518,10 +538,11 @@
       totalVisibleChars > 10000 &&
       scrollBottom >= bodyHeight - 5 &&
       currentIndex < parts.length - 1 &&
-      promptShownForward
+      promptShownForward &&
+      isValidPage(currentIndex + 1)
     ) {
       const nextPage = currentIndex + 2;
-      showOverlay(nextPage, numPages, (targetPage) => {
+      showOverlay(nextPage, validPageCount, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
@@ -546,8 +567,8 @@
       scrollTop <= 5 &&
       promptShownBackward
     ) {
-      const targetPageForPrompt = currentIndex === 0 ? numPages : currentIndex;
-      showOverlay(targetPageForPrompt, numPages, (targetPage) => {
+      const targetPageForPrompt = currentIndex === 0 ? validPageCount  : currentIndex;
+      showOverlay(targetPageForPrompt, validPageCount , (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
