@@ -109,7 +109,7 @@
   document.querySelectorAll('body > *').forEach(node => {
     node.remove();
   });
-
+  
   // ページトップ、ヘッダー、フッターなどを削除
   document.querySelectorAll(
     '#pageTop, .c-navigater, .js-navigater-totop, .global-header, .global-footer'
@@ -123,7 +123,7 @@
     document.head.appendChild(vp)
   }
   vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-
+  
   // 親コンテナ作成
   const container = document.createElement('div');
   container.id = 'novelDisplay';
@@ -133,13 +133,11 @@
   measurer.style.cssText = 'position:absolute; visibility:hidden; pointer-events:none;';
   document.body.appendChild(measurer);
   
-  function visibleLength(html) {
-    measurer.innerHTML = html;
-    return measurer.textContent.length;
-  }
+  // HTMLから可視文字数を取得
+  measurer.innerHTML = text;
+  const fullText = measurer.textContent;
+  const totalVisibleChars = fullText.length;
   
-  // 総文字数を取得
-  const totalVisibleChars = visibleLength(text);
   console.log('総文字数:', totalVisibleChars);
   
   // 1ページあたりの上限文字数
@@ -237,8 +235,6 @@
   }
   
   const fullHTML = text;
-  measurer.innerHTML = fullHTML;
-  const fullText = measurer.textContent;
   
   // 位置マップを作成
   const posMap = buildPositionMap(fullHTML);
@@ -288,7 +284,7 @@
     const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
     
     let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
-
+  
     // 重複処理
     if (i > 0 && overlap > 0) {
       const overlapEndHtmlPos = getHtmlPos(posMap, startVisiblePos + overlap);
@@ -311,12 +307,14 @@
         main: chunks
       });
     }
-    prevEndVisiblePos = endVisiblePos;
-    
-    const actualLen = visibleLength(partHTML);
+    // 実際の文字数を計算（重複部分を含む）
+    const actualStartPos = i > 0 ? Math.max(0, prevEndVisiblePos - overlap) : 0;
+    const actualLen = endVisiblePos - actualStartPos;
     console.log(`パート${i + 1}: ${actualLen}文字`);
+    
+    prevEndVisiblePos = endVisiblePos;
   }
-
+  
   measurer.remove();
   
   // レンダリング関数
