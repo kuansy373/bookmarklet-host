@@ -1,40 +1,70 @@
 (() => {
-// ==============================
-// Vertical text
-// ==============================
+  // ==============================
+  // Vertical text
+  // ==============================
   let text = '';
   
-  // ruby / rb / rp / rt / em / span のみを保持する関数
+   // HTMLエスケープ用関数（属性値を安全にする）
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, function (m) {
+      return ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m];
+    });
+  }
+  
+  // 許可する属性（ホワイトリスト）
+  const ALLOWED_ATTRS = ['class', 'id', 'lang', 'title', 'dir'];
+  
+   // rubyタグなどを保持したままテキストを抽出する関数
   function extractWithRubyTags(node) {
     let result = '';
-    
+  
+    // ノードを再帰的に巡回する
     function traverse(el) {
       for (const child of el.childNodes) {
+  
+        // テキストノードはそのまま追加
         if (child.nodeType === Node.TEXT_NODE) {
-          // テキストノードはそのまま追加
           result += child.textContent;
+  
+        // 要素ノードの場合
         } else if (child.nodeType === Node.ELEMENT_NODE) {
           const tagName = child.tagName.toLowerCase();
-          
-          // 保持するタグの場合はタグごと追加
-          if (['ruby', 'rb', 'rp', 'rt', 'em', 'span'].includes(tagName)) {
+  
+          // 以下のタグのみそのまま使用
+          if (['ruby', 'rb', 'rp', 'rt', 'em'].includes(tagName)) {
+            
             const attrs = Array.from(child.attributes)
-              .map(attr => ` ${attr.name}="${attr.value}"`)
+              // ① イベント属性除去 (onclick など)
+              .filter(attr => !/^on/i.test(attr.name))
+              // ② ホワイトリストで制限
+              .filter(attr => ALLOWED_ATTRS.includes(attr.name))
+              // ③ 値をエスケープして安全にする
+              .map(attr => ` ${attr.name}="${escapeHTML(attr.value)}"`)
               .join('');
+            // 開始タグ
             result += `<${tagName}${attrs}>`;
+            // 子ノードを再帰処理
             traverse(child);
+            // 閉じタグ
             result += `</${tagName}>`;
+          // brタグは改行として扱う
           } else if (tagName === 'br') {
-            // br タグは \n に統一
             result += '\n';
+          // その他のタグはタグ自体を無視して中身だけ処理
           } else {
-            // それ以外のタグは中身だけ処理
             traverse(child);
           }
         }
       }
     }
-    
+  
+    // 指定ノードから処理開始
     traverse(node);
     return result;
   }
@@ -50,8 +80,8 @@
     '.p-novel__title, ' +  // 小説タイトル
     '.p-novel__text, ' +   // 本文テキスト
     // カクヨム
-    '.widget-episodeTitle, ' + // エピソードタイトル
-    '.widget-episodeBody p, ' +// 本文段落
+    '.widget-episodeTitle, ' +  // エピソードタイトル
+    '.widget-episodeBody p, ' + // 本文段落
     // アルファポリス
     '.novel-title, ' +     // 小説タイトル
     '.novel-body p, ' +    // 本文段落
