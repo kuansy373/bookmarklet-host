@@ -478,10 +478,10 @@
       
       // 範囲チェックを先に実行
       if (targetPage < 1 || targetPage > maxPage) {
-        alert(`1から${maxPage}の範囲で入力してください`);  // クロージャ（関数スコープ）で maxPage はスクロールロジックの validPageCount を引いている
+        alert(`1から${maxPage}の範囲で入力してください`);
       } else if (!isValidPage(targetIndex)) {
         // 範囲内だが無効なページ
-        alert(`ページ${targetPage}は空のため移動できません`);
+        alert(`1から${maxPage}の範囲で入力してください。\nページ${targetPage}は空ページです。`);
       } else {
         // 有効なページへ移動
         overlayElements.overlay.style.display = 'none';
@@ -542,7 +542,7 @@
       isValidPage(currentIndex + 1)
     ) {
       const nextPage = currentIndex + 2;
-      showOverlay(nextPage, validPageCount, (targetPage) => {
+      showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
@@ -568,7 +568,7 @@
       promptShownBackward
     ) {
       const targetPageForPrompt = currentIndex === 0 ? validPageCount  : currentIndex;
-      showOverlay(targetPageForPrompt, validPageCount , (targetPage) => {
+      showOverlay(targetPageForPrompt, numPages , (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
         renderPart(currentIndex);
