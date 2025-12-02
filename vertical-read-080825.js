@@ -574,7 +574,7 @@
       showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
-        renderPart(currentIndex);
+        w.renderPart(currentIndex);
         win.scrollTo(0, 0);
         setTimeout(() => {
           if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
@@ -600,11 +600,11 @@
       showOverlay(targetPageForPrompt, numPages , (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
-        renderPart(currentIndex);
+        w.renderPart(currentIndex);
         if (currentIndex === parts.length - 1) {
           win.scrollTo(0, 0);
         } else {
-          const prevPartHeight = container.scrollHeight;
+          const prevPartHeight = win.scrollHeight;
           win.scrollTo(0, prevPartHeight - win.innerHeight);
         }
         setTimeout(() => {
@@ -671,7 +671,7 @@
       scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
     }
     lastTimestamp = timestamp;
-    requestAnimationFrame(forceScroll);
+    win.requestAnimationFrame(forceScroll);
   }
   
   // スライダー入力に応じてスクロール速度を変更
@@ -686,7 +686,7 @@
     syncScrollSpeed(scrollSliderLeft.value);
     scrollSliderRight.value = scrollSliderLeft.value;
   });
-  requestAnimationFrame(forceScroll);
+  win.requestAnimationFrame(forceScroll);
     
   // ==============================
   // Slider Settings
@@ -1196,7 +1196,7 @@
     const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, copyBtn, cancelBtn, saveBtn];
     
     if (font === '游明朝') {
-      doc.body.style.cssText = initialBodyStyle;
+      doc.body.style.fontFamily = '';
       elements.forEach(el => { if (el) el.style.fontFamily = ''; });
       return;
     }
@@ -1974,7 +1974,7 @@
         fgPickr = initPickr('fg', 'color')
       } catch (e) {
         console.warn('Pickrの初期化に失敗しました:', e);
-        alert('Pickrの初期化に失敗しました:', e);
+        win.alert('Pickrの初期化に失敗しました: ' + (e && e.message ? e.message : e));
         bgPickr = {
           setColor: (color) => {
             currentBg = savedBg = color;
@@ -2295,14 +2295,14 @@
     width: '100px',
     fontFamily: 'monospace',
   });
-  const style = doc.createElement('style');
-  style.textContent = `
+  const styleJson  = doc.createElement('style');
+  styleJson.textContent = `
     #jsonInput::placeholder {
       color: unset;
       opacity: 0.7;
     }
   `;
-  doc.head.appendChild(style);
+  doc.head.appendChild(styleJson);
   // 数字、矢印のスタイル
   const labels = onetapUI.querySelectorAll('.label');
   labels.forEach(span => {
@@ -2444,12 +2444,12 @@
         applyBtn.style.color = color;
         applyBtn.style.backgroundColor = backgroundColor;
       }
-      alert(`☆ ${name} を保存しました！`);
+      win.alert(`☆ ${name} を保存しました！`);
     } catch (e) {
       if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-        alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+        win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
       } else {
-        alert('保存に失敗しました: ' + e);
+        win.alert('保存に失敗しました: ' + e);
       }
     }
   }
@@ -2545,14 +2545,14 @@
         try {
           // チェックボックスの状態に応じてコピーする内容を切り替え
           const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
-          await navigator.clipboard.writeText(textToCopy);
+          await win.navigator.clipboard.writeText(textToCopy);
           const originalText = copyBtn.textContent;
           copyBtn.textContent = 'コピー完了！';
           setTimeout(() => {
             copyBtn.textContent = originalText;
           }, 1000);
         } catch (err) {
-          alert('コピーに失敗しました: ' + err);
+          win.alert('コピーに失敗しました: ' + err);
         }
       };
       
@@ -2683,7 +2683,7 @@
   function applyStyleData(data) {
     const target = doc.getElementById('novelDisplay');
     if (!target) {
-      alert('対象要素が見つかりません');
+      win.alert('対象要素が見つかりません');
       return false;
     }
   
@@ -2749,14 +2749,14 @@
     const jsonText = jsonInput.value.trim();
   
     if (!jsonText) {
-      alert('JSONデータを入力してください');
+      win.alert('JSONデータを入力してください');
       return;
     }
   
     try {
       const data = JSON.parse(jsonText);
   
-      const proceed = confirm(`☆ JSONデータを反映します！`);
+      const proceed = win.confirm(`☆ JSONデータを反映します！`);
       if (!proceed) return;
   
       if (applyStyleData(data)) {
@@ -2764,29 +2764,29 @@
         jsonInput.value = ''; // 入力欄をクリア
       }
     } catch (e) {
-      alert('JSONの解析に失敗しました:\n' + e.message);
+      win.alert('JSONの解析に失敗しました:\n' + e.message);
     }
   };
   
   // APPLYボタン
   async function applyStyleByName(name) {
     // --- ユーザーに確認 ---
-    const proceed = confirm(`☆ ${name} を反映します！`);
+    const proceed = win.confirm(`☆ ${name} を反映します！`);
     if (!proceed) return;
   
     try {
       const res = await fetch(`http://localhost:3000/get/${name}`);
       const data = await res.json();
-      if (!data) return alert(`${name} は保存されていません`);
+      if (!data) return win.alert(`${name} は保存されていません`);
   
       if (applyStyleData(data)) {
         onetapUI.style.display = 'none';
       }
     } catch (e) {
       if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-        alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+        win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
       } else {
-        alert('データの取得に失敗しました: ' + e);
+        win.alert('データの取得に失敗しました: ' + e);
       }
     }
   };
