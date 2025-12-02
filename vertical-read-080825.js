@@ -1297,6 +1297,7 @@
     })
   ]).then(() => {
       const style = doc.createElement('style');
+      const PickrClass = w.Pickr || window.Pickr;
       style.textContent = `
         /* ---- #pickrContainer 関連 ---- */
         #pickrContainer {
@@ -1779,7 +1780,7 @@
         const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
         const getCurrent = () => (isFg ? currentFg : currentBg);
         const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
-        const pickr = Pickr.create({
+        const pickr = PickrClass.create({
           el: `#${id}Swatch`,
           theme: 'classic',
           default: getSaved(),
@@ -1925,11 +1926,11 @@
                 const resultInput = app.querySelector('.pcr-result');
             
                 if (resultInput && resultInput.value !== "-") {
-                  navigator.clipboard.writeText(resultInput.value).then(function(){
+                  win.navigator.clipboard.writeText(resultInput.value).then(function(){
                     button.textContent = "Copied!";
                     setTimeout(function(){ button.textContent = "Copy"; }, 1200);
                   }).catch(function(err){
-                    console.error("コピーに失敗しました:", err);
+                    win.console.error("コピーに失敗しました:", err);
                   });
                 }
               });
@@ -2196,7 +2197,7 @@
         var targetId = button.getAttribute("data-target");
         var targetInput = doc.getElementById(targetId);
         if (targetInput && targetInput.value !== "-") {
-          navigator.clipboard.writeText(targetInput.value).then(function(){
+          win.navigator.clipboard.writeText(targetInput.value).then(function(){
             button.textContent = "Copied!";
             setTimeout(function(){ button.textContent = "Copy"; }, 1200);
           }).catch(function(err){
