@@ -341,7 +341,7 @@
     transform: translateZ(0);
   }
   ruby rt {
-    font-size: 0.6em;
+    font-size: 0.5em;
   }
   </style>
   </head>
@@ -2302,7 +2302,7 @@
       padding: '4px',
       border: '1px solid',
       borderRadius: '2px',
-      width: '120px',
+      width: 'auto',
       fontFamily: 'monospace',
     });
   });
