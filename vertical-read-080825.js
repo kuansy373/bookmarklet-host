@@ -2606,6 +2606,7 @@
         if (overlay.parentNode) doc.body.removeChild(overlay);
         __saveConfirmOpen = false;
         isSwitching = false;
+        doc.removeEventListener('keydown', handleKeydown); // イベントリスナーを削除
         resolve(result);
       };
       
@@ -2638,6 +2639,14 @@
         font-size: 14px;
       `;
       saveBtn.onclick = () => cleanupAndResolve(true);
+  
+      // エンターキーで「保存する」ボタンを押す処理
+      const handleKeydown = (e) => {
+        if (e.key === 'Enter') {
+          saveBtn.click(); // 「保存する」ボタンをクリック
+        }
+      };
+      doc.addEventListener('keydown', handleKeydown); // キーイベントを登録
       
       // 組み立て
       previewContainer.appendChild(preview);
