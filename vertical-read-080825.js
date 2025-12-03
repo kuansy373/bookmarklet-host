@@ -1296,597 +1296,598 @@
       crossorigin: 'anonymous'
     })
   ]).then(() => {
-      const style = doc.createElement('style');
-      const PickrClass = w.Pickr || window.Pickr;
-      style.textContent = `
-        /* ---- #pickrContainer 関連 ---- */
-        #pickrContainer {
-          all: initial;
-          position: fixed;
-          top: 10px;
-          right: 10px;
-          z-index: 20000;
-          color: unset;
-          background: unset;
-          padding: 7px;
-          padding-bottom: 0;
-          border: 1px solid;
-          border-radius: 8px;
-          font-family: sans-serif;
-          box-shadow: 0 0 4px;
-        }
-  
-        #pickrContainer,
-        #pickrContainer *,
-        .pcr-app,
-        .pcr-app * {
-          line-height: initial !important;
-        }
-  
-        #pickrContainer .row {
-          display: flex;
-          align-items: center;
-          margin-bottom: 2px;
-          gap: 5px;
-        }
-  
-        #pickrContainer .label {
-          font-weight: bold;
-          font-family: monospace;
-          font-size: 21px;
-        }
-  
-        #pickrClose {
-          all: initial;
-          font-size: 15px;
-          font-weight: bolder;
-          color: unset;
-          cursor: pointer;
-          position: absolute;
-          top: 5px;
-          right: 7px;
-        }
-  
-        #pickrContainer .row.contrast-row {
-          justify-content: flex-start;
-          gap: 4px;
-        }
-  
-        #pickrContainer .row.contrast-row > strong {
-          display: inline-block;
-          min-width: 60px;
-        }
-  
-        #dragHandle {
-          cursor: move;
-          padding: 0px;
-          padding-bottom: 2px;
-          padding-left: 0.3px;
-          margin-right: 20px;
-          background: #F4F4F4;
-        }
-  
-        #dragHandle:active {
-          transform: none;
-        }
-  
-        /* ---- .color-swatch 関連 ---- */
-        .color-swatch {
-          width: 30px;
-          height: 30px;
-          border: 1px solid #999;
-          border-radius: 4px;
-          cursor: pointer;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-  
-        .color-swatch > div {
-          flex: 1;
-        }
-  
-        .color-saved {
-          border-bottom: 1px solid #999;
-        }
-  
-        .hex-display {
-          all: initial;
-          font-family: monospace;
-          font-size: 14px;
-          font-weight: normal;
-          padding: 2px 4px;
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          text-align: left;
-          width: 86px;
-          height: 13px;
-        }
-  
-        .copy-btn {
-          all: initial;
-          position: absolute;
-          right: 55px;
-          font-size: 11px;
-          block-size: 17px;
-          border: 1px solid #999;
-          border-radius: 4px;
-          background: #F0FFEC;
-          cursor: pointer;
-        }
-  
-        .hex-load-btn {
-          all: initial;
-          cursor: pointer;
-          padding: 2px 2px;
-          font-size: 1em;
-          font-weight: bolder;
-          border: 1px solid #aaa;
-          background: #dddddd;
-          border-radius: 4px;
-        }
-  
-        .hex-load-btn:active {
-          transform: translateY(1px);
-        }
-  
-        .switch-bgfg {
-          all: initial;
-          font-family: monospace;
-          font-size: 18px;
-          border: 1px solid #aaa;
-          background: #dddddd;
-          border-radius: 4px;
-          width: 19px;
-          height: 25px;
-          text-align: center;
-          margin-left: 3px;
-        }
-  
-        .switch-bgfg:active {
-          transform: translateY(1px);
-        }
-  
-        input.contrast-display {
-          all: initial;
-          font-family: monospace;
-          font-size: 14px;
-          font-weight: normal;
-          width: 35px;
-          padding: 1px;
-          background: #ffffff;
-          border: 2px solid #999;
-          border-radius: 4px;
-          text-align: center;
-        }
-  
-        #randomColorBtn {
-          all: initial;
-          background: #E6FDFF;
-          border: 1px solid #aaa;
-          border-radius: 4px;
-          padding: 2px 6px;
-          font-size: 15px;
-          font-family: monospace;
-        }
-  
-        #randomColorBtn:active {
-          transform: translateY(1px);
-        }
-  
-        #bgLockIcon, #fgLockIcon {
-          all: unset;
-          font-size: 14px;
-          margin: 0px 0px;
-          border: 1px solid;
-          display: inline-block;
-        }
-  
-        /* ---- .pcr-app 関連 ---- */
-        .pcr-app {
-          position: fixed !important;
-          box-sizing: initial !important;
-          left: initial !important;
-          bottom: initial !important;
-          top: 150px !important;
-          right: 10px !important;
-          padding: 10px !important;
-          width: 310px !important;
-          height: 150px !important;
-          z-index: 20001 !important;
-          background: unset !important;
-          border: 1px solid !important;
-        }
-  
-        .pcr-selection {
-          height: 114px !important;
-        }
-  
-        .pcr-color-palette {
-          height: auto !important;
-          border: 1px solid !important;
-        }
-  
-        .pickr .pcr-button {
-          all: unset;
-          display: inline-block;
-          position: relative;
-          height: 8.3px;
-          width: 8.3px;
-          padding: .5em;
-          cursor: pointer;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-          border: 1px solid;
-          border-radius: 2px;
-          background-size: 0;
-          transition: all .3s;
-        }
-  
-        .pcr-color-preview {
-          width: 22px !important;
-          margin-right: 10px !important;
-          border: 1px solid; !important;
-        }
-  
-        .pcr-color-chooser{
-          margin-left: 10px !important;
-        }
-  
-        .pcr-last-color {
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-  
-        .pcr-swatches {
-          all: initial !important;
-        }
-  
-        .pcr-result {
-          height: 20px !important;
-          margin-top: 10px !important;
-          font-family: monospace !important;
-          font-size: 15px !important;
-          background: #fff !important;
-          color: #000000 !important;
-          box-shadow: initial !important;
-          border: 1px solid #ccc !important;
-          border-radius: 4px !important;
-        }
-  
-        .pcr-save {
-          all: unset;
-          box-shadow: initial !important;
-          font-size: 12px !important;
-          font-weight: normal !important;
-          height: 22px !important;
-          width: 40px !important;
-          margin-top: 10px !important;
-          padding: 0px !important;
-          border: 1px solid #999 !important;
-          border-radius: 4px !important;
-          background: #97DDC8! important;
-          color: #000000 !important;
-        }
-  
-        .pcr-save:active {
-          transform: translateY(1px);
-        }
-      `;
-  
-      doc.head.appendChild(style);
-      const container = doc.createElement('div');
-      container.id = 'pickrContainer';
-      container.innerHTML = `
-        <div id="pickrClose">✕</div>
-      
-        <div class="row">
-          <div class="label">BG:</div>
-          <div id="bgSwatch" class="color-swatch">
-            <div class="color-saved"></div>
-            <div class="color-current"></div>
-          </div>
-          <button id="bgHexLoad" class="hex-load-btn">⇦</button>
-          <input id="bgHex" class="hex-display" value="-">
-          <button class="copy-btn" data-target="bgHex">Copy</button>
-          <button id="dragHandle" class="hex-load-btn">🟰</button>
-        </div>
-      
-        <div class="row">
-          <div class="label">FG:</div>
-          <div id="fgSwatch" class="color-swatch">
-            <div class="color-saved"></div>
-            <div class="color-current"></div>
-          </div>
-          <button id="fgHexLoad" class="hex-load-btn">⇦</button>
-          <input id="fgHex" class="hex-display" value="-">
-          <button class="copy-btn" data-target="fgHex">Copy</button>
-          <button id="swapColorsBtn" class="switch-bgfg">↕</button>
-        </div>
-      
-        <div class="row">
-          <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">BG:</div>
-          <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
-            <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
-            <span id="bgLockIcon">🔓</span>
-          </label>
-          <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">FG:</div>
-          <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
-            <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
-            <span id="fgLockIcon">🔓</span>
-          </label>
-          <button id="randomColorBtn">🎨Random</button>
-        </div>
-      
-        <div class="row contrast-row" style="align-items: center;">
-          <strong>Contrast:</strong>
-          <span id="contrastRatio" style="width: 51px;">-</span>
-          <input
-            id="contrastMin"
-            class="contrast-display"
-            type="number"
-            min="1"
-            max="21"
-            step="0.1"
-            value="3"
-            title="Minimum contrast ratio"
-          >
-          <span style="margin: 0;font-size: 10px;font-weight: 500;">～</span>
-          <input
-            id="contrastMax"
-            class="contrast-display"
-            type="number"
-            min="1"
-            max="21"
-            step="0.1"
-            value="18"
-            title="Maximum contrast ratio"
-          >
-        </div>
-      `;
-      doc.body.appendChild(container);
-  
-      // --- ドラッグ処理 ---
-      (function() {
-        const dragHandle = doc.getElementById('dragHandle');
-        const container = doc.getElementById('pickrContainer');
-        let isDragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
-  
-        // --- マウス操作 ---
-        dragHandle.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          offsetX = e.clientX - container.getBoundingClientRect().left;
-          offsetY = e.clientY - container.getBoundingClientRect().top;
-          e.preventDefault();
-        });
-  
-        doc.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
-          container.style.left = e.clientX - offsetX + 'px';
-          container.style.top = e.clientY - offsetY + 'px';
-          container.style.right = 'auto';
-          container.style.bottom = 'auto';
-        });
-  
-        doc.addEventListener('mouseup', () => {
-          isDragging = false;
-        });
-  
-        // --- タッチ操作 ---
-        dragHandle.addEventListener('touchstart', (e) => {
-          if (e.touches.length !== 1) return;
-          const touch = e.touches[0];
-          isDragging = true;
-          offsetX = touch.clientX - container.getBoundingClientRect().left;
-          offsetY = touch.clientY - container.getBoundingClientRect().top;
-          e.preventDefault();
-        });
-  
-        doc.addEventListener('touchmove', (e) => {
-          if (!isDragging || e.touches.length !== 1) return;
-          const touch = e.touches[0];
-          container.style.left = touch.clientX - offsetX + 'px';
-          container.style.top = touch.clientY - offsetY + 'px';
-          container.style.right = 'auto';
-          container.style.bottom = 'auto';
-        }, { passive: false });
-  
-        doc.addEventListener('touchend', () => {
-          isDragging = false;
-        });
-      })();
-  
-      // --- ユーティリティ関数 ---
-      const getHex = (prop) => {
-        const rgb = getComputedStyle(doc.body)[prop];
-        if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
-          return null
-        }
-        const nums = rgb.match(/\d+/g)?.map(Number);
-        return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
-      };
-      window.applyStyle = (prop, value) => {
-        if (!value) return;
-        const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
-        let el = doc.getElementById(id);
-        if (!el) {
-          el = doc.createElement('style');
-          el.id = id;
-          doc.head.appendChild(el)
-        }
-        el.textContent = `
-        *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
-          ${prop}: ${value};
-        }`
-      };
-      const updateSwatch = (swatch, current, saved) => {
-        if (!swatch) return;
-        swatch.querySelector('.color-current').style.background = current;
-        swatch.querySelector('.color-saved').style.background = saved
-      };
-      const updateColorHexDisplays = () => {
-        doc.getElementById("bgHex").value = currentBg;
-        doc.getElementById("fgHex").value = currentFg;
-        updateLockIcons();
-      };
-      const getContrast = (fg, bg) => {
-        const lum = (hex) => {
-          const rgb = hex.match(/\w\w/g).map((v) => parseInt(v, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
-          return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
-        };
-        const [l1, l2] = [lum(fg), lum(bg)];
-        return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
-      };
-      function hexToHSL(hex) {
-        if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
-          return { h: 0, s: 0, l: 0 };
-        }
-        let r = parseInt(hex.substr(1,2),16)/255;
-        let g = parseInt(hex.substr(3,2),16)/255;
-        let b = parseInt(hex.substr(5,2),16)/255;
-        let max = Math.max(r,g,b), min = Math.min(r,g,b);
-        let h, s, l = (max + min)/2;
-        if(max == min){
-          h = s = 0;
-        } else {
-          let d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch(max){
-            case r: h = (g - b)/d + (g < b ? 6 : 0); break;
-            case g: h = (b - r)/d + 2; break;
-            case b: h = (r - g)/d + 4; break;
-          }
-          h *= 60;
-        }
-        return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
+    const style = doc.createElement('style');
+    const PickrClass = w.Pickr || window.Pickr;
+    style.textContent = `
+      /* ---- #pickrContainer 関連 ---- */
+      #pickrContainer {
+        all: initial;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 20000;
+        color: unset;
+        background: unset;
+        padding: 7px;
+        padding-bottom: 0;
+        border: 1px solid;
+        border-radius: 8px;
+        font-family: sans-serif;
+        box-shadow: 0 0 4px;
       }
-      // --- Pickr関連・状態変数 ---
-      const contrastEl = doc.getElementById('contrastRatio');
-      const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
-      let savedFg = getHex('color') || '#000000';
-      let savedBg = getHex('backgroundColor') || '#ffffff';
-      let currentFg = savedFg;
-      let currentBg = savedBg;
-      // --- pcr-appドラッグ用グローバル変数を追加 ---
-      let globalDragStyle = null;
-      let globalDragRuleIndex = null;
-  
-      const initPickr = (id, prop) => {
-        const swatch = doc.getElementById(id + 'Swatch');
-        const isFg = prop === 'color';
-        const getSaved = () => (isFg ? savedFg : savedBg);
-        const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
-        const getCurrent = () => (isFg ? currentFg : currentBg);
-        const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
-        const pickr = PickrClass.create({
-          el: `#${id}Swatch`,
-          theme: 'classic',
-          default: getSaved(),
-          components: {
-            preview: !0,
-            opacity: !1,
-            hue: !0,
-            interaction: {
-              input: !0,
-              save: !0,
-            },
+
+      #pickrContainer,
+      #pickrContainer *,
+      .pcr-app,
+      .pcr-app * {
+        line-height: initial !important;
+      }
+
+      #pickrContainer .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+        gap: 5px;
+      }
+
+      #pickrContainer .label {
+        font-weight: bold;
+        font-family: monospace;
+        font-size: 21px;
+      }
+
+      #pickrClose {
+        all: initial;
+        font-size: 15px;
+        font-weight: bolder;
+        color: unset;
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
+        right: 7px;
+      }
+
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+      }
+
+      #pickrContainer .row.contrast-row > strong {
+        display: inline-block;
+        min-width: 60px;
+      }
+
+      #dragHandle {
+        cursor: move;
+        padding: 0px;
+        padding-bottom: 2px;
+        padding-left: 0.3px;
+        margin-right: 20px;
+        background: #F4F4F4;
+      }
+
+      #dragHandle:active {
+        transform: none;
+      }
+
+      /* ---- .color-swatch 関連 ---- */
+      .color-swatch {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #999;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .color-swatch > div {
+        flex: 1;
+      }
+
+      .color-saved {
+        border-bottom: 1px solid #999;
+      }
+
+      .hex-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 4px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: left;
+        width: 86px;
+        height: 13px;
+      }
+
+      .copy-btn {
+        all: initial;
+        position: absolute;
+        right: 55px;
+        font-size: 11px;
+        block-size: 17px;
+        border: 1px solid #999;
+        border-radius: 4px;
+        background: #F0FFEC;
+        cursor: pointer;
+      }
+
+      .hex-load-btn {
+        all: initial;
+        cursor: pointer;
+        padding: 2px 2px;
+        font-size: 1em;
+        font-weight: bolder;
+        border: 1px solid #aaa;
+        background: #dddddd;
+        border-radius: 4px;
+      }
+
+      .hex-load-btn:active {
+        transform: translateY(1px);
+      }
+
+      .switch-bgfg {
+        all: initial;
+        font-family: monospace;
+        font-size: 18px;
+        border: 1px solid #aaa;
+        background: #dddddd;
+        border-radius: 4px;
+        width: 19px;
+        height: 25px;
+        text-align: center;
+        margin-left: 3px;
+      }
+
+      .switch-bgfg:active {
+        transform: translateY(1px);
+      }
+
+      input.contrast-display {
+        all: initial;
+        font-family: monospace;
+        font-size: 14px;
+        font-weight: normal;
+        width: 35px;
+        padding: 1px;
+        background: #ffffff;
+        border: 2px solid #999;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      #randomColorBtn {
+        all: initial;
+        background: #E6FDFF;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 15px;
+        font-family: monospace;
+      }
+
+      #randomColorBtn:active {
+        transform: translateY(1px);
+      }
+
+      #bgLockIcon, #fgLockIcon {
+        all: unset;
+        font-size: 14px;
+        margin: 0px 0px;
+        border: 1px solid;
+        display: inline-block;
+      }
+
+      /* ---- .pcr-app 関連 ---- */
+      .pcr-app {
+        position: fixed !important;
+        box-sizing: initial !important;
+        left: initial !important;
+        bottom: initial !important;
+        top: 150px !important;
+        right: 10px !important;
+        padding: 10px !important;
+        width: 310px !important;
+        height: 150px !important;
+        z-index: 20001 !important;
+        background: unset !important;
+        border: 1px solid !important;
+      }
+
+      .pcr-selection {
+        height: 114px !important;
+      }
+
+      .pcr-color-palette {
+        height: auto !important;
+        border: 1px solid !important;
+      }
+
+      .pickr .pcr-button {
+        all: unset;
+        display: inline-block;
+        position: relative;
+        height: 8.3px;
+        width: 8.3px;
+        padding: .5em;
+        cursor: pointer;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        border: 1px solid;
+        border-radius: 2px;
+        background-size: 0;
+        transition: all .3s;
+      }
+
+      .pcr-color-preview {
+        width: 22px !important;
+        margin-right: 10px !important;
+        border: 1px solid; !important;
+      }
+
+      .pcr-color-chooser{
+        margin-left: 10px !important;
+      }
+
+      .pcr-last-color {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .pcr-swatches {
+        all: initial !important;
+      }
+
+      .pcr-result {
+        height: 20px !important;
+        margin-top: 10px !important;
+        font-family: monospace !important;
+        font-size: 15px !important;
+        background: #fff !important;
+        color: #000000 !important;
+        box-shadow: initial !important;
+        border: 1px solid #ccc !important;
+        border-radius: 4px !important;
+      }
+
+      .pcr-save {
+        all: unset;
+        box-shadow: initial !important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        height: 22px !important;
+        width: 40px !important;
+        margin-top: 10px !important;
+        padding: 0px !important;
+        border: 1px solid #999 !important;
+        border-radius: 4px !important;
+        background: #97DDC8! important;
+        color: #000000 !important;
+      }
+
+      .pcr-save:active {
+        transform: translateY(1px);
+      }
+    `;
+
+    doc.head.appendChild(style);
+    const container = doc.createElement('div');
+    container.id = 'pickrContainer';
+    container.innerHTML = `
+      <div id="pickrClose">✕</div>
+    
+      <div class="row">
+        <div class="label">BG:</div>
+        <div id="bgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
+          <div class="color-current"></div>
+        </div>
+        <button id="bgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="bgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="bgHex">Copy</button>
+        <button id="dragHandle" class="hex-load-btn">🟰</button>
+      </div>
+    
+      <div class="row">
+        <div class="label">FG:</div>
+        <div id="fgSwatch" class="color-swatch">
+          <div class="color-saved"></div>
+          <div class="color-current"></div>
+        </div>
+        <button id="fgHexLoad" class="hex-load-btn">⇦</button>
+        <input id="fgHex" class="hex-display" value="-">
+        <button class="copy-btn" data-target="fgHex">Copy</button>
+        <button id="swapColorsBtn" class="switch-bgfg">↕</button>
+      </div>
+    
+      <div class="row">
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">BG:</div>
+        <label id="bgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-bg-lock" style="display:none;">
+          <span id="bgLockIcon">🔓</span>
+        </label>
+        <div class="label" style="margin-left:2px;font-weight: normal;font-size: 19px;">FG:</div>
+        <label id="fgLockLabel" style="cursor:pointer;display:inline-flex;align-items:center;">
+          <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
+          <span id="fgLockIcon">🔓</span>
+        </label>
+        <button id="randomColorBtn">🎨Random</button>
+      </div>
+    
+      <div class="row contrast-row" style="align-items: center;">
+        <strong>Contrast:</strong>
+        <span id="contrastRatio" style="width: 51px;">-</span>
+        <input
+          id="contrastMin"
+          class="contrast-display"
+          type="number"
+          min="1"
+          max="21"
+          step="0.1"
+          value="3"
+          title="Minimum contrast ratio"
+        >
+        <span style="margin: 0;font-size: 10px;font-weight: 500;">～</span>
+        <input
+          id="contrastMax"
+          class="contrast-display"
+          type="number"
+          min="1"
+          max="21"
+          step="0.1"
+          value="18"
+          title="Maximum contrast ratio"
+        >
+      </div>
+    `;
+    doc.body.appendChild(container);
+
+    // --- ドラッグ処理 ---
+    (function() {
+      const dragHandle = doc.getElementById('dragHandle');
+      const container = doc.getElementById('pickrContainer');
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      // --- マウス操作 ---
+      dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
+
+      doc.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        container.style.left = e.clientX - offsetX + 'px';
+        container.style.top = e.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      });
+
+      doc.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // --- タッチ操作 ---
+      dragHandle.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        isDragging = true;
+        offsetX = touch.clientX - container.getBoundingClientRect().left;
+        offsetY = touch.clientY - container.getBoundingClientRect().top;
+        e.preventDefault();
+      });
+
+      doc.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        container.style.left = touch.clientX - offsetX + 'px';
+        container.style.top = touch.clientY - offsetY + 'px';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+      }, { passive: false });
+
+      doc.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+    })();
+
+    // --- ユーティリティ関数 ---
+    const getHex = (prop) => {
+      const rgb = getComputedStyle(doc.body)[prop];
+      if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
+        return null
+      }
+      const nums = rgb.match(/\d+/g)?.map(Number);
+      return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
+    };
+    window.applyStyle = (prop, value) => {
+      if (!value) return;
+      const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
+      let el = doc.getElementById(id);
+      if (!el) {
+        el = doc.createElement('style');
+        el.id = id;
+        doc.head.appendChild(el)
+      }
+      el.textContent = `
+      *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
+        ${prop}: ${value};
+      }`
+    };
+    const updateSwatch = (swatch, current, saved) => {
+      if (!swatch) return;
+      swatch.querySelector('.color-current').style.background = current;
+      swatch.querySelector('.color-saved').style.background = saved
+    };
+    const updateColorHexDisplays = () => {
+      doc.getElementById("bgHex").value = currentBg;
+      doc.getElementById("fgHex").value = currentFg;
+      updateLockIcons();
+    };
+    const getContrast = (fg, bg) => {
+      const lum = (hex) => {
+        const rgb = hex.match(/\w\w/g).map((v) => parseInt(v, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+        return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+      };
+      const [l1, l2] = [lum(fg), lum(bg)];
+      return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
+    };
+    function hexToHSL(hex) {
+      if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
+        return { h: 0, s: 0, l: 0 };
+      }
+      let r = parseInt(hex.substr(1,2),16)/255;
+      let g = parseInt(hex.substr(3,2),16)/255;
+      let b = parseInt(hex.substr(5,2),16)/255;
+      let max = Math.max(r,g,b), min = Math.min(r,g,b);
+      let h, s, l = (max + min)/2;
+      if(max == min){
+        h = s = 0;
+      } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+          case r: h = (g - b)/d + (g < b ? 6 : 0); break;
+          case g: h = (b - r)/d + 2; break;
+          case b: h = (r - g)/d + 4; break;
+        }
+        h *= 60;
+      }
+      return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
+    }
+    // --- Pickr関連・状態変数 ---
+    const contrastEl = doc.getElementById('contrastRatio');
+    const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
+    let savedFg = getHex('color') || '#000000';
+    let savedBg = getHex('backgroundColor') || '#ffffff';
+    let currentFg = savedFg;
+    let currentBg = savedBg;
+    // --- pcr-appドラッグ用グローバル変数を追加 ---
+    let globalDragStyle = null;
+    let globalDragRuleIndex = null;
+
+    const initPickr = (id, prop) => {
+      const swatch = doc.getElementById(id + 'Swatch');
+      const isFg = prop === 'color';
+      const getSaved = () => (isFg ? savedFg : savedBg);
+      const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
+      const getCurrent = () => (isFg ? currentFg : currentBg);
+      const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
+      const pickr = PickrClass.create({
+        el: `#${id}Swatch`,
+        theme: 'classic',
+        default: getSaved(),
+        components: {
+          preview: !0,
+          opacity: !1,
+          hue: !0,
+          interaction: {
+            input: !0,
+            save: !0,
           },
-        });
-        pickr.on('init', instance => {
-          // --- pcr-appドラッグボタン追加 ---
-          setTimeout(() => {
-            // すべてのpcr-appにドラッグボタンを追加
-            doc.querySelectorAll('.pcr-app').forEach(app => {
-              if (app.querySelector('.pcr-drag-handle')) return;
-              const saveBtn = app.querySelector('.pcr-save');
-              if (saveBtn) {
-                const dragBtn = doc.createElement('button');
-                dragBtn.textContent = '🟰';
-                dragBtn.className = 'pcr-drag-handle';
-                dragBtn.style.cssText = `
-                  all: unset;
-                  cursor: move;
-                  margin-left: 2.4px;
-                  margin-top: 10px;
-                  font-size: 17px;
-                  vertical-align: middle;
-                  display: inline-block;
-                  padding: 0px 4px 3px 4px;
-                  border: 1px solid #aaa;
-                  border-radius: 4px;
-                  background: #F4F4F4;
-                  height: 22px;
-                  width: 28px;
-                  text-align: center;
-                `;
-                saveBtn.insertAdjacentElement('afterend', dragBtn);
-  
-                // --- ドラッグ処理 ---
-                let isDragging = false, offsetX = 0, offsetY = 0;
-  
-                // --- グローバルなドラッグ用CSSルールを使う ---
-                function applyDragCss(left, top) {
-                  if (!globalDragStyle) {
-                    globalDragStyle = doc.createElement('style');
-                    globalDragStyle.setAttribute('data-pcr-drag', '1');
-                    doc.head.appendChild(globalDragStyle);
-                  }
-                  const sheet = globalDragStyle.sheet;
-                  if (globalDragRuleIndex !== null) {
-                    sheet.deleteRule(globalDragRuleIndex);
-                    globalDragRuleIndex = null;
-                  }
-                  const rule = `.pcr-app { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; position: fixed !important; }`;
-                  globalDragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
+        },
+      });
+      
+      pickr.on('init', instance => {
+        // --- pcr-appドラッグボタン追加 ---
+        setTimeout(() => {
+          // すべてのpcr-appにドラッグボタンを追加
+          doc.querySelectorAll('.pcr-app').forEach(app => {
+            if (app.querySelector('.pcr-drag-handle')) return;
+            const saveBtn = app.querySelector('.pcr-save');
+            if (saveBtn) {
+              const dragBtn = doc.createElement('button');
+              dragBtn.textContent = '🟰';
+              dragBtn.className = 'pcr-drag-handle';
+              dragBtn.style.cssText = `
+                all: unset;
+                cursor: move;
+                margin-left: 2.4px;
+                margin-top: 10px;
+                font-size: 17px;
+                vertical-align: middle;
+                display: inline-block;
+                padding: 0px 4px 3px 4px;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                background: #F4F4F4;
+                height: 22px;
+                width: 28px;
+                text-align: center;
+              `;
+              saveBtn.insertAdjacentElement('afterend', dragBtn);
+
+              // --- ドラッグ処理 ---
+              let isDragging = false, offsetX = 0, offsetY = 0;
+
+              // --- グローバルなドラッグ用CSSルールを使う ---
+              function applyDragCss(left, top) {
+                if (!globalDragStyle) {
+                  globalDragStyle = doc.createElement('style');
+                  globalDragStyle.setAttribute('data-pcr-drag', '1');
+                  doc.head.appendChild(globalDragStyle);
                 }
-  
-                dragBtn.addEventListener('mousedown', e => {
-                  isDragging = true;
-                  const rect = app.getBoundingClientRect();
-                  offsetX = e.clientX - rect.left;
-                  offsetY = e.clientY - rect.top;
-                  applyDragCss(rect.left, rect.top);
-                  e.preventDefault();
-                  e.stopPropagation();
-                });
-                doc.addEventListener('mousemove', e => {
-                  if (!isDragging) return;
-                  applyDragCss(e.clientX - offsetX, e.clientY - offsetY);
-                });
-                doc.addEventListener('mouseup', () => {
-                  if (isDragging) {
-                    isDragging = false;
-                  }
-                });
-  
-                // タッチ対応
-                dragBtn.addEventListener('touchstart', e => {
-                  if (e.touches.length !== 1) return;
-                  isDragging = true;
-                  const touch = e.touches[0];
-                  const rect = app.getBoundingClientRect();
-                  offsetX = touch.clientX - rect.left;
-                  offsetY = touch.clientY - rect.top;
-                  applyDragCss(rect.left, rect.top);
-                  e.preventDefault();
-                  e.stopPropagation();
-                });
-                doc.addEventListener('touchmove', e => {
-                  if (!isDragging || e.touches.length !== 1) return;
-                  const touch = e.touches[0];
-                  applyDragCss(touch.clientX - offsetX, touch.clientY - offsetY);
-                }, { passive: false });
-                doc.addEventListener('touchend', () => {
-                  if (isDragging) {
-                    isDragging = false;
-                  }
-                });
+                const sheet = globalDragStyle.sheet;
+                if (globalDragRuleIndex !== null) {
+                  sheet.deleteRule(globalDragRuleIndex);
+                  globalDragRuleIndex = null;
+                }
+                const rule = `.pcr-app { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; position: fixed !important; }`;
+                globalDragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
               }
-            });
-          }, 0);
-        });
+
+              dragBtn.addEventListener('mousedown', e => {
+                isDragging = true;
+                const rect = app.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                applyDragCss(rect.left, rect.top);
+                e.preventDefault();
+                e.stopPropagation();
+              });
+              doc.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                applyDragCss(e.clientX - offsetX, e.clientY - offsetY);
+              });
+              doc.addEventListener('mouseup', () => {
+                if (isDragging) {
+                  isDragging = false;
+                }
+              });
+
+              // タッチ対応
+              dragBtn.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) return;
+                isDragging = true;
+                const touch = e.touches[0];
+                const rect = app.getBoundingClientRect();
+                offsetX = touch.clientX - rect.left;
+                offsetY = touch.clientY - rect.top;
+                applyDragCss(rect.left, rect.top);
+                e.preventDefault();
+                e.stopPropagation();
+              });
+              doc.addEventListener('touchmove', e => {
+                if (!isDragging || e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                applyDragCss(touch.clientX - offsetX, touch.clientY - offsetY);
+              }, { passive: false });
+              doc.addEventListener('touchend', () => {
+                if (isDragging) {
+                  isDragging = false;
+                }
+              });
+            }
+          });
+        }, 0);
+      });
         
       pickr.on('init', instance => {
         setTimeout(() => {
@@ -1935,863 +1936,861 @@
                   }
                 });
               });
-              }
-            });
+            }
           });
         });
-  
-        pickr.on('change', (color) => {
-          const hex = color.toHEXA().toString();
-          setCurrent(hex);
-          applyStyle(prop, hex);
-          updateSwatch(swatch, hex, getSaved());
-          updateContrast()
-        });
-        pickr.on('save', (color) => {
-          const hex = color.toHEXA().toString();
-          setCurrent(hex);
-          setSaved(hex);
-          applyStyle(prop, hex);
-          updateSwatch(swatch, hex, hex);
-          updateContrast();
-          if (isFg) window.__fgHSL = hexToHSL(hex);
-          else window.__bgHSL = hexToHSL(hex);
-        });
-        pickr.on('hide', () => {
-          setCurrent(getSaved());
-          applyStyle(prop, getSaved());
-          updateSwatch(swatch, getSaved(), getSaved());
-          updateContrast()
-        });
-        updateSwatch(swatch, getCurrent(), getSaved());
-        applyStyle(prop, getCurrent());
+      });
+
+      pickr.on('change', (color) => {
+        const hex = color.toHEXA().toString();
+        setCurrent(hex);
+        applyStyle(prop, hex);
+        updateSwatch(swatch, hex, getSaved());
+        updateContrast()
+      });
+      pickr.on('save', (color) => {
+        const hex = color.toHEXA().toString();
+        setCurrent(hex);
+        setSaved(hex);
+        applyStyle(prop, hex);
+        updateSwatch(swatch, hex, hex);
         updateContrast();
-        return pickr
+        if (isFg) window.__fgHSL = hexToHSL(hex);
+        else window.__bgHSL = hexToHSL(hex);
+      });
+      pickr.on('hide', () => {
+        setCurrent(getSaved());
+        applyStyle(prop, getSaved());
+        updateSwatch(swatch, getSaved(), getSaved());
+        updateContrast()
+      });
+      updateSwatch(swatch, getCurrent(), getSaved());
+      applyStyle(prop, getCurrent());
+      updateContrast();
+      return pickr
+    };
+    let bgPickr = null;
+    let fgPickr = null;
+    try {
+      bgPickr = initPickr('bg', 'background-color');
+      fgPickr = initPickr('fg', 'color')
+    } catch (e) {
+      console.warn('Pickrの初期化に失敗しました:', e);
+      win.alert('Pickrの初期化に失敗しました: ' + (e && e.message ? e.message : e));
+      bgPickr = {
+        setColor: (color) => {
+          currentBg = savedBg = color;
+          applyStyle('background-color', color);
+          updateSwatch(doc.getElementById('bgSwatch'), color, color);
+          updateContrast()
+        },
+        show: () => {},
+        destroyAndRemove: () => {},
       };
-      let bgPickr = null;
-      let fgPickr = null;
-      try {
-        bgPickr = initPickr('bg', 'background-color');
-        fgPickr = initPickr('fg', 'color')
-      } catch (e) {
-        console.warn('Pickrの初期化に失敗しました:', e);
-        win.alert('Pickrの初期化に失敗しました: ' + (e && e.message ? e.message : e));
-        bgPickr = {
-          setColor: (color) => {
-            currentBg = savedBg = color;
-            applyStyle('background-color', color);
-            updateSwatch(doc.getElementById('bgSwatch'), color, color);
-            updateContrast()
-          },
-          show: () => {},
-          destroyAndRemove: () => {},
-        };
-        fgPickr = {
-          setColor: (color) => {
-            currentFg = savedFg = color;
-            applyStyle('color', color);
-            updateSwatch(doc.getElementById('fgSwatch'), color, color);
-            updateContrast()
-          },
-          show: () => {},
-          destroyAndRemove: () => {},
-        }
+      fgPickr = {
+        setColor: (color) => {
+          currentFg = savedFg = color;
+          applyStyle('color', color);
+          updateSwatch(doc.getElementById('fgSwatch'), color, color);
+          updateContrast()
+        },
+        show: () => {},
+        destroyAndRemove: () => {},
       }
-      // --- イベントハンドラ・UI操作 ---
-      updateColorHexDisplays();
-      // --- ロックアイコン制御 ---
-      function updateLockIcons() {
-        const bgLocked = doc.getElementById('color-toggle-bg-lock').checked;
-        const fgLocked = doc.getElementById('color-toggle-fg-lock').checked;
-        const bgColor = doc.getElementById('bgHex').value;
-        const fgColor = doc.getElementById('fgHex').value;
-        const bgLockIcon = doc.getElementById('bgLockIcon');
-        const fgLockIcon = doc.getElementById('fgLockIcon');
-        bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
-        fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
-        bgLockIcon.style.background = bgColor;
-        fgLockIcon.style.background = fgColor;
-        bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
-        fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
-        bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
-        fgLockIcon.style.borderRadius = fgLocked ? '0px' : '4px';
-        bgLockIcon.style.padding = bgLocked ? '0px 0px' : '6px 6px';
-        fgLockIcon.style.padding = fgLocked ? '0px 0px' : '6px 6px';
+    }
+    // --- イベントハンドラ・UI操作 ---
+    updateColorHexDisplays();
+    // --- ロックアイコン制御 ---
+    function updateLockIcons() {
+      const bgLocked = doc.getElementById('color-toggle-bg-lock').checked;
+      const fgLocked = doc.getElementById('color-toggle-fg-lock').checked;
+      const bgColor = doc.getElementById('bgHex').value;
+      const fgColor = doc.getElementById('fgHex').value;
+      const bgLockIcon = doc.getElementById('bgLockIcon');
+      const fgLockIcon = doc.getElementById('fgLockIcon');
+      bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
+      fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
+      bgLockIcon.style.background = bgColor;
+      fgLockIcon.style.background = fgColor;
+      bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
+      fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
+      bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
+      fgLockIcon.style.borderRadius = fgLocked ? '0px' : '4px';
+      bgLockIcon.style.padding = bgLocked ? '0px 0px' : '6px 6px';
+      fgLockIcon.style.padding = fgLocked ? '0px 0px' : '6px 6px';
+    }
+    doc.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
+    doc.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
+    updateLockIcons();
+
+    doc.getElementById('bgHexLoad').onclick = () => {
+      const val = doc.getElementById('bgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgPickr.setColor(val, !0)
       }
-      doc.getElementById('color-toggle-bg-lock').addEventListener('change', updateLockIcons);
-      doc.getElementById('color-toggle-fg-lock').addEventListener('change', updateLockIcons);
+      bgPickr.show();
       updateLockIcons();
-  
-      doc.getElementById('bgHexLoad').onclick = () => {
-        const val = doc.getElementById('bgHex').value.trim();
-        if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-          bgPickr.setColor(val, !0)
-        }
-        bgPickr.show();
-        updateLockIcons();
-      };
-      doc.getElementById('fgHexLoad').onclick = () => {
-        const val = doc.getElementById('fgHex').value.trim();
-        if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-          fgPickr.setColor(val, !0)
-        }
-        fgPickr.show();
-        updateLockIcons();
-      };
-  
-      function hslToHex(h, s, l) {
-        s /= 100;
-        l /= 100;
-        const c = (1 - Math.abs(2 * l - 1)) * s;
-        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-        const m = l - c / 2;
-        let r = 0,
-          g = 0,
-          b = 0;
-        if (0 <= h && h < 60) {
-          r = c;
-          g = x;
-          b = 0
-        } else if (60 <= h && h < 120) {
-          r = x;
-          g = c;
-          b = 0
-        } else if (120 <= h && h < 180) {
-          r = 0;
-          g = c;
-          b = x
-        } else if (180 <= h && h < 240) {
-          r = 0;
-          g = x;
-          b = c
-        } else if (240 <= h && h < 300) {
-          r = x;
-          g = 0;
-          b = c
-        } else if (300 <= h && h < 360) {
-          r = c;
-          g = 0;
-          b = x
-        }
-        r = Math.round((r + m) * 255);
-        g = Math.round((g + m) * 255);
-        b = Math.round((b + m) * 255);
-        return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
+    };
+    doc.getElementById('fgHexLoad').onclick = () => {
+      const val = doc.getElementById('fgHex').value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        fgPickr.setColor(val, !0)
       }
-      // ランダムに生成される色のhsl範囲
-      function getRandomHSL() {
-        return {
-          h: Math.floor(Math.random() * 360),
-          s: Math.floor(Math.random() * 101) ,
-          l: Math.floor(Math.random() * 101)
-        }
+      fgPickr.show();
+      updateLockIcons();
+    };
+
+    function hslToHex(h, s, l) {
+      s /= 100;
+      l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r = 0,
+        g = 0,
+        b = 0;
+      if (0 <= h && h < 60) {
+        r = c;
+        g = x;
+        b = 0
+      } else if (60 <= h && h < 120) {
+        r = x;
+        g = c;
+        b = 0
+      } else if (120 <= h && h < 180) {
+        r = 0;
+        g = c;
+        b = x
+      } else if (180 <= h && h < 240) {
+        r = 0;
+        g = x;
+        b = c
+      } else if (240 <= h && h < 300) {
+        r = x;
+        g = 0;
+        b = c
+      } else if (300 <= h && h < 360) {
+        r = c;
+        g = 0;
+        b = x
       }
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
+    }
+    // ランダムに生成される色のhsl範囲
+    function getRandomHSL() {
+      return {
+        h: Math.floor(Math.random() * 360),
+        s: Math.floor(Math.random() * 101) ,
+        l: Math.floor(Math.random() * 101)
+      }
+    }
   
-      function changeColors() {
-        const bgLocked = doc.getElementById("color-toggle-bg-lock").checked;
-        const fgLocked = doc.getElementById("color-toggle-fg-lock").checked;
-        const contrastMin = parseFloat(doc.getElementById("contrastMin").value) || 1;
-        const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
-        let trials = 0;
-        const maxTrials = 300;
-        // --- HSLオブジェクトが不正な場合は必ず初期化 ---
-        if (!window.__bgHSL || typeof window.__bgHSL.h !== 'number' || typeof window.__bgHSL.s !== 'number' || typeof window.__bgHSL.l !== 'number') {
-          window.__bgHSL = hexToHSL(currentBg);
-        }
-        if (!window.__fgHSL || typeof window.__fgHSL.h !== 'number' || typeof window.__fgHSL.s !== 'number' || typeof window.__fgHSL.l !== 'number') {
-          window.__fgHSL = hexToHSL(currentFg);
-        }
-        while (trials < maxTrials) {
-          trials++;
-          if (!bgLocked) {
-            window.__bgHSL = getRandomHSL()
-          }
-          if (!fgLocked) {
-            window.__fgHSL = getRandomHSL()
-          }
-          const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-          const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
-          const ratio = parseFloat(getContrast(fgHex, bgHex));
-          if (ratio >= contrastMin && ratio <= contrastMax) {
-            if (!bgLocked) currentBg = savedBg = bgHex;
-            if (!fgLocked) currentFg = savedFg = fgHex;
-            applyStyle("background-color", savedBg);
-            applyStyle("color", savedFg);
-            updateSwatch(doc.getElementById("bgSwatch"), savedBg, savedBg);
-            updateSwatch(doc.getElementById("fgSwatch"), savedFg, savedFg);
-            updateContrast();
-            updateColorHexDisplays();
-            updateLockIcons();
-            return
-          }
-        }
-        alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
-      }
-      doc.getElementById("randomColorBtn").onclick = changeColors;
-      doc.getElementById("swapColorsBtn").onclick = () => {
-        // ロック状態を無視して完全にスワップ
-        [currentFg, currentBg] = [currentBg, currentFg];
-        [savedFg, savedBg] = [currentFg, currentBg];
-        applyStyle("color", currentFg);
-        applyStyle("background-color", currentBg);
-        updateSwatch(doc.getElementById("bgSwatch"), currentBg, savedBg);
-        updateSwatch(doc.getElementById("fgSwatch"), currentFg, savedFg);
-        updateColorHexDisplays();
-        updateContrast();
+    function changeColors() {
+      const bgLocked = doc.getElementById("color-toggle-bg-lock").checked;
+      const fgLocked = doc.getElementById("color-toggle-fg-lock").checked;
+      const contrastMin = parseFloat(doc.getElementById("contrastMin").value) || 1;
+      const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
+      let trials = 0;
+      const maxTrials = 300;
+      // --- HSLオブジェクトが不正な場合は必ず初期化 ---
+      if (!window.__bgHSL || typeof window.__bgHSL.h !== 'number' || typeof window.__bgHSL.s !== 'number' || typeof window.__bgHSL.l !== 'number') {
         window.__bgHSL = hexToHSL(currentBg);
+      }
+      if (!window.__fgHSL || typeof window.__fgHSL.h !== 'number' || typeof window.__fgHSL.s !== 'number' || typeof window.__fgHSL.l !== 'number') {
         window.__fgHSL = hexToHSL(currentFg);
-        updateLockIcons();
+      }
+      while (trials < maxTrials) {
+        trials++;
+        if (!bgLocked) {
+          window.__bgHSL = getRandomHSL()
+        }
+        if (!fgLocked) {
+          window.__fgHSL = getRandomHSL()
+        }
+        const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
+        const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+        const ratio = parseFloat(getContrast(fgHex, bgHex));
+        if (ratio >= contrastMin && ratio <= contrastMax) {
+          if (!bgLocked) currentBg = savedBg = bgHex;
+          if (!fgLocked) currentFg = savedFg = fgHex;
+          applyStyle("background-color", savedBg);
+          applyStyle("color", savedFg);
+          updateSwatch(doc.getElementById("bgSwatch"), savedBg, savedBg);
+          updateSwatch(doc.getElementById("fgSwatch"), savedFg, savedFg);
+          updateContrast();
+          updateColorHexDisplays();
+          updateLockIcons();
+          return
+        }
+      }
+      alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
+    }
+    doc.getElementById("randomColorBtn").onclick = changeColors;
+    doc.getElementById("swapColorsBtn").onclick = () => {
+      // ロック状態を無視して完全にスワップ
+      [currentFg, currentBg] = [currentBg, currentFg];
+      [savedFg, savedBg] = [currentFg, currentBg];
+      applyStyle("color", currentFg);
+      applyStyle("background-color", currentBg);
+      updateSwatch(doc.getElementById("bgSwatch"), currentBg, savedBg);
+      updateSwatch(doc.getElementById("fgSwatch"), currentFg, savedFg);
+      updateColorHexDisplays();
+      updateContrast();
+      window.__bgHSL = hexToHSL(currentBg);
+      window.__fgHSL = hexToHSL(currentFg);
+      updateLockIcons();
+    };
+    // Pickr UI コンテナとスタイルを初期非表示にする
+    container.style.display = 'none';
+    style.disabled = true;
+    window.__pickrLoaded = false;
+    // □ ボタン作成関数（スタイルも内部に集約）
+    function createPickrOpenButton() {
+      const pickrOpen = doc.createElement('div');
+      pickrOpen.id = 'pickrOpen';
+      pickrOpen.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      `;
+    
+      Object.assign(pickrOpen.style, {
+        all: 'initial',
+        cursor: 'pointer',
+        position: 'fixed',
+        top: '80px',
+        right: '18px',
+        opacity: '0.3',
+        color: 'unset',
+        zIndex: '20000'
+      });
+    
+      // UI を開く
+      pickrOpen.onclick = () => {
+        container.style.display = 'block';
+        style.disabled = false;
+        pickrOpen.remove();
+        window.__pickrLoaded = true;
       };
-      // Pickr UI コンテナとスタイルを初期非表示にする
+    
+      doc.body.appendChild(pickrOpen);
+      return pickrOpen;
+    }
+    
+    // 最初の □ ボタンを作成
+    createPickrOpenButton();
+    
+    // Pickr の閉じるボタンの処理
+    doc.getElementById('pickrClose').onclick = () => {
+      // UI を閉じる
       container.style.display = 'none';
       style.disabled = true;
       window.__pickrLoaded = false;
-      // □ ボタン作成関数（スタイルも内部に集約）
-      function createPickrOpenButton() {
-        const pickrOpen = doc.createElement('div');
-        pickrOpen.id = 'pickrOpen';
-        pickrOpen.innerHTML = `
-          <svg width="14" height="14" viewBox="0 0 24 24">
-            <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
-          </svg>
-        `;
-      
-        Object.assign(pickrOpen.style, {
-          all: 'initial',
-          cursor: 'pointer',
-          position: 'fixed',
-          top: '80px',
-          right: '18px',
-          opacity: '0.3',
-          color: 'unset',
-          zIndex: '20000'
-        });
-      
-        // UI を開く
-        pickrOpen.onclick = () => {
-          container.style.display = 'block';
-          style.disabled = false;
-          pickrOpen.remove();
-          window.__pickrLoaded = true;
-        };
-      
-        doc.body.appendChild(pickrOpen);
-        return pickrOpen;
-      }
-      
-      // 最初の □ ボタンを作成
+    
+      // □ ボタンを再生成
       createPickrOpenButton();
-      
-      // Pickr の閉じるボタンの処理
-      doc.getElementById('pickrClose').onclick = () => {
-        // UI を閉じる
-        container.style.display = 'none';
-        style.disabled = true;
-        window.__pickrLoaded = false;
-      
-        // □ ボタンを再生成
-        createPickrOpenButton();
-      };
-    
-      doc.querySelectorAll(".copy-btn").forEach(function(button){
-        button.addEventListener("click", function(){
-          var targetId = button.getAttribute("data-target");
-          var targetInput = doc.getElementById(targetId);
-          if (targetInput && targetInput.value !== "-") {
-            win.navigator.clipboard.writeText(targetInput.value).then(function(){
-              button.textContent = "Copied!";
-              setTimeout(function(){ button.textContent = "Copy"; }, 1100);
-            }).catch(function(err){
-              console.error("コピーに失敗しました:", err);
-            });
-          }
-        });
-      });
-    
-      })
-      .catch((err) => {
-        alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
-        console.error("Pickr load error:", err);
-    });
-      
-    // ==============================
-    // ローカルサーバーで各値を保存/反映
-    // ==============================
-    const onetapUI = doc.createElement('div');
-    Object.assign(onetapUI.style, {
-      all: 'unset',
-      position: 'fixed',
-      top: '80px',
-      left: '10px',
-      padding: '8px',
-      border: '1px solid',
-      borderRadius: '4px',
-      fontSize: '14px',
-      background: 'inherit',
-      zIndex: '10001',
-      fontFamily: 'sans-serif',
-      display: 'none',
-    });
-    
-    // ボタンセットを生成
-    const buttonSets = Array.from({ length: 8 }, (_, i) => 
-      `<div class="button-set">
-        <span class="label">${i + 1}.</span>
-        <button id="saveBtn${i + 1}" class="button">SAVE</button>
-        <span class="label">⇒</span>
-        <button id="applyBtn${i + 1}" class="button">APPLY</button>
-      </div>`
-    ).join('');
-    
-    onetapUI.innerHTML = `
-      <div class="ui-header">
-        <span>Apply Style with One Tap</span>
-        <button id="closeUIBtn" style="border:none; padding-left:10px;">✕</button>
-      </div>
-      <div class="ui-buttons">
-        ${buttonSets}
-        <div class="button-set">
-          <input id="jsonInput" class="json-input" placeholder="JSONを貼り付け" />
-          <span class="label">⇒</span>
-          <button id="applyJsonBtn" class="button">APPLY</button>
-        </div>
-      </div>
-    `;
-    
-    // ヘッダーのスタイル
-    const header = onetapUI.querySelector('.ui-header');
-    Object.assign(header.style, {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      fontWeight: 'bold',
-      marginBottom: '10px',
-    });
-    // ボタン群のスタイル
-    const buttonsContainer = onetapUI.querySelector('.ui-buttons');
-    Object.assign(buttonsContainer.style, {
-      display: 'flex',
-      flexDirection: 'column',
-      marginLeft: '5px',
-      gap: '10px',
-      fontSize: '14px',
-    });
-    // ボタンのスタイル
-    const buttons = onetapUI.querySelectorAll('.button');
-    buttons.forEach(btn => {
-      Object.assign(btn.style, {
-        fontSize: '14px',
-        color: 'unset',
-        background: 'initial',
-        padding: '2px 4px',
-        border: '1px solid',
-      });
-    });
-    // JSON入力欄のスタイル
-    const jsonInput = onetapUI.querySelector('.json-input');
-    Object.assign(jsonInput.style, {
-      fontSize: '12px',
-      padding: '4px',
-      border: '1px solid',
-      borderRadius: '2px',
-      width: '100px',
-      fontFamily: 'monospace',
-    });
-    const styleJson  = doc.createElement('style');
-    styleJson.textContent = `
-      #jsonInput::placeholder {
-        color: unset;
-        opacity: 0.7;
-      }
-    `;
-    doc.head.appendChild(styleJson);
-    // 数字、矢印のスタイル
-    const labels = onetapUI.querySelectorAll('.label');
-    labels.forEach(span => {
-      Object.assign(span.style, {
-        all: 'initial',
-        color: 'inherit',
-        background: 'inherit',
-        fontSize: '14px',
-      });
-    });
-    // ☆ ボタン
-    const toggleBtn = doc.createElement('button');
-    toggleBtn.innerHTML = `
-    <svg width="14" height="14" viewBox="0 0 24 24">
-      <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
-    </svg>
-    `;
-    Object.assign(toggleBtn.style, {
-      all: 'initial',
-      position: 'fixed',
-      top: '80px',
-      left: '18px',
-      cursor: 'pointer',
-      zIndex: '10000',
-      opacity: '0.3',
-    });
-    doc.body.appendChild(toggleBtn);
-    doc.body.appendChild(onetapUI);
-    
-    // --- ボタンごとのイベント登録 ---
-    for (let i = 1; i <= 8; i++) {
-      doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`style${i}`);
-      doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`style${i}`);
-    }
-    
-    // APPLYボタンの色を先に取得
-    async function initApplyButtonStyle() {
-      const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6', 'style7', 'style8'];
-    
-      for (const styleName of styles) {
-        try {
-          const res = await fetch(`http://localhost:3000/get/${styleName}`);
-          const data = await res.json();
-          const applyBtn = doc.getElementById(`applyBtn${styleName.slice(-1)}`);
-          if (applyBtn && data) {
-            if (data.color) applyBtn.style.color = data.color;
-            if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
-          }
-        } catch (e) { }
-      }
-    }
-    // ページ読み込み時に呼ぶ
-    initApplyButtonStyle();
-    
-    // ☆ UIを開く
-    toggleBtn.onclick = () => {
-      onetapUI.style.display = 'block';
-    };
-    // ✕ UIを閉じる
-    doc.getElementById('closeUIBtn').onclick = () => {
-      onetapUI.style.display = 'none';
     };
     
-    // RGB → HEX 変換関数
-    function rgbToHex(rgb) {
-      const result = rgb.match(/\d+/g);
-      if (!result) return rgb; // マッチしなければそのまま返す
-      let r = parseInt(result[0], 10).toString(16).padStart(2, "0");
-      let g = parseInt(result[1], 10).toString(16).padStart(2, "0");
-      let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
-      return `#${r}${g}${b}`;
-    }
-    
-    // SAVEボタン
-    async function saveStyle(name) {
-      const target = doc.getElementById('novelDisplay');
-      if (!target) return alert('対象要素が見つかりません');
-      const computed = window.getComputedStyle(target);
-      let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
-      const fontFamily = fontSelect.value;
-      // blur 値を抽出
-      let blur = null;
-      const match = textShadow.match(/(-?\d+)px$/);
-      if (match) {
-        blur = parseInt(match[1], 10);
-      }
-      // HEX に変換
-      color = rgbToHex(color);
-      backgroundColor = rgbToHex(backgroundColor);
-      // === スクロールUIの値を取得 ===
-      const scrollSettings = {
-        border: doc.getElementById('scrollB').checked,
-        colorIn: doc.getElementById('scrollC').checked,
-        shadow: Number(doc.getElementById('scrollS').value),
-        both: doc.getElementById('scrollBoth').checked,
-        right: doc.getElementById('scrollRight').checked,
-        left: doc.getElementById('scrollLeft').checked,
-        position: Number(doc.getElementById('scrollX').value),
-        width: Number(doc.getElementById('scrollW').value),
-        opacity: parseFloat(doc.getElementById('scrollO').value),
-        speedScale: parseFloat(doc.getElementById('scrollSpeedScale').value),
-        hideBall: doc.getElementById('scrollHide').checked,
-      };
-      // --- 確認用オブジェクト ---
-      const savePreview = {
-        color,
-        backgroundColor,
-        fontSize,
-        fontWeight,
-        textShadow: blur,
-        fontFamily,
-        scrollSettings
-      };
-      
-      // --- オーバーレイUIで確認 ---
-      const confirmed = await showSaveConfirmOverlay(name, savePreview);
-      if (!confirmed) return;
-      
-      try {
-        await fetch('http://localhost:3000/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name,
-            color,
-            backgroundColor,
-            fontSize,
-            fontWeight,
-            textShadow: blur,
-            fontFamily,
-            scrollSettings
-          })
-        });
-        
-        // 保存成功後にAPPLYボタンに色を反映
-        const num = name.replace('style', '');
-        const applyBtn = doc.getElementById(`applyBtn${num}`);
-        if (applyBtn) {
-          applyBtn.style.color = color;
-          applyBtn.style.backgroundColor = backgroundColor;
-        }
-        win.alert(`☆ ${name} を保存しました！`);
-      } catch (e) {
-        if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-          win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
-        } else {
-          win.alert('保存に失敗しました: ' + e);
-        }
-      }
-    }
-    
-    let __saveConfirmOpen = false;
-    // オーバーレイを表示する関数
-    function showSaveConfirmOverlay(name, savePreview) {
-      
-      // 既にオーバーレイが開いていれば二重表示を防ぐ
-      if (__saveConfirmOpen) return Promise.resolve(false);
-      __saveConfirmOpen = true;
-      isSwitching = true;
-      
-      return new Promise((resolve) => {
-        // オーバーレイを作成
-        const overlay = doc.createElement('div');
-        overlay.style.cssText = `
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 10005;
-        `;
-      
-        // コンテンツボックス
-        const box = doc.createElement('div');
-        box.style.cssText = `
-          padding: 24px;
-          border-radius: 8px;
-          max-width: 500px;
-          max-height: 50vh;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-          z-index: 10008
-        `;
-        
-        // タイトル
-        const title = doc.createElement('h3');
-        title.textContent = `☆ http://localhost:3000 に保存しますか？`;
-        title.id = 'title';
-        title.style.cssText = `
-          margin: 0 0 16px 0;
-          font-size: 16px;
-          font-weight: bold;
-        `;
-        
-        // プリティプリントチェックボックスコンテナ
-        const checkboxContainer = doc.createElement('div');
-        checkboxContainer.style.cssText = `
-          margin: 0 0 12px 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        `;
-        
-        const prettyCheckbox = doc.createElement('input');
-        prettyCheckbox.type = 'checkbox';
-        prettyCheckbox.id = 'prettyPrintCheckbox';
-        prettyCheckbox.checked = false;
-        prettyCheckbox.style.cssText = `
-          cursor: pointer;
-        `;
-        
-        const prettyLabel = doc.createElement('label');
-        prettyLabel.htmlFor = 'prettyPrintCheckbox';
-        prettyLabel.textContent = 'プリティプリント';
-        prettyLabel.id = 'prettyLabel';
-        prettyLabel.style.cssText = `
-          cursor: pointer;
-          font-size: 14px;
-          user-select: none;
-        `;
-    
-        // コピーボタン
-        const jsonCopyBtn = doc.createElement('button');
-        jsonCopyBtn.textContent = 'コピー';
-        jsonCopyBtn.id = 'jsonCopyBtn';
-        jsonCopyBtn.style.cssText = `
-          padding: 6px 12px;
-          margin-left: auto;
-          color: unset;
-          border: 1px solid currentcolor;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 12px;
-        `;
-        jsonCopyBtn.onclick = async () => {
-          if (jsonCopyBtn.disabled) return;
-          try {
-            jsonCopyBtn.disabled = true;
-            const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
-            await win.navigator.clipboard.writeText(textToCopy);
-            jsonCopyBtn.textContent = 'コピー完了!';
-            setTimeout(() => {
-              jsonCopyBtn.textContent = 'コピー';
-              jsonCopyBtn.disabled = false;
-            }, 1100);
-          } catch (err) {
-            jsonCopyBtn.disabled = false;
-            win.alert('コピーに失敗しました: ' + err);
-          }
-        };
-        
-        checkboxContainer.appendChild(prettyCheckbox);
-        checkboxContainer.appendChild(prettyLabel);
-        checkboxContainer.appendChild(jsonCopyBtn);
-        
-        // プレビューコンテナ
-        const previewContainer = doc.createElement('div');
-        previewContainer.style.cssText = `
-          position: relative;
-          margin: 0 0 20px 0;
-        `;
-        
-        // プレビュー内容
-        const preview = doc.createElement('pre');
-        const jsonTextFormatted = JSON.stringify(savePreview, null, 2);
-        const jsonTextCompressed = JSON.stringify(savePreview);
-        preview.textContent = jsonTextCompressed;
-        preview.style.cssText = `
-          padding: 12px;
-          border: 1px solid currentColor;
-          border-radius: 4px;
-          overflow-x: auto;
-          font-size: 12px;
-          margin: 0;
-          white-space: nowrap;
-        `;
-        
-        // プリティプリントチェックイベント
-        prettyCheckbox.onchange = () => {
-          if (prettyCheckbox.checked) {
-            preview.textContent = jsonTextFormatted;
-            preview.style.whiteSpace = 'pre-wrap';
-          } else {
-            preview.textContent = jsonTextCompressed;
-            preview.style.whiteSpace = 'nowrap';
-          }
-        };
-        
-        // ボタンコンテナ
-        const buttonContainer = doc.createElement('div');
-        buttonContainer.style.cssText = `
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-        `;
-    
-        // 操作の処理まとめ
-        const cleanupAndResolve = (result) => {
-          if (overlay.parentNode) doc.body.removeChild(overlay);
-          __saveConfirmOpen = false;
-          isSwitching = false;
-          resolve(result);
-        };
-        
-        // キャンセルボタン
-        const cancelBtn = doc.createElement('button');
-        cancelBtn.textContent = 'キャンセル';
-        cancelBtn.id = 'cancelBtn';
-        cancelBtn.style.cssText = `
-          padding: 8px 20px;
-          background: rgba(120, 120, 120, 0.3);
-          color: unset;
-          border: 1px solid;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-        `;
-        cancelBtn.onclick = () => cleanupAndResolve(false);
-        
-        // 保存ボタン
-        const saveBtn = doc.createElement('button');
-        saveBtn.textContent = '保存する';
-        saveBtn.id = 'saveBtn';
-        saveBtn.style.cssText = `
-          padding: 8px 20px;
-          background: rgba(120, 120, 120, 0.3);
-          color: unset;
-          border: 1px solid currentColor;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-        `;
-        saveBtn.onclick = () => cleanupAndResolve(true);
-        
-        // 組み立て
-        previewContainer.appendChild(preview);
-        buttonContainer.appendChild(cancelBtn);
-        buttonContainer.appendChild(saveBtn);
-        box.appendChild(title);
-        box.appendChild(checkboxContainer);
-        box.appendChild(previewContainer);
-        box.appendChild(buttonContainer);
-        overlay.appendChild(box);
-        doc.body.appendChild(overlay);
-    
-        // 現在のフォントを新しく作られた要素に適用
-        const overlayElements = [
-          doc.getElementById('title'),
-          doc.getElementById('prettyLabel'),
-          doc.getElementById('jsonCopyBtn'),
-          doc.getElementById('cancelBtn'),
-          doc.getElementById('saveBtn')
-        ];
-        
-        if (currentFont && currentFont !== '游明朝') {
-          const fontFamily = currentFont === 'sans-serif' 
-            ? 'sans-serif' 
-            : `'${currentFont}', sans-serif`;
-          
-          overlayElements.forEach(el => {
-            if (el) el.style.fontFamily = fontFamily;
+    doc.querySelectorAll(".copy-btn").forEach(function(button){
+      button.addEventListener("click", function(){
+        var targetId = button.getAttribute("data-target");
+        var targetInput = doc.getElementById(targetId);
+        if (targetInput && targetInput.value !== "-") {
+          win.navigator.clipboard.writeText(targetInput.value).then(function(){
+            button.textContent = "Copied!";
+            setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+          }).catch(function(err){
+            console.error("コピーに失敗しました:", err);
           });
         }
-        
-        /// フォーカスをオーバーレイに移してキーボードの影響を抑える
-        overlay.tabIndex = -1;
-        overlay.focus();
-        // オーバーレイ領域をクリックで閉じる
-        overlay.onclick = (e) => {
-          if (e.target === overlay) cleanupAndResolve(false);
-        };
       });
+    });
+    }).catch((err) => {
+      alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+      console.error("Pickr load error:", err);
+    });
+      
+  // ==============================
+  // ローカルサーバーで各値を保存/反映
+  // ==============================
+  const onetapUI = doc.createElement('div');
+  Object.assign(onetapUI.style, {
+    all: 'unset',
+    position: 'fixed',
+    top: '80px',
+    left: '10px',
+    padding: '8px',
+    border: '1px solid',
+    borderRadius: '4px',
+    fontSize: '14px',
+    background: 'inherit',
+    zIndex: '10001',
+    fontFamily: 'sans-serif',
+    display: 'none',
+  });
+  
+  // ボタンセットを生成
+  const buttonSets = Array.from({ length: 8 }, (_, i) => 
+    `<div class="button-set">
+      <span class="label">${i + 1}.</span>
+      <button id="saveBtn${i + 1}" class="button">SAVE</button>
+      <span class="label">⇒</span>
+      <button id="applyBtn${i + 1}" class="button">APPLY</button>
+    </div>`
+  ).join('');
+  
+  onetapUI.innerHTML = `
+    <div class="ui-header">
+      <span>Apply Style with One Tap</span>
+      <button id="closeUIBtn" style="border:none; padding-left:10px;">✕</button>
+    </div>
+    <div class="ui-buttons">
+      ${buttonSets}
+      <div class="button-set">
+        <input id="jsonInput" class="json-input" placeholder="JSONを貼り付け" />
+        <span class="label">⇒</span>
+        <button id="applyJsonBtn" class="button">APPLY</button>
+      </div>
+    </div>
+  `;
+  
+  // ヘッダーのスタイル
+  const header = onetapUI.querySelector('.ui-header');
+  Object.assign(header.style, {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  });
+  // ボタン群のスタイル
+  const buttonsContainer = onetapUI.querySelector('.ui-buttons');
+  Object.assign(buttonsContainer.style, {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '5px',
+    gap: '10px',
+    fontSize: '14px',
+  });
+  // ボタンのスタイル
+  const buttons = onetapUI.querySelectorAll('.button');
+  buttons.forEach(btn => {
+    Object.assign(btn.style, {
+      fontSize: '14px',
+      color: 'unset',
+      background: 'initial',
+      padding: '2px 4px',
+      border: '1px solid',
+    });
+  });
+  // JSON入力欄のスタイル
+  const jsonInput = onetapUI.querySelector('.json-input');
+  Object.assign(jsonInput.style, {
+    fontSize: '12px',
+    padding: '4px',
+    border: '1px solid',
+    borderRadius: '2px',
+    width: '100px',
+    fontFamily: 'monospace',
+  });
+  const styleJson  = doc.createElement('style');
+  styleJson.textContent = `
+    #jsonInput::placeholder {
+      color: unset;
+      opacity: 0.7;
     }
-    
-    // 共通のスタイル適用関数
-    function applyStyleData(data) {
-      const target = doc.getElementById('novelDisplay');
-      if (!target) {
-        win.alert('対象要素が見つかりません');
-        return false;
-      }
-    
-      // --- 文字スタイル反映 ---
-      if (data.color) {
-        applyStyle('color', data.color);
-        const fgHex = doc.getElementById('fgHex');
-        if (fgHex) fgHex.value = data.color;
-      }
-      if (data.backgroundColor) {
-        applyStyle('background-color', data.backgroundColor);
-        const bgHex = doc.getElementById('bgHex');
-        if (bgHex) bgHex.value = data.backgroundColor;
-      }
-      if (data.fontSize) target.style.fontSize = data.fontSize;
-      if (data.fontWeight) target.style.fontWeight = data.fontWeight;
-      if (data.textShadow !== null && data.textShadow !== undefined) {
-        target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
-        target.dataset.textShadow = data.textShadow;
-      }
-      if (data.fontFamily && fontSelect) {
-        fontSelect.value = data.fontFamily;
-        fontSelect.dispatchEvent(new Event('change'));
-      }
-    
-      // --- スクロールUIを反映 ---
-      if (data.scrollSettings) {
-        const s = data.scrollSettings;
-    
-        doc.getElementById('scrollB').checked = s.border;
-        doc.getElementById('scrollC').checked = s.colorIn;
-        doc.getElementById('scrollS').value = s.shadow;
-        doc.getElementById('scrollBoth').checked = s.both;
-        doc.getElementById('scrollRight').checked = s.right;
-        doc.getElementById('scrollLeft').checked = s.left;
-        doc.getElementById('scrollX').value = s.position;
-        doc.getElementById('scrollW').value = s.width;
-        doc.getElementById('scrollO').value = s.opacity;
-        doc.getElementById('scrollSpeedScale').value = s.speedScale;
-        doc.getElementById('scrollHide').checked = s.hideBall;
-    
-        // イベント強制発火
-        doc.getElementById('scrollB').dispatchEvent(new Event('change'));
-        doc.getElementById('scrollC').dispatchEvent(new Event('change'));
-        doc.getElementById('scrollS').dispatchEvent(new Event('input'));
-        doc.getElementById('scrollRight').dispatchEvent(new Event('change'));
-        doc.getElementById('scrollLeft').dispatchEvent(new Event('change'));
-        doc.getElementById('scrollBoth').dispatchEvent(new Event('change'));
-        doc.getElementById('scrollX').dispatchEvent(new Event('input'));
-        doc.getElementById('scrollW').dispatchEvent(new Event('input'));
-        doc.getElementById('scrollO').dispatchEvent(new Event('input'));
-        doc.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
-        doc.getElementById('scrollHide').dispatchEvent(new Event('change'));
-      }
-    
-      updateControls();
-      return true;
-    }
-    
-    // JSON APPLYボタン
-    doc.getElementById('applyJsonBtn').onclick = async () => {
-      const jsonInput = doc.getElementById('jsonInput');
-      const jsonText = jsonInput.value.trim();
-    
-      if (!jsonText) {
-        win.alert('JSONデータを入力してください');
-        return;
-      }
-    
+  `;
+  doc.head.appendChild(styleJson);
+  // 数字、矢印のスタイル
+  const labels = onetapUI.querySelectorAll('.label');
+  labels.forEach(span => {
+    Object.assign(span.style, {
+      all: 'initial',
+      color: 'inherit',
+      background: 'inherit',
+      fontSize: '14px',
+    });
+  });
+  // ☆ ボタン
+  const toggleBtn = doc.createElement('button');
+  toggleBtn.innerHTML = `
+  <svg width="14" height="14" viewBox="0 0 24 24">
+    <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
+  </svg>
+  `;
+  Object.assign(toggleBtn.style, {
+    all: 'initial',
+    position: 'fixed',
+    top: '80px',
+    left: '18px',
+    cursor: 'pointer',
+    zIndex: '10000',
+    opacity: '0.3',
+  });
+  doc.body.appendChild(toggleBtn);
+  doc.body.appendChild(onetapUI);
+  
+  // --- ボタンごとのイベント登録 ---
+  for (let i = 1; i <= 8; i++) {
+    doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`style${i}`);
+    doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`style${i}`);
+  }
+  
+  // APPLYボタンの色を先に取得
+  async function initApplyButtonStyle() {
+    const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6', 'style7', 'style8'];
+  
+    for (const styleName of styles) {
       try {
-        const data = JSON.parse(jsonText);
-    
-        const proceed = win.confirm(`☆ JSONデータを反映します！`);
-        if (!proceed) return;
-    
-        if (applyStyleData(data)) {
-          onetapUI.style.display = 'none';
-          jsonInput.value = ''; // 入力欄をクリア
-        }
-      } catch (e) {
-        win.alert('JSONの解析に失敗しました:\n' + e.message);
-      }
-    };
-    
-    // APPLYボタン
-    async function applyStyleByName(name) {
-      // --- ユーザーに確認 ---
-      const proceed = win.confirm(`☆ ${name} を反映します！`);
-      if (!proceed) return;
-    
-      try {
-        const res = await fetch(`http://localhost:3000/get/${name}`);
+        const res = await fetch(`http://localhost:3000/get/${styleName}`);
         const data = await res.json();
-        if (!data) return win.alert(`${name} は保存されていません`);
-    
-        if (applyStyleData(data)) {
-          onetapUI.style.display = 'none';
+        const applyBtn = doc.getElementById(`applyBtn${styleName.slice(-1)}`);
+        if (applyBtn && data) {
+          if (data.color) applyBtn.style.color = data.color;
+          if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
         }
-      } catch (e) {
-        if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-          win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
-        } else {
-          win.alert('データの取得に失敗しました: ' + e);
-        }
-      }
+      } catch (e) { }
+    }
+  }
+  // ページ読み込み時に呼ぶ
+  initApplyButtonStyle();
+  
+  // ☆ UIを開く
+  toggleBtn.onclick = () => {
+    onetapUI.style.display = 'block';
+  };
+  // ✕ UIを閉じる
+  doc.getElementById('closeUIBtn').onclick = () => {
+    onetapUI.style.display = 'none';
+  };
+  
+  // RGB → HEX 変換関数
+  function rgbToHex(rgb) {
+    const result = rgb.match(/\d+/g);
+    if (!result) return rgb; // マッチしなければそのまま返す
+    let r = parseInt(result[0], 10).toString(16).padStart(2, "0");
+    let g = parseInt(result[1], 10).toString(16).padStart(2, "0");
+    let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
+    return `#${r}${g}${b}`;
+  }
+  
+  // SAVEボタン
+  async function saveStyle(name) {
+    const target = doc.getElementById('novelDisplay');
+    if (!target) return alert('対象要素が見つかりません');
+    const computed = window.getComputedStyle(target);
+    let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
+    const fontFamily = fontSelect.value;
+    // blur 値を抽出
+    let blur = null;
+    const match = textShadow.match(/(-?\d+)px$/);
+    if (match) {
+      blur = parseInt(match[1], 10);
+    }
+    // HEX に変換
+    color = rgbToHex(color);
+    backgroundColor = rgbToHex(backgroundColor);
+    // === スクロールUIの値を取得 ===
+    const scrollSettings = {
+      border: doc.getElementById('scrollB').checked,
+      colorIn: doc.getElementById('scrollC').checked,
+      shadow: Number(doc.getElementById('scrollS').value),
+      both: doc.getElementById('scrollBoth').checked,
+      right: doc.getElementById('scrollRight').checked,
+      left: doc.getElementById('scrollLeft').checked,
+      position: Number(doc.getElementById('scrollX').value),
+      width: Number(doc.getElementById('scrollW').value),
+      opacity: parseFloat(doc.getElementById('scrollO').value),
+      speedScale: parseFloat(doc.getElementById('scrollSpeedScale').value),
+      hideBall: doc.getElementById('scrollHide').checked,
     };
+    // --- 確認用オブジェクト ---
+    const savePreview = {
+      color,
+      backgroundColor,
+      fontSize,
+      fontWeight,
+      textShadow: blur,
+      fontFamily,
+      scrollSettings
+    };
+    
+    // --- オーバーレイUIで確認 ---
+    const confirmed = await showSaveConfirmOverlay(name, savePreview);
+    if (!confirmed) return;
+    
+    try {
+      await fetch('http://localhost:3000/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          color,
+          backgroundColor,
+          fontSize,
+          fontWeight,
+          textShadow: blur,
+          fontFamily,
+          scrollSettings
+        })
+      });
+      
+      // 保存成功後にAPPLYボタンに色を反映
+      const num = name.replace('style', '');
+      const applyBtn = doc.getElementById(`applyBtn${num}`);
+      if (applyBtn) {
+        applyBtn.style.color = color;
+        applyBtn.style.backgroundColor = backgroundColor;
+      }
+      win.alert(`☆ ${name} を保存しました！`);
+    } catch (e) {
+      if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+        win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+      } else {
+        win.alert('保存に失敗しました: ' + e);
+      }
+    }
+  }
+  
+  let __saveConfirmOpen = false;
+  // オーバーレイを表示する関数
+  function showSaveConfirmOverlay(name, savePreview) {
+    
+    // 既にオーバーレイが開いていれば二重表示を防ぐ
+    if (__saveConfirmOpen) return Promise.resolve(false);
+    __saveConfirmOpen = true;
+    isSwitching = true;
+    
+    return new Promise((resolve) => {
+      // オーバーレイを作成
+      const overlay = doc.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10005;
+      `;
+    
+      // コンテンツボックス
+      const box = doc.createElement('div');
+      box.style.cssText = `
+        padding: 24px;
+        border-radius: 8px;
+        max-width: 500px;
+        max-height: 50vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        z-index: 10008
+      `;
+      
+      // タイトル
+      const title = doc.createElement('h3');
+      title.textContent = `☆ http://localhost:3000 に保存しますか？`;
+      title.id = 'title';
+      title.style.cssText = `
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        font-weight: bold;
+      `;
+      
+      // プリティプリントチェックボックスコンテナ
+      const checkboxContainer = doc.createElement('div');
+      checkboxContainer.style.cssText = `
+        margin: 0 0 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      `;
+      
+      const prettyCheckbox = doc.createElement('input');
+      prettyCheckbox.type = 'checkbox';
+      prettyCheckbox.id = 'prettyPrintCheckbox';
+      prettyCheckbox.checked = false;
+      prettyCheckbox.style.cssText = `
+        cursor: pointer;
+      `;
+      
+      const prettyLabel = doc.createElement('label');
+      prettyLabel.htmlFor = 'prettyPrintCheckbox';
+      prettyLabel.textContent = 'プリティプリント';
+      prettyLabel.id = 'prettyLabel';
+      prettyLabel.style.cssText = `
+        cursor: pointer;
+        font-size: 14px;
+        user-select: none;
+      `;
+  
+      // コピーボタン
+      const jsonCopyBtn = doc.createElement('button');
+      jsonCopyBtn.textContent = 'コピー';
+      jsonCopyBtn.id = 'jsonCopyBtn';
+      jsonCopyBtn.style.cssText = `
+        padding: 6px 12px;
+        margin-left: auto;
+        color: unset;
+        border: 1px solid currentcolor;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      `;
+      jsonCopyBtn.onclick = async () => {
+        if (jsonCopyBtn.disabled) return;
+        try {
+          jsonCopyBtn.disabled = true;
+          const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
+          await win.navigator.clipboard.writeText(textToCopy);
+          jsonCopyBtn.textContent = 'コピー完了!';
+          setTimeout(() => {
+            jsonCopyBtn.textContent = 'コピー';
+            jsonCopyBtn.disabled = false;
+          }, 1100);
+        } catch (err) {
+          jsonCopyBtn.disabled = false;
+          win.alert('コピーに失敗しました: ' + err);
+        }
+      };
+      
+      checkboxContainer.appendChild(prettyCheckbox);
+      checkboxContainer.appendChild(prettyLabel);
+      checkboxContainer.appendChild(jsonCopyBtn);
+      
+      // プレビューコンテナ
+      const previewContainer = doc.createElement('div');
+      previewContainer.style.cssText = `
+        position: relative;
+        margin: 0 0 20px 0;
+      `;
+      
+      // プレビュー内容
+      const preview = doc.createElement('pre');
+      const jsonTextFormatted = JSON.stringify(savePreview, null, 2);
+      const jsonTextCompressed = JSON.stringify(savePreview);
+      preview.textContent = jsonTextCompressed;
+      preview.style.cssText = `
+        padding: 12px;
+        border: 1px solid currentColor;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 12px;
+        margin: 0;
+        white-space: nowrap;
+      `;
+      
+      // プリティプリントチェックイベント
+      prettyCheckbox.onchange = () => {
+        if (prettyCheckbox.checked) {
+          preview.textContent = jsonTextFormatted;
+          preview.style.whiteSpace = 'pre-wrap';
+        } else {
+          preview.textContent = jsonTextCompressed;
+          preview.style.whiteSpace = 'nowrap';
+        }
+      };
+      
+      // ボタンコンテナ
+      const buttonContainer = doc.createElement('div');
+      buttonContainer.style.cssText = `
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      `;
+  
+      // 操作の処理まとめ
+      const cleanupAndResolve = (result) => {
+        if (overlay.parentNode) doc.body.removeChild(overlay);
+        __saveConfirmOpen = false;
+        isSwitching = false;
+        resolve(result);
+      };
+      
+      // キャンセルボタン
+      const cancelBtn = doc.createElement('button');
+      cancelBtn.textContent = 'キャンセル';
+      cancelBtn.id = 'cancelBtn';
+      cancelBtn.style.cssText = `
+        padding: 8px 20px;
+        background: rgba(120, 120, 120, 0.3);
+        color: unset;
+        border: 1px solid;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      `;
+      cancelBtn.onclick = () => cleanupAndResolve(false);
+      
+      // 保存ボタン
+      const saveBtn = doc.createElement('button');
+      saveBtn.textContent = '保存する';
+      saveBtn.id = 'saveBtn';
+      saveBtn.style.cssText = `
+        padding: 8px 20px;
+        background: rgba(120, 120, 120, 0.3);
+        color: unset;
+        border: 1px solid currentColor;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      `;
+      saveBtn.onclick = () => cleanupAndResolve(true);
+      
+      // 組み立て
+      previewContainer.appendChild(preview);
+      buttonContainer.appendChild(cancelBtn);
+      buttonContainer.appendChild(saveBtn);
+      box.appendChild(title);
+      box.appendChild(checkboxContainer);
+      box.appendChild(previewContainer);
+      box.appendChild(buttonContainer);
+      overlay.appendChild(box);
+      doc.body.appendChild(overlay);
+  
+      // 現在のフォントを新しく作られた要素に適用
+      const overlayElements = [
+        doc.getElementById('title'),
+        doc.getElementById('prettyLabel'),
+        doc.getElementById('jsonCopyBtn'),
+        doc.getElementById('cancelBtn'),
+        doc.getElementById('saveBtn')
+      ];
+      
+      if (currentFont && currentFont !== '游明朝') {
+        const fontFamily = currentFont === 'sans-serif' 
+          ? 'sans-serif' 
+          : `'${currentFont}', sans-serif`;
+        
+        overlayElements.forEach(el => {
+          if (el) el.style.fontFamily = fontFamily;
+        });
+      }
+      
+      /// フォーカスをオーバーレイに移してキーボードの影響を抑える
+      overlay.tabIndex = -1;
+      overlay.focus();
+      // オーバーレイ領域をクリックで閉じる
+      overlay.onclick = (e) => {
+        if (e.target === overlay) cleanupAndResolve(false);
+      };
+    });
+  }
+  
+  // 共通のスタイル適用関数
+  function applyStyleData(data) {
+    const target = doc.getElementById('novelDisplay');
+    if (!target) {
+      win.alert('対象要素が見つかりません');
+      return false;
+    }
+  
+    // --- 文字スタイル反映 ---
+    if (data.color) {
+      applyStyle('color', data.color);
+      const fgHex = doc.getElementById('fgHex');
+      if (fgHex) fgHex.value = data.color;
+    }
+    if (data.backgroundColor) {
+      applyStyle('background-color', data.backgroundColor);
+      const bgHex = doc.getElementById('bgHex');
+      if (bgHex) bgHex.value = data.backgroundColor;
+    }
+    if (data.fontSize) target.style.fontSize = data.fontSize;
+    if (data.fontWeight) target.style.fontWeight = data.fontWeight;
+    if (data.textShadow !== null && data.textShadow !== undefined) {
+      target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
+      target.dataset.textShadow = data.textShadow;
+    }
+    if (data.fontFamily && fontSelect) {
+      fontSelect.value = data.fontFamily;
+      fontSelect.dispatchEvent(new Event('change'));
+    }
+  
+    // --- スクロールUIを反映 ---
+    if (data.scrollSettings) {
+      const s = data.scrollSettings;
+  
+      doc.getElementById('scrollB').checked = s.border;
+      doc.getElementById('scrollC').checked = s.colorIn;
+      doc.getElementById('scrollS').value = s.shadow;
+      doc.getElementById('scrollBoth').checked = s.both;
+      doc.getElementById('scrollRight').checked = s.right;
+      doc.getElementById('scrollLeft').checked = s.left;
+      doc.getElementById('scrollX').value = s.position;
+      doc.getElementById('scrollW').value = s.width;
+      doc.getElementById('scrollO').value = s.opacity;
+      doc.getElementById('scrollSpeedScale').value = s.speedScale;
+      doc.getElementById('scrollHide').checked = s.hideBall;
+  
+      // イベント強制発火
+      doc.getElementById('scrollB').dispatchEvent(new Event('change'));
+      doc.getElementById('scrollC').dispatchEvent(new Event('change'));
+      doc.getElementById('scrollS').dispatchEvent(new Event('input'));
+      doc.getElementById('scrollRight').dispatchEvent(new Event('change'));
+      doc.getElementById('scrollLeft').dispatchEvent(new Event('change'));
+      doc.getElementById('scrollBoth').dispatchEvent(new Event('change'));
+      doc.getElementById('scrollX').dispatchEvent(new Event('input'));
+      doc.getElementById('scrollW').dispatchEvent(new Event('input'));
+      doc.getElementById('scrollO').dispatchEvent(new Event('input'));
+      doc.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
+      doc.getElementById('scrollHide').dispatchEvent(new Event('change'));
+    }
+  
+    updateControls();
+    return true;
+  }
+  
+  // JSON APPLYボタン
+  doc.getElementById('applyJsonBtn').onclick = async () => {
+    const jsonInput = doc.getElementById('jsonInput');
+    const jsonText = jsonInput.value.trim();
+  
+    if (!jsonText) {
+      win.alert('JSONデータを入力してください');
+      return;
+    }
+  
+    try {
+      const data = JSON.parse(jsonText);
+  
+      const proceed = win.confirm(`☆ JSONデータを反映します！`);
+      if (!proceed) return;
+  
+      if (applyStyleData(data)) {
+        onetapUI.style.display = 'none';
+        jsonInput.value = ''; // 入力欄をクリア
+      }
+    } catch (e) {
+      win.alert('JSONの解析に失敗しました:\n' + e.message);
+    }
+  };
+    
+  // APPLYボタン
+  async function applyStyleByName(name) {
+    // --- ユーザーに確認 ---
+    const proceed = win.confirm(`☆ ${name} を反映します！`);
+    if (!proceed) return;
+  
+    try {
+      const res = await fetch(`http://localhost:3000/get/${name}`);
+      const data = await res.json();
+      if (!data) return win.alert(`${name} は保存されていません`);
+  
+      if (applyStyleData(data)) {
+        onetapUI.style.display = 'none';
+      }
+    } catch (e) {
+      if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+        win.alert('ローカルサーバーが見つかりません。\nhttp://localhost:3000 を立ち上げてから再試行してください。');
+      } else {
+        win.alert('データの取得に失敗しました: ' + e);
+      }
+    }
+  };
 })()
