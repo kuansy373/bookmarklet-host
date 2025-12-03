@@ -620,683 +620,683 @@
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-`;
-document.body.style.cssText = initialBodyStyle;
-  
-// === 右スライダー ===
-const scrollSliderRight = document.createElement('input');
-scrollSliderRight.type = 'range';
-scrollSliderRight.min = 0;
-scrollSliderRight.max = 25;
-scrollSliderRight.value = 0;
-Object.assign(scrollSliderRight.style, {
-  appearance: 'none',
-  border: 'none',
-  position: 'fixed',
-  height: '210vh',
-  bottom: '-108vh',
-  right: '30px',
-  zIndex: '9999',
-  width: '80px',
-  opacity: '1',
-});
-document.body.appendChild(scrollSliderRight);
-// === 左スライダー ===
-const scrollSliderLeft = document.createElement('input');
-scrollSliderLeft.type = 'range';
-scrollSliderLeft.min = 0;
-scrollSliderLeft.max = 25;
-scrollSliderLeft.value = 0;
-Object.assign(scrollSliderLeft.style, {
-  appearance: 'none',
-  border: 'none',
-  position: 'fixed',
-  height: '210vh',
-  bottom: '-108vh',
-  left: '30px',
-  zIndex: '9999',
-  width: '80px',
-  opacity: '1',
-  direction: 'rtl', // 左用は増加方向反転
-});
-document.body.appendChild(scrollSliderLeft);
-
-// === スクロール処理 ===
-const scroller = document.scrollingElement || document.documentElement;
-let scrollSpeed = 0;
-let lastTimestamp = null;
-
-function forceScroll(timestamp) {
-  if (lastTimestamp !== null && scrollSpeed !== 0) {
-    const elapsed = timestamp - lastTimestamp;
-    scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
-  }
-  lastTimestamp = timestamp;
-  requestAnimationFrame(forceScroll);
-}
-
-// スライダー入力に応じてスクロール速度を変更
-function syncScrollSpeed(value) {
-  scrollSpeed = parseInt(value, 10) * speedScale;
-}
-scrollSliderRight.addEventListener('input', () => {
-  syncScrollSpeed(scrollSliderRight.value);
-  scrollSliderLeft.value = scrollSliderRight.value;
-});
-scrollSliderLeft.addEventListener('input', () => {
-  syncScrollSpeed(scrollSliderLeft.value);
-  scrollSliderRight.value = scrollSliderLeft.value;
-});
-requestAnimationFrame(forceScroll);
-  
-// ==============================
-// Slider Settings
-// ==============================
-const scrollUI = document.createElement('div');
-Object.assign(scrollUI.style, {
-  all: 'unset',
-  position: 'fixed',
-  top: '10px',
-  left: '10px',
-  padding: '8px',
-  background: 'inherit',
-  border: '1px solid',
-  borderRadius: '4px',
-  fontSize: '14px',
-  zIndex: '10007',
-  fontFamily: 'sans-serif',
-});
-scrollUI.innerHTML = `
-  <div style="font-weight:bold;">< Slider Settings ></div>
-  <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
-  <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
-  <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
-  <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
-  <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
-  <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
-  <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
-  <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
-  <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
-  <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
-  <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
-`;
-document.body.appendChild(scrollUI);
-document.querySelectorAll('.settingCheckbox').forEach(cb => {
-  Object.assign(cb.style, {
-    all: 'revert',
-    height: '15px',
-    width: '15px',
-    verticalAlign: 'middle',
-    userSelect: 'none',
-  });
-});
-document.querySelectorAll('.settingInputbox').forEach(cb => {
-  Object.assign(cb.style, {
-    all: 'initial',
-    width: '60px',
-    border: '1px solid',
-    color: 'unset',
-  });
-});
-document.querySelectorAll('.labelText').forEach(span => {
-  Object.assign(span.style, {
+  `;
+  document.body.style.cssText = initialBodyStyle;
+    
+  // === 右スライダー ===
+  const scrollSliderRight = document.createElement('input');
+  scrollSliderRight.type = 'range';
+  scrollSliderRight.min = 0;
+  scrollSliderRight.max = 25;
+  scrollSliderRight.value = 0;
+  Object.assign(scrollSliderRight.style, {
+    appearance: 'none',
+    border: 'none',
     position: 'fixed',
-    paddingTop: '1.5px',
+    height: '210vh',
+    bottom: '-108vh',
+    right: '30px',
+    zIndex: '9999',
+    width: '80px',
+    opacity: '1',
   });
-});
+  document.body.appendChild(scrollSliderRight);
+  // === 左スライダー ===
+  const scrollSliderLeft = document.createElement('input');
+  scrollSliderLeft.type = 'range';
+  scrollSliderLeft.min = 0;
+  scrollSliderLeft.max = 25;
+  scrollSliderLeft.value = 0;
+  Object.assign(scrollSliderLeft.style, {
+    appearance: 'none',
+    border: 'none',
+    position: 'fixed',
+    height: '210vh',
+    bottom: '-108vh',
+    left: '30px',
+    zIndex: '9999',
+    width: '80px',
+    opacity: '1',
+    direction: 'rtl', // 左用は増加方向反転
+  });
+  document.body.appendChild(scrollSliderLeft);
 
-// === イベント ===
-// 共通のスタイル適用関数
-const applyToSliders = (fn) => {
-  fn(scrollSliderRight);
-  fn(scrollSliderLeft);
-};
+  // === スクロール処理 ===
+  const scroller = document.scrollingElement || document.documentElement;
+  let scrollSpeed = 0;
+  let lastTimestamp = null;
 
-// Border & Color
-['scrollB', 'scrollC'].forEach((id, i) => {
-  document.getElementById(id).addEventListener('change', e => {
-    if (e.target.checked) {
-      document.getElementById(i ? 'scrollB' : 'scrollC').checked = false;
-      applyToSliders(el => {
-        el.style.border = i ? 'none' : '1px solid';
-        el.style.setProperty("background", i ? "currentColor" : "transparent", "important");
-      });
-    } else {
-      applyToSliders(el => {
-        el.style.border = 'none';
-        el.style.setProperty("background", "transparent", "important");
-      });
+  function forceScroll(timestamp) {
+    if (lastTimestamp !== null && scrollSpeed !== 0) {
+      const elapsed = timestamp - lastTimestamp;
+      scroller.scrollTop += (scrollSpeed * elapsed) / 1000;
     }
-  });
-});
-
-// Shadow
-const scrollS = document.getElementById('scrollS');
-scrollS.addEventListener('input', () => {
-  const val = Number(scrollS.value) || 0;
-  const shadow = val < 0 ? `inset 0 0 ${Math.abs(val)}px` : `0 0 ${val}px`;
-  applyToSliders(el => el.style.boxShadow = shadow);
-});
-scrollS.addEventListener('blur', e => {
-  if (e.target.value === '') {
-    e.target.value = '0';
-    applyToSliders(el => el.style.boxShadow = '0 0 0px');
+    lastTimestamp = timestamp;
+    requestAnimationFrame(forceScroll);
   }
-});
 
-// Right/Left/Both
-const rightbox = document.getElementById('scrollRight');
-const leftbox = document.getElementById('scrollLeft');
-const bothbox = document.getElementById('scrollBoth');
-
-function updateDisplay() {
-  scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
-  scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
-}
-
-function uncheckOthers(current) {
-  [rightbox, leftbox, bothbox].forEach(box => {
-    if (box !== current) box.checked = false;
-  });
-}
-
-rightbox.checked = true;
-updateDisplay();
-
-[rightbox, leftbox, bothbox].forEach(box => {
-  box.addEventListener('change', e => {
-    if (e.target.checked) uncheckOthers(box);
-    updateDisplay();
-  });
-});
-
-// Position & Width
-setupXWInput('scrollX', val => applyToSliders(el => {
-  el.style[el === scrollSliderRight ? 'right' : 'left'] = `${val}px`;
-}));
-setupXWInput('scrollW', val => applyToSliders(el => el.style.width = `${val}px`));
-
-function setupXWInput(inputId, applyStyle) {
-  const input = document.getElementById(inputId);
-  input.addEventListener('input', e => {
-    const val = parseFloat(e.target.value);
-    if (!isNaN(val)) applyStyle(val);
-  });
-  input.addEventListener('blur', e => {
-    if (e.target.value === '') {
-      e.target.value = '0';
-      applyStyle(0);
-    }
-  });
-}
-
-// Opacity
-const opacityInput = document.getElementById('scrollO');
-let lastValue = opacityInput.value;
-
-opacityInput.addEventListener('input', e => {
-  if (e.target.value === '0' && lastValue !== '0.') {
-    e.target.value = '0.';
+  // スライダー入力に応じてスクロール速度を変更
+  function syncScrollSpeed(value) {
+    scrollSpeed = parseInt(value, 10) * speedScale;
   }
-  const num = parseFloat(e.target.value);
-  if (!isNaN(num) && num >= 0 && num <= 1) {
-    applyToSliders(el => el.style.opacity = num);
-  }
-  lastValue = e.target.value;
-});
-
-opacityInput.addEventListener('focus', e => {
-  if (e.target.value === '0') e.target.value = '0.';
-});
-
-opacityInput.addEventListener('blur', e => {
-  if (e.target.value === '0.' || e.target.value === '') {
-    e.target.value = '0';
-    applyToSliders(el => el.style.opacity = 0);
-  }
-});
-
-// Speed Scale
-const speedScaleInput = document.getElementById('scrollSpeedScale');
-let speedScale = parseFloat(speedScaleInput.value);
-
-speedScaleInput.addEventListener('input', e => {
-  let num = parseFloat(e.target.value);
-  if (!isNaN(num)) {
-    num = Math.max(0, Math.min(20, num)); // 0-20に制限
-    if (num !== parseFloat(e.target.value)) e.target.value = num;
-    speedScale = num;
+  scrollSliderRight.addEventListener('input', () => {
     syncScrollSpeed(scrollSliderRight.value);
-  }
-});
-
-speedScaleInput.addEventListener('blur', e => {
-  if (e.target.value === '') {
-    e.target.value = '0';
-    speedScale = 0;
-    syncScrollSpeed(scrollSliderRight.value);
-  }
-});
-
-// Slider ball 
-document.getElementById('scrollHide').addEventListener('change', e => {
-  const [height, bottom] = e.target.checked ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
-  applyToSliders(el => {
-    el.style.height = height;
-    el.style.bottom = bottom;
+    scrollSliderLeft.value = scrollSliderRight.value;
   });
-});
-
-// ===開閉ボタン△ ===
-const scrollUIToggle = document.createElement('button');
-scrollUIToggle.innerHTML = `
-<svg width="14" height="14" viewBox="0 0 24 24">
-  <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
-</svg>
-`;
-Object.assign(scrollUIToggle.style, {
-  all: 'initial',
-  position: 'fixed',
+  scrollSliderLeft.addEventListener('input', () => {
+    syncScrollSpeed(scrollSliderLeft.value);
+    scrollSliderRight.value = scrollSliderLeft.value;
+  });
+  requestAnimationFrame(forceScroll);
+    
+  // ==============================
+  // Slider Settings
+  // ==============================
+  const scrollUI = document.createElement('div');
+  Object.assign(scrollUI.style, {
+    all: 'unset',
+    position: 'fixed',
     top: '10px',
-    left: '18px',
-    fontSize: '14px',
-    color: 'unset',
-    opacity: '0.3',
-    cursor: 'pointer',
-    zIndex: '10006',
-    display: 'block'
-});
-document.body.appendChild(scrollUIToggle);
-
-scrollUI.style.display = 'none';
-  scrollUIToggle.addEventListener('click', () => {
-  scrollUI.style.display = 'block';
-});
-const scrollSCloseBtn = document.createElement('button');
-scrollSCloseBtn.textContent = '✕';
-Object.assign(scrollSCloseBtn.style, {
-  all: 'initial',
-  position: 'absolute',
-  top: '4px',
-  right: '4px',
-  cursor: 'pointer',
-  fontSize: '14px',
-  color: 'unset',
-});
-scrollUI.appendChild(scrollSCloseBtn);
-
-scrollSCloseBtn.addEventListener('click', () => {
-  scrollUI.style.display = 'none';
-});
-
-// ==============================
-// Font Control Panel
-// ==============================
-['fontPanel', 'fontOpenBtn'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-});
-
-// 操作対象は #novelDisplay
-let target = document.getElementById('novelDisplay');
-if (!target) {
-  console.error('#novelDisplay が見つかりません');
-}
-// パネルコンテナ
-const panel = document.createElement('div');
-panel.id = 'fontPanel';
-Object.assign(panel.style, {
-  lineHeight: 'initial',
-  position: 'fixed',
-  top: '10px',
-  right: '10px',
-  padding: '0 8px',
-  paddingBottom: '8px',
-  width: '270px',
-  height: '87px',
-  border: '1px solid',
-  borderRadius: '4px',
-  zIndex: '10007',
-  display: 'none',
-  fontFamily: 'sans-serif'
-});
-// モードボタン
-const modes = ['Font shadow','Font weight','Font size'];
-let currentMode = 'Font size';
-const modeContainer = document.createElement('div');
-Object.assign(modeContainer.style, {
-  display: 'block',
-  flexDirection: 'column',
-  gap: '4px',
-  marginBottom: '8px'
-});
-// 選択切り替えスタイル制御
-const setActive = (btn, isActive) => {
-  btn.style.opacity = isActive ? '1' : '0.5';
-  btn.style.boxShadow = isActive ? 'inset 0 0 3px' : 'none';
-};
-
-modes.forEach(mode => {
-  const btn = document.createElement('button');
-  btn.textContent = mode;
-  Object.assign(btn.style, {
-    all: 'initial',
-    fontSize: '13px',
-    padding: '2px 6px',
+    left: '10px',
+    padding: '8px',
+    background: 'inherit',
     border: '1px solid',
     borderRadius: '4px',
+    fontSize: '14px',
+    zIndex: '10007',
+    fontFamily: 'sans-serif',
+  });
+  scrollUI.innerHTML = `
+    <div style="font-weight:bold;">< Slider Settings ></div>
+    <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
+    <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
+    <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
+    <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
+    <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
+    <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
+    <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
+    <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
+    <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
+    <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
+    <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
+  `;
+  document.body.appendChild(scrollUI);
+  document.querySelectorAll('.settingCheckbox').forEach(cb => {
+    Object.assign(cb.style, {
+      all: 'revert',
+      height: '15px',
+      width: '15px',
+      verticalAlign: 'middle',
+      userSelect: 'none',
+    });
+  });
+  document.querySelectorAll('.settingInputbox').forEach(cb => {
+    Object.assign(cb.style, {
+      all: 'initial',
+      width: '60px',
+      border: '1px solid',
+      color: 'unset',
+    });
+  });
+  document.querySelectorAll('.labelText').forEach(span => {
+    Object.assign(span.style, {
+      position: 'fixed',
+      paddingTop: '1.5px',
+    });
+  });
+
+  // === イベント ===
+  // 共通のスタイル適用関数
+  const applyToSliders = (fn) => {
+    fn(scrollSliderRight);
+    fn(scrollSliderLeft);
+  };
+
+  // Border & Color
+  ['scrollB', 'scrollC'].forEach((id, i) => {
+    document.getElementById(id).addEventListener('change', e => {
+      if (e.target.checked) {
+        document.getElementById(i ? 'scrollB' : 'scrollC').checked = false;
+        applyToSliders(el => {
+          el.style.border = i ? 'none' : '1px solid';
+          el.style.setProperty("background", i ? "currentColor" : "transparent", "important");
+        });
+      } else {
+        applyToSliders(el => {
+          el.style.border = 'none';
+          el.style.setProperty("background", "transparent", "important");
+        });
+      }
+    });
+  });
+
+  // Shadow
+  const scrollS = document.getElementById('scrollS');
+  scrollS.addEventListener('input', () => {
+    const val = Number(scrollS.value) || 0;
+    const shadow = val < 0 ? `inset 0 0 ${Math.abs(val)}px` : `0 0 ${val}px`;
+    applyToSliders(el => el.style.boxShadow = shadow);
+  });
+  scrollS.addEventListener('blur', e => {
+    if (e.target.value === '') {
+      e.target.value = '0';
+      applyToSliders(el => el.style.boxShadow = '0 0 0px');
+    }
+  });
+
+  // Right/Left/Both
+  const rightbox = document.getElementById('scrollRight');
+  const leftbox = document.getElementById('scrollLeft');
+  const bothbox = document.getElementById('scrollBoth');
+
+  function updateDisplay() {
+    scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
+    scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
+  }
+
+  function uncheckOthers(current) {
+    [rightbox, leftbox, bothbox].forEach(box => {
+      if (box !== current) box.checked = false;
+    });
+  }
+
+  rightbox.checked = true;
+  updateDisplay();
+
+  [rightbox, leftbox, bothbox].forEach(box => {
+    box.addEventListener('change', e => {
+      if (e.target.checked) uncheckOthers(box);
+      updateDisplay();
+    });
+  });
+
+  // Position & Width
+  setupXWInput('scrollX', val => applyToSliders(el => {
+    el.style[el === scrollSliderRight ? 'right' : 'left'] = `${val}px`;
+  }));
+  setupXWInput('scrollW', val => applyToSliders(el => el.style.width = `${val}px`));
+
+  function setupXWInput(inputId, applyStyle) {
+    const input = document.getElementById(inputId);
+    input.addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val)) applyStyle(val);
+    });
+    input.addEventListener('blur', e => {
+      if (e.target.value === '') {
+        e.target.value = '0';
+        applyStyle(0);
+      }
+    });
+  }
+
+  // Opacity
+  const opacityInput = document.getElementById('scrollO');
+  let lastValue = opacityInput.value;
+
+  opacityInput.addEventListener('input', e => {
+    if (e.target.value === '0' && lastValue !== '0.') {
+      e.target.value = '0.';
+    }
+    const num = parseFloat(e.target.value);
+    if (!isNaN(num) && num >= 0 && num <= 1) {
+      applyToSliders(el => el.style.opacity = num);
+    }
+    lastValue = e.target.value;
+  });
+
+  opacityInput.addEventListener('focus', e => {
+    if (e.target.value === '0') e.target.value = '0.';
+  });
+
+  opacityInput.addEventListener('blur', e => {
+    if (e.target.value === '0.' || e.target.value === '') {
+      e.target.value = '0';
+      applyToSliders(el => el.style.opacity = 0);
+    }
+  });
+
+  // Speed Scale
+  const speedScaleInput = document.getElementById('scrollSpeedScale');
+  let speedScale = parseFloat(speedScaleInput.value);
+
+  speedScaleInput.addEventListener('input', e => {
+    let num = parseFloat(e.target.value);
+    if (!isNaN(num)) {
+      num = Math.max(0, Math.min(20, num)); // 0-20に制限
+      if (num !== parseFloat(e.target.value)) e.target.value = num;
+      speedScale = num;
+      syncScrollSpeed(scrollSliderRight.value);
+    }
+  });
+
+  speedScaleInput.addEventListener('blur', e => {
+    if (e.target.value === '') {
+      e.target.value = '0';
+      speedScale = 0;
+      syncScrollSpeed(scrollSliderRight.value);
+    }
+  });
+
+  // Slider ball 
+  document.getElementById('scrollHide').addEventListener('change', e => {
+    const [height, bottom] = e.target.checked ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
+    applyToSliders(el => {
+      el.style.height = height;
+      el.style.bottom = bottom;
+    });
+  });
+
+  // ===開閉ボタン△ ===
+  const scrollUIToggle = document.createElement('button');
+  scrollUIToggle.innerHTML = `
+  <svg width="14" height="14" viewBox="0 0 24 24">
+    <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
+  </svg>
+  `;
+  Object.assign(scrollUIToggle.style, {
+    all: 'initial',
+    position: 'fixed',
+      top: '10px',
+      left: '18px',
+      fontSize: '14px',
+      color: 'unset',
+      opacity: '0.3',
+      cursor: 'pointer',
+      zIndex: '10006',
+      display: 'block'
+  });
+  document.body.appendChild(scrollUIToggle);
+
+  scrollUI.style.display = 'none';
+    scrollUIToggle.addEventListener('click', () => {
+    scrollUI.style.display = 'block';
+  });
+  const scrollSCloseBtn = document.createElement('button');
+  scrollSCloseBtn.textContent = '✕';
+  Object.assign(scrollSCloseBtn.style, {
+    all: 'initial',
+    position: 'absolute',
+    top: '4px',
+    right: '4px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    color: 'unset',
+  });
+  scrollUI.appendChild(scrollSCloseBtn);
+
+  scrollSCloseBtn.addEventListener('click', () => {
+    scrollUI.style.display = 'none';
+  });
+
+  // ==============================
+  // Font Control Panel
+  // ==============================
+  ['fontPanel', 'fontOpenBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+
+  // 操作対象は #novelDisplay
+  let target = document.getElementById('novelDisplay');
+  if (!target) {
+    console.error('#novelDisplay が見つかりません');
+  }
+  // パネルコンテナ
+  const panel = document.createElement('div');
+  panel.id = 'fontPanel';
+  Object.assign(panel.style, {
+    lineHeight: 'initial',
+    position: 'fixed',
+    top: '10px',
+    right: '10px',
+    padding: '0 8px',
+    paddingBottom: '8px',
+    width: '270px',
+    height: '87px',
+    border: '1px solid',
+    borderRadius: '4px',
+    zIndex: '10007',
+    display: 'none',
+    fontFamily: 'sans-serif'
+  });
+  // モードボタン
+  const modes = ['Font shadow','Font weight','Font size'];
+  let currentMode = 'Font size';
+  const modeContainer = document.createElement('div');
+  Object.assign(modeContainer.style, {
+    display: 'block',
+    flexDirection: 'column',
+    gap: '4px',
+    marginBottom: '8px'
+  });
+  // 選択切り替えスタイル制御
+  const setActive = (btn, isActive) => {
+    btn.style.opacity = isActive ? '1' : '0.5';
+    btn.style.boxShadow = isActive ? 'inset 0 0 3px' : 'none';
+  };
+
+  modes.forEach(mode => {
+    const btn = document.createElement('button');
+    btn.textContent = mode;
+    Object.assign(btn.style, {
+      all: 'initial',
+      fontSize: '13px',
+      padding: '2px 6px',
+      border: '1px solid',
+      borderRadius: '4px',
+      color: 'unset',
+      cursor: 'pointer',
+      textAlign: 'left',
+    });
+    if (mode === 'Font weight') btn.style.margin = '0 4px';
+    
+    setActive(btn, mode === currentMode);
+    
+    btn.addEventListener('click', () => {
+      currentMode = mode;
+      [...modeContainer.children].forEach(c => setActive(c, false));
+      setActive(btn, true);
+      updateControls();
+    });
+    modeContainer.appendChild(btn);
+  });
+
+  // コントロールエリア
+  const controlArea = document.createElement('div');
+  Object.assign(controlArea.style, {
+  });
+
+  // ラベル
+  const label = document.createElement('div');
+  Object.assign(label.style, {
+    fontSize: '14px',
+    marginBottom: '4px'
+  });
+    
+  // 増減ボタン
+  const decreaseBtn = document.createElement('button');
+  decreaseBtn.id = 'sliderDecrease';
+  decreaseBtn.textContent = '◀';
+  Object.assign(decreaseBtn.style, {
+    position: 'absolute',
+    left: '135px',
+    fontSize: '15px',
+    padding: '0 6px',
+    marginBottom:'3px',
+    borderRadius: '4px',
+    border: '1px solid',
+    cursor: 'pointer'
+  });
+  const increaseBtn = document.createElement('button');
+  increaseBtn.id = 'sliderIncrease';
+  increaseBtn.textContent = '▶';
+  Object.assign(increaseBtn.style, {
+    position: 'absolute',
+    left: '255px',
+    fontSize: '15px',
+    padding: '0 6px',
+    marginBottom:'3px',
+    borderRadius: '4px',
+    border: '1px solid',
+    cursor: 'pointer'
+  });
+  // 増減ボタンの共通処理
+  function adjustSlider(delta) {
+    let value = parseInt(slider.value) + delta * parseInt(slider.step || 1);
+    if (value >= parseInt(slider.min) && value <= parseInt(slider.max)) {
+      slider.value = value;
+      slider.dispatchEvent(new Event('input'));
+    }
+  }
+  decreaseBtn.addEventListener('click', () => adjustSlider(-1));
+  increaseBtn.addEventListener('click', () => adjustSlider(1));
+    
+  // スライダー
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  Object.assign(slider.style, {
+    position: 'absolute',
+    width: '100px',
+    marginLeft: '151px',
+    marginBottom:'4px',
+    blockSize: '5px',
+  });
+
+  // 更新処理
+  function updateControls() {
+    if (!target) return;
+
+    if (currentMode === 'Font size') {
+      slider.min = 10;
+      slider.max = 50;
+      slider.step = 1;
+      slider.value = parseInt(getComputedStyle(target).fontSize) || 23;
+      label.textContent = `Font size: ${slider.value}px`;
+      slider.oninput = () => {
+        target.style.fontSize = `${slider.value}px`;
+        label.textContent = `Font size: ${slider.value}px`;
+      };
+    }
+    else if (currentMode === 'Font weight') {
+      slider.min = 100;
+      slider.max = 900;
+      slider.step = 100;
+      slider.value = parseInt(getComputedStyle(target).fontWeight) || 400;
+      label.textContent = `Font weight: ${slider.value}`;
+      slider.oninput = () => {
+        target.style.fontWeight = slider.value;
+        label.textContent = `Font weight: ${slider.value}`;
+      };
+    }
+  else if (currentMode === 'Font shadow') {
+    slider.min = 0;
+    slider.max = 30;
+    slider.step = 1;
+
+    // 現在のスライダー値を保持（前回の設定を使う）
+    let blur = parseInt(target.dataset.textShadow || 0);
+    slider.value = blur;
+    label.textContent = `Font shadow: ${slider.value}px`;
+
+    slider.oninput = () => {
+      const b = slider.value;
+      if (b > 0) {
+        target.style.textShadow = `0 0 ${b}px`;
+      } else {
+        target.style.textShadow = 'none';
+      }
+      label.textContent = `Font shadow: ${b}px`;
+
+      // blur 値を保持しておく
+      target.dataset.textShadow = b;
+    };
+  }
+  }
+  // 横並び用コンテナを作る
+  const sliderContainer = document.createElement('div');
+  Object.assign(sliderContainer.style, {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '5px',
+  });
+  // controlArea に横並びコンテナを追加
+  controlArea.appendChild(sliderContainer);
+  // ラベルとスライダーを横並びコンテナに追加
+  sliderContainer.appendChild(label);        
+  sliderContainer.appendChild(slider);
+  sliderContainer.appendChild(decreaseBtn);
+  sliderContainer.appendChild(increaseBtn);
+
+  panel.appendChild(modeContainer);
+  panel.appendChild(controlArea);
+  document.body.appendChild(panel);
+
+  // Font Family セレクトボックス
+  const fontFamilyContainer = document.createElement('div');
+  Object.assign(fontFamilyContainer.style, {
+    display: 'flex',
+  });
+
+  // ラベル
+  const fontFamilyLabel = document.createElement('div');
+  fontFamilyLabel.textContent = 'Font family:';
+  Object.assign(fontFamilyLabel.style, {
+    fontSize: '14px',
+    marginBottom: '4px'
+  });
+  fontFamilyContainer.appendChild(fontFamilyLabel);
+
+  // セレクトボックス
+  const fontSelect = document.createElement('select');
+    Object.assign(fontSelect.style, {
+      all: 'initial',
+      alignItems: 'center',
+      border: '1px solid',
+      color: 'unset',
+      marginLeft: '10px',
+      width: '155px',
+      paddingLeft: '5px',
+      fontSize: '14px',
+  });
+  [
+    '游明朝',
+    'sans-serif',
+    'Zen Kurenaido',
+    'New Tegomin',
+    'Yuji Syuku',
+    'Kaisei Decol',
+    'Hachi Maru Pop',
+    'Stick',
+    'DotGothic16',
+    'Rampart One',
+  ].forEach(font => {
+    const opt = document.createElement('option');
+    opt.value = font;
+    opt.textContent = font;
+    fontSelect.appendChild(opt);
+  });
+
+  // グローバル変数として現在のフォントを保持
+  let currentFont = '游明朝';
+
+  // セレクト切り替え時にフォント適用
+  fontSelect.addEventListener('change', () => {
+    const font = fontSelect.value;
+    currentFont = font; // 現在のフォントを保存
+    // target以外の適用先をIDで取得する
+    const pageLabel = document.getElementById('pageLabel');
+    const yesButton = document.getElementById('yesButton');
+    const noButton = document.getElementById('noButton');
+    const title = document.getElementById('title');
+    const prettyLabel = document.getElementById('prettyLabel');
+    const jsonCopyBtn = document.getElementById('copyBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    // 適用対象を配列にまとめる
+    const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, jsonCopyBtn, cancelBtn, saveBtn];
+    
+    if (font === '游明朝') {
+      document.body.style.cssText = initialBodyStyle;
+      elements.forEach(el => { if (el) el.style.fontFamily = ''; });
+      return;
+    }
+    if (font === 'sans-serif') {
+      elements.forEach(el => { if (el) el.style.fontFamily = 'sans-serif'; });
+      return;
+    }
+    // Google Fonts 読み込み
+    const id = "gf-font-" + font.replace(/\s+/g, '-');
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link');
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
+      document.head.appendChild(link);
+    }
+    elements.forEach(el => {
+      if (el) el.style.fontFamily = `'${font}', sans-serif`;
+    });
+  });
+  fontFamilyContainer.appendChild(fontSelect);
+
+  // controlArea に追加
+  controlArea.appendChild(fontFamilyContainer);
+
+  // 開閉ボタン〇
+  const openBtn = document.createElement('div');
+  openBtn.id = 'fontOpenBtn';
+  openBtn.innerHTML = `
+  <svg width="14" height="14" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
+  </svg>
+  `;
+  Object.assign(openBtn.style, {
+    all: 'initial',
+    position: 'fixed',
+    top: '10px',
+    right: '18px',
+    opacity: '0.3',
     color: 'unset',
     cursor: 'pointer',
-    textAlign: 'left',
+    zIndex: '10006'
   });
-  if (mode === 'Font weight') btn.style.margin = '0 4px';
-  
-  setActive(btn, mode === currentMode);
-  
-  btn.addEventListener('click', () => {
-    currentMode = mode;
-    [...modeContainer.children].forEach(c => setActive(c, false));
-    setActive(btn, true);
-    updateControls();
+  openBtn.addEventListener('click', () => {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
   });
-  modeContainer.appendChild(btn);
-});
-
-// コントロールエリア
-const controlArea = document.createElement('div');
-Object.assign(controlArea.style, {
-});
-
-// ラベル
-const label = document.createElement('div');
-Object.assign(label.style, {
-  fontSize: '14px',
-  marginBottom: '4px'
-});
-  
-// 増減ボタン
-const decreaseBtn = document.createElement('button');
-decreaseBtn.id = 'sliderDecrease';
-decreaseBtn.textContent = '◀';
-Object.assign(decreaseBtn.style, {
-  position: 'absolute',
-  left: '135px',
-  fontSize: '15px',
-  padding: '0 6px',
-  marginBottom:'3px',
-  borderRadius: '4px',
-  border: '1px solid',
-  cursor: 'pointer'
-});
-const increaseBtn = document.createElement('button');
-increaseBtn.id = 'sliderIncrease';
-increaseBtn.textContent = '▶';
-Object.assign(increaseBtn.style, {
-  position: 'absolute',
-  left: '255px',
-  fontSize: '15px',
-  padding: '0 6px',
-  marginBottom:'3px',
-  borderRadius: '4px',
-  border: '1px solid',
-  cursor: 'pointer'
-});
-// 増減ボタンの共通処理
-function adjustSlider(delta) {
-  let value = parseInt(slider.value) + delta * parseInt(slider.step || 1);
-  if (value >= parseInt(slider.min) && value <= parseInt(slider.max)) {
-    slider.value = value;
-    slider.dispatchEvent(new Event('input'));
-  }
-}
-decreaseBtn.addEventListener('click', () => adjustSlider(-1));
-increaseBtn.addEventListener('click', () => adjustSlider(1));
-  
-// スライダー
-const slider = document.createElement('input');
-slider.type = 'range';
-Object.assign(slider.style, {
-  position: 'absolute',
-  width: '100px',
-  marginLeft: '151px',
-  marginBottom:'4px',
-  blockSize: '5px',
-});
-
-// 更新処理
-function updateControls() {
-  if (!target) return;
-
-  if (currentMode === 'Font size') {
-    slider.min = 10;
-    slider.max = 50;
-    slider.step = 1;
-    slider.value = parseInt(getComputedStyle(target).fontSize) || 23;
-    label.textContent = `Font size: ${slider.value}px`;
-    slider.oninput = () => {
-      target.style.fontSize = `${slider.value}px`;
-      label.textContent = `Font size: ${slider.value}px`;
-    };
-  }
-  else if (currentMode === 'Font weight') {
-    slider.min = 100;
-    slider.max = 900;
-    slider.step = 100;
-    slider.value = parseInt(getComputedStyle(target).fontWeight) || 400;
-    label.textContent = `Font weight: ${slider.value}`;
-    slider.oninput = () => {
-      target.style.fontWeight = slider.value;
-      label.textContent = `Font weight: ${slider.value}`;
-    };
-  }
-else if (currentMode === 'Font shadow') {
-  slider.min = 0;
-  slider.max = 30;
-  slider.step = 1;
-
-  // 現在のスライダー値を保持（前回の設定を使う）
-  let blur = parseInt(target.dataset.textShadow || 0);
-  slider.value = blur;
-  label.textContent = `Font shadow: ${slider.value}px`;
-
-  slider.oninput = () => {
-    const b = slider.value;
-    if (b > 0) {
-      target.style.textShadow = `0 0 ${b}px`;
-    } else {
-      target.style.textShadow = 'none';
-    }
-    label.textContent = `Font shadow: ${b}px`;
-
-    // blur 値を保持しておく
-    target.dataset.textShadow = b;
-  };
-}
-}
-// 横並び用コンテナを作る
-const sliderContainer = document.createElement('div');
-Object.assign(sliderContainer.style, {
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: '5px',
-});
-// controlArea に横並びコンテナを追加
-controlArea.appendChild(sliderContainer);
-// ラベルとスライダーを横並びコンテナに追加
-sliderContainer.appendChild(label);        
-sliderContainer.appendChild(slider);
-sliderContainer.appendChild(decreaseBtn);
-sliderContainer.appendChild(increaseBtn);
-
-panel.appendChild(modeContainer);
-panel.appendChild(controlArea);
-document.body.appendChild(panel);
-
-// Font Family セレクトボックス
-const fontFamilyContainer = document.createElement('div');
-Object.assign(fontFamilyContainer.style, {
-  display: 'flex',
-});
-
-// ラベル
-const fontFamilyLabel = document.createElement('div');
-fontFamilyLabel.textContent = 'Font family:';
-Object.assign(fontFamilyLabel.style, {
-  fontSize: '14px',
-  marginBottom: '4px'
-});
-fontFamilyContainer.appendChild(fontFamilyLabel);
-
-// セレクトボックス
-const fontSelect = document.createElement('select');
-  Object.assign(fontSelect.style, {
+  document.body.appendChild(openBtn);
+    // 閉じるボタン ✕
+  const closeBtn = document.createElement('div');
+  closeBtn.textContent = '✕';
+  Object.assign(closeBtn.style, {
     all: 'initial',
-    alignItems: 'center',
-    border: '1px solid',
-    color: 'unset',
-    marginLeft: '10px',
-    width: '155px',
-    paddingLeft: '5px',
+    position: 'absolute',
+    top: '0px',
+    right: '7px',
+    cursor: 'pointer',
     fontSize: '14px',
-});
-[
-  '游明朝',
-  'sans-serif',
-  'Zen Kurenaido',
-  'New Tegomin',
-  'Yuji Syuku',
-  'Kaisei Decol',
-  'Hachi Maru Pop',
-  'Stick',
-  'DotGothic16',
-  'Rampart One',
-].forEach(font => {
-  const opt = document.createElement('option');
-  opt.value = font;
-  opt.textContent = font;
-  fontSelect.appendChild(opt);
-});
-
-// グローバル変数として現在のフォントを保持
-let currentFont = '游明朝';
-
-// セレクト切り替え時にフォント適用
-fontSelect.addEventListener('change', () => {
-  const font = fontSelect.value;
-  currentFont = font; // 現在のフォントを保存
-  // target以外の適用先をIDで取得する
-  const pageLabel = document.getElementById('pageLabel');
-  const yesButton = document.getElementById('yesButton');
-  const noButton = document.getElementById('noButton');
-  const title = document.getElementById('title');
-  const prettyLabel = document.getElementById('prettyLabel');
-  const jsonCopyBtn = document.getElementById('copyBtn');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const saveBtn = document.getElementById('saveBtn');
-  // 適用対象を配列にまとめる
-  const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, jsonCopyBtn, cancelBtn, saveBtn];
-  
-  if (font === '游明朝') {
-    document.body.style.cssText = initialBodyStyle;
-    elements.forEach(el => { if (el) el.style.fontFamily = ''; });
-    return;
-  }
-  if (font === 'sans-serif') {
-    elements.forEach(el => { if (el) el.style.fontFamily = 'sans-serif'; });
-    return;
-  }
-  // Google Fonts 読み込み
-  const id = "gf-font-" + font.replace(/\s+/g, '-');
-  if (!document.getElementById(id)) {
-    const link = document.createElement('link');
-    link.id = id;
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/ /g, '+') + "&display=swap";
-    document.head.appendChild(link);
-  }
-  elements.forEach(el => {
-    if (el) el.style.fontFamily = `'${font}', sans-serif`;
+    color: 'unset',
   });
-});
-fontFamilyContainer.appendChild(fontSelect);
+  closeBtn.addEventListener('click', () => {
+    panel.style.display = 'none';
+    openBtn.style.display = 'block';
+  });
+  panel.appendChild(closeBtn);
+  // 初期化
+  updateControls();
 
-// controlArea に追加
-controlArea.appendChild(fontFamilyContainer);
+  // ==============================
+  // Color Pickr
+  // ==============================
+  if (window.__pickrLoaded) return;
+  window.__pickrLoaded = true;
 
-// 開閉ボタン〇
-const openBtn = document.createElement('div');
-openBtn.id = 'fontOpenBtn';
-openBtn.innerHTML = `
-<svg width="14" height="14" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
-</svg>
-`;
-Object.assign(openBtn.style, {
-  all: 'initial',
-  position: 'fixed',
-  top: '10px',
-  right: '18px',
-  opacity: '0.3',
-  color: 'unset',
-  cursor: 'pointer',
-  zIndex: '10006'
-});
-openBtn.addEventListener('click', () => {
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
-});
-document.body.appendChild(openBtn);
-  // 閉じるボタン ✕
-const closeBtn = document.createElement('div');
-closeBtn.textContent = '✕';
-Object.assign(closeBtn.style, {
-  all: 'initial',
-  position: 'absolute',
-  top: '0px',
-  right: '7px',
-  cursor: 'pointer',
-  fontSize: '14px',
-  color: 'unset',
-});
-closeBtn.addEventListener('click', () => {
-  panel.style.display = 'none';
-  openBtn.style.display = 'block';
-});
-panel.appendChild(closeBtn);
-// 初期化
-updateControls();
+  const load = (tag, attrs) => new Promise((resolve, reject) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      // 属性として設定
+      el.setAttribute(k, v);
+    }
+    el.onload = resolve;
+    el.onerror = reject;
+    document.head.appendChild(el);
+  });
 
-// ==============================
-// Color Pickr
-// ==============================
-if (window.__pickrLoaded) return;
-window.__pickrLoaded = true;
-
-const load = (tag, attrs) => new Promise((resolve, reject) => {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
-    // 属性として設定
-    el.setAttribute(k, v);
-  }
-  el.onload = resolve;
-  el.onerror = reject;
-  document.head.appendChild(el);
-});
-
-// バージョン固定とSRI対応可能な形に変更
-Promise.all([
-  load('link', {
-    rel: 'stylesheet',
-    href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css',
-    integrity: 'sha256-qj36GhivWJmT9StJECKY9O6UivAiwl7S+uckYeyYQ38=',
-    crossorigin: 'anonymous'
-  }),
-  load('script', {
-    src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js',
-    integrity: 'sha256-9C+4uiI+EoOmixe5tRD8hziXftaA5lBhVeF5bjvtqkY=',
-    crossorigin: 'anonymous'
-  })
-]).then(() => {
+  // バージョン固定とSRI対応可能な形に変更
+  Promise.all([
+    load('link', {
+      rel: 'stylesheet',
+      href: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css',
+      integrity: 'sha256-qj36GhivWJmT9StJECKY9O6UivAiwl7S+uckYeyYQ38=',
+      crossorigin: 'anonymous'
+    }),
+    load('script', {
+      src: 'https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js',
+      integrity: 'sha256-9C+4uiI+EoOmixe5tRD8hziXftaA5lBhVeF5bjvtqkY=',
+      crossorigin: 'anonymous'
+    })
+  ]).then(() => {
     const style = document.createElement('style');
     style.textContent = `
       /* ---- #pickrContainer 関連 ---- */
@@ -1888,53 +1888,53 @@ Promise.all([
         }, 0);
       });
       
-    pickr.on('init', instance => {
-      setTimeout(() => {
-        document.querySelectorAll('.pcr-app').forEach(app => {
-          // すでにコピー用ボタンがあればスキップ
-          if (app.querySelector('.pcr-copy')) return;
-    
-          const resultInput = app.querySelector('.pcr-result');
-          if (resultInput) {
-            // Copy ボタン生成
-            const hexCopyBtn = document.createElement('button');
-            hexCopyBtn.textContent = 'Copy';
-            hexCopyBtn.className = 'pcr-copy';
-            hexCopyBtn.style.cssText = `
-              all: unset;
-              position: absolute;
-              cursor: pointer;
-              border: 1px solid #999;
-              border-radius: 4px;
-              color: #000000;
-              background: #F0FFEC;
-              padding: initial;
-              margin-top: 5px;
-              font-size: 12px;
-              block-size: 18px;
-              width: 42px;
-              right: 94px;
-              top: 132px;
-              text-align: center;
-            `;
-            // .pcr-result の右隣に追加
-            resultInput.insertAdjacentElement('afterend', hexCopyBtn);
-            // クリック時にクリップボードへコピー
-            document.querySelectorAll(".pcr-copy").forEach(function(button){
-              button.addEventListener("click", function(){
-                const app = button.closest('.pcr-app');
-                const resultInput = app.querySelector('.pcr-result');
-            
-                if (resultInput && resultInput.value !== "-") {
-                  navigator.clipboard.writeText(resultInput.value).then(function(){
-                    button.textContent = "Copied!";
-                    setTimeout(function(){ button.textContent = "Copy"; }, 1200);
-                  }).catch(function(err){
-                    console.error("コピーに失敗しました:", err);
-                  });
-                }
+      pickr.on('init', instance => {
+        setTimeout(() => {
+          document.querySelectorAll('.pcr-app').forEach(app => {
+            // すでにコピー用ボタンがあればスキップ
+            if (app.querySelector('.pcr-copy')) return;
+      
+            const resultInput = app.querySelector('.pcr-result');
+            if (resultInput) {
+              // Copy ボタン生成
+              const hexCopyBtn = document.createElement('button');
+              hexCopyBtn.textContent = 'Copy';
+              hexCopyBtn.className = 'pcr-copy';
+              hexCopyBtn.style.cssText = `
+                all: unset;
+                position: absolute;
+                cursor: pointer;
+                border: 1px solid #999;
+                border-radius: 4px;
+                color: #000000;
+                background: #F0FFEC;
+                padding: initial;
+                margin-top: 5px;
+                font-size: 12px;
+                block-size: 18px;
+                width: 42px;
+                right: 94px;
+                top: 132px;
+                text-align: center;
+              `;
+              // .pcr-result の右隣に追加
+              resultInput.insertAdjacentElement('afterend', hexCopyBtn);
+              // クリック時にクリップボードへコピー
+              document.querySelectorAll(".pcr-copy").forEach(function(button){
+                button.addEventListener("click", function(){
+                  const app = button.closest('.pcr-app');
+                  const resultInput = app.querySelector('.pcr-result');
+              
+                  if (resultInput && resultInput.value !== "-") {
+                    navigator.clipboard.writeText(resultInput.value).then(function(){
+                      button.textContent = "Copied!";
+                      setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+                    }).catch(function(err){
+                      console.error("コピーに失敗しました:", err);
+                    });
+                  }
+                });
               });
-            });
             }
           });
         });
@@ -2206,13 +2206,11 @@ Promise.all([
         }
       });
     });
-
-    })
-    .catch((err) => {
-      alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
-      console.error("Pickr load error:", err);
+  }).catch((err) => {
+    alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+    console.error("Pickr load error:", err);
   });
-    
+      
   // ==============================
   // ローカルサーバーで各値を保存/反映
   // ==============================
