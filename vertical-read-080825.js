@@ -1189,11 +1189,11 @@
     const noButton = doc.getElementById('noButton');
     const title = doc.getElementById('title');
     const prettyLabel = doc.getElementById('prettyLabel');
-    const copyBtn = doc.getElementById('copyBtn');
+    const jsonCopyBtn = doc.getElementById('jsonCopyBtn');
     const cancelBtn = doc.getElementById('cancelBtn');
     const saveBtn = doc.getElementById('saveBtn');
     // 適用対象を配列にまとめる
-    const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, copyBtn, cancelBtn, saveBtn];
+    const elements = [target, pageLabel, yesButton, noButton, title, prettyLabel, jsonCopyBtn, cancelBtn, saveBtn];
     
     if (font === '游明朝') {
       doc.body.style.fontFamily = '';
@@ -1897,10 +1897,10 @@
             const resultInput = app.querySelector('.pcr-result');
             if (resultInput) {
               // Copy ボタン生成
-              const copyBtn = doc.createElement('button');
-              copyBtn.textContent = 'Copy';
-              copyBtn.className = 'pcr-copy';
-              copyBtn.style.cssText = `
+              const hexCopyBtn = doc.createElement('button');
+              hexCopyBtn.textContent = 'Copy';
+              hexCopyBtn.className = 'pcr-copy';
+              hexCopyBtn.style.cssText = `
                 all: unset;
                 position: absolute;
                 cursor: pointer;
@@ -1918,27 +1918,27 @@
                 text-align: center;
               `;
               // .pcr-result の右隣に追加
-              resultInput.insertAdjacentElement('afterend', copyBtn);
+              resultInput.insertAdjacentElement('afterend', hexCopyBtn);
               // クリック時にクリップボードへコピー
-            doc.querySelectorAll(".pcr-copy").forEach(function(button){
-              button.addEventListener("click", function(){
-                const app = button.closest('.pcr-app');
-                const resultInput = app.querySelector('.pcr-result');
-            
-                if (resultInput && resultInput.value !== "-") {
-                  win.navigator.clipboard.writeText(resultInput.value).then(function(){
-                    button.textContent = "Copied!";
-                    setTimeout(function(){ button.textContent = "Copy"; }, 1200);
-                  }).catch(function(err){
-                    win.console.error("コピーに失敗しました:", err);
-                  });
-                }
+              doc.querySelectorAll(".pcr-copy").forEach(function(button){
+                button.addEventListener("click", function(){
+                  const app = button.closest('.pcr-app');
+                  const resultInput = app.querySelector('.pcr-result');
+              
+                  if (resultInput && resultInput.value !== "-") {
+                    win.navigator.clipboard.writeText(resultInput.value).then(function(){
+                      button.textContent = "Copied!";
+                      setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+                    }).catch(function(err){
+                      win.console.error("コピーに失敗しました:", err);
+                    });
+                  }
+                });
               });
+              }
             });
-            }
           });
         });
-      });
   
         pickr.on('change', (color) => {
           const hex = color.toHEXA().toString();
@@ -2530,10 +2530,10 @@
       `;
   
       // コピーボタン
-      const copyBtn = doc.createElement('button');
-      copyBtn.textContent = 'コピー';
-      copyBtn.id = 'copyBtn';
-      copyBtn.style.cssText = `
+      const jsonCopyBtn = doc.createElement('button');
+      jsonCopyBtn.textContent = 'コピー';
+      jsonCopyBtn.id = 'jsonCopyBtn';
+      jsonCopyBtn.style.cssText = `
         padding: 6px 12px;
         margin-left: auto;
         color: unset;
@@ -2542,24 +2542,26 @@
         cursor: pointer;
         font-size: 12px;
       `;
-      copyBtn.onclick = async () => {
+      jsonCopyBtn.onclick = async () => {
+        if (jsonCopyBtn.disabled) return;
         try {
-          // チェックボックスの状態に応じてコピーする内容を切り替え
+          jsonCopyBtn.disabled = true;
           const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
           await win.navigator.clipboard.writeText(textToCopy);
-          const originalText = copyBtn.textContent;
-          copyBtn.textContent = 'コピー完了！';
+          jsonCopyBtn.textContent = 'コピー完了!';
           setTimeout(() => {
-            copyBtn.textContent = originalText;
-          }, 1000);
+            jsonCopyBtn.textContent = 'コピー';
+            jsonCopyBtn.disabled = false;
+          }, 1100);
         } catch (err) {
+          jsonCopyBtn.disabled = false;
           win.alert('コピーに失敗しました: ' + err);
         }
       };
       
       checkboxContainer.appendChild(prettyCheckbox);
       checkboxContainer.appendChild(prettyLabel);
-      checkboxContainer.appendChild(copyBtn);
+      checkboxContainer.appendChild(jsonCopyBtn);
       
       // プレビューコンテナ
       const previewContainer = doc.createElement('div');
@@ -2655,7 +2657,7 @@
       const overlayElements = [
         doc.getElementById('title'),
         doc.getElementById('prettyLabel'),
-        doc.getElementById('copyBtn'),
+        doc.getElementById('jsonCopyBtn'),
         doc.getElementById('cancelBtn'),
         doc.getElementById('saveBtn')
       ];
