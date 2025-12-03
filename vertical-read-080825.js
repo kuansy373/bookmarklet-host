@@ -2302,7 +2302,7 @@
       padding: '4px',
       border: '1px solid',
       borderRadius: '2px',
-      width: 'auto',
+      width: '130px',
       fontFamily: 'monospace',
     });
   });
