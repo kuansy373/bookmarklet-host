@@ -2296,14 +2296,14 @@
     width: '100px',
     fontFamily: 'monospace',
   });
-  const styleJson  = doc.createElement('style');
-  styleJson.textContent = `
+  const jsonStyle  = doc.createElement('style');
+  jsonStyle.textContent = `
     #jsonInput::placeholder {
       color: unset;
       opacity: 0.7;
     }
   `;
-  doc.head.appendChild(styleJson);
+  doc.head.appendChild(jsonStyle);
   // 数字、矢印のスタイル
   const labels = onetapUI.querySelectorAll('.label');
   labels.forEach(span => {
@@ -2583,6 +2583,7 @@
         font-size: 12px;
         margin: 0;
         white-space: nowrap;
+        scrollbar-width: thin;
       `;
       
       // プリティプリントチェックイベント
