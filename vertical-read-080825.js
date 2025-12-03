@@ -576,7 +576,7 @@
         currentIndex = targetPage - 1;
         w.renderPart(currentIndex);
         win.scrollTo(0, 0);
-        setTimeout(() => {
+        win.setTimeout(() => {
           if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
           if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
           if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
@@ -607,7 +607,7 @@
           const prevPartHeight = win.scrollHeight;
           win.scrollTo(0, prevPartHeight - win.innerHeight);
         }
-        setTimeout(() => {
+        win.setTimeout(() => {
           if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
           if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
           if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
@@ -1797,7 +1797,7 @@
       
       pickr.on('init', instance => {
         // --- pcr-appドラッグボタン追加 ---
-        setTimeout(() => {
+        win.setTimeout(() => {
           // すべてのpcr-appにドラッグボタンを追加
           doc.querySelectorAll('.pcr-app').forEach(app => {
             if (app.querySelector('.pcr-drag-handle')) return;
@@ -1890,7 +1890,7 @@
       });
         
       pickr.on('init', instance => {
-        setTimeout(() => {
+        win.setTimeout(() => {
           doc.querySelectorAll('.pcr-app').forEach(app => {
             // すでにコピー用ボタンがあればスキップ
             if (app.querySelector('.pcr-copy')) return;
@@ -1929,7 +1929,7 @@
                   if (resultInput && resultInput.value !== "-") {
                     win.navigator.clipboard.writeText(resultInput.value).then(function(){
                       button.textContent = "Copied!";
-                      setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+                      win.setTimeout(function(){ button.textContent = "Copy"; }, 1100);
                     }).catch(function(err){
                       win.console.error("コピーに失敗しました:", err);
                     });
@@ -2201,7 +2201,7 @@
         if (targetInput && targetInput.value !== "-") {
           win.navigator.clipboard.writeText(targetInput.value).then(function(){
             button.textContent = "Copied!";
-            setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+            win.setTimeout(function(){ button.textContent = "Copy"; }, 1100);
           }).catch(function(err){
             console.error("コピーに失敗しました:", err);
           });
@@ -2549,7 +2549,7 @@
           const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
           await win.navigator.clipboard.writeText(textToCopy);
           jsonCopyBtn.textContent = 'コピー完了!';
-          setTimeout(() => {
+          win.setTimeout(() => {
             jsonCopyBtn.textContent = 'コピー';
             jsonCopyBtn.disabled = false;
           }, 1100);
