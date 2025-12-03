@@ -1928,7 +1928,7 @@
                   if (resultInput && resultInput.value !== "-") {
                     navigator.clipboard.writeText(resultInput.value).then(function(){
                       button.textContent = "Copied!";
-                      setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+                      setTimeout(function(){ button.textContent = "Copy"; }, 1100);
                     }).catch(function(err){
                       console.error("コピーに失敗しました:", err);
                     });
@@ -2199,7 +2199,7 @@
         if (targetInput && targetInput.value !== "-") {
           navigator.clipboard.writeText(targetInput.value).then(function(){
             button.textContent = "Copied!";
-            setTimeout(function(){ button.textContent = "Copy"; }, 1200);
+            setTimeout(function(){ button.textContent = "Copy"; }, 1100);
           }).catch(function(err){
             console.error("コピーに失敗しました:", err);
           });
@@ -2541,16 +2541,18 @@
         font-size: 12px;
       `;
       jsonCopyBtn.onclick = async () => {
+        if (jsonCopyBtn.disabled) return;
         try {
-          // チェックボックスの状態に応じてコピーする内容を切り替え
+          jsonCopyBtn.disabled = true;
           const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
           await navigator.clipboard.writeText(textToCopy);
-          const originalText = jsonCopyBtn.textContent;
-          jsonCopyBtn.textContent = 'コピー完了！';
+          jsonCopyBtn.textContent = 'コピー完了!';
           setTimeout(() => {
-            jsonCopyBtn.textContent = originalText;
-          }, 1000);
+            jsonCopyBtn.textContent = 'コピー';
+            jsonCopyBtn.disabled = false;
+          }, 1100);
         } catch (err) {
+          jsonCopyBtn.disabled = false;
           alert('コピーに失敗しました: ' + err);
         }
       };
@@ -2579,6 +2581,7 @@
         font-size: 12px;
         margin: 0;
         white-space: nowrap;
+        scrollbar-width: thin;
       `;
       
       // プリティプリントチェックイベント
