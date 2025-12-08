@@ -693,7 +693,6 @@
   // ==============================
   const scrollUI = doc.createElement('div');
   Object.assign(scrollUI.style, {
-    all: 'unset',
     position: 'fixed',
     top: '10px',
     left: '10px',
@@ -722,7 +721,6 @@
   doc.body.appendChild(scrollUI);
   doc.querySelectorAll('.settingCheckbox').forEach(cb => {
     Object.assign(cb.style, {
-      all: 'revert',
       height: '15px',
       width: '15px',
       verticalAlign: 'middle',
@@ -731,7 +729,6 @@
   });
   doc.querySelectorAll('.settingInputbox').forEach(cb => {
     Object.assign(cb.style, {
-      all: 'initial',
       width: '60px',
       border: '1px solid',
       color: 'unset',
@@ -887,23 +884,22 @@
   });
   
   // ===開閉ボタン△ ===
-  const scrollUIToggle = doc.createElement('button');
+  const scrollUIToggle = doc.createElement('div');
   scrollUIToggle.innerHTML = `
   <svg width="14" height="14" viewBox="0 0 24 24">
     <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
   </svg>
   `;
   Object.assign(scrollUIToggle.style, {
-    all: 'initial',
     position: 'fixed',
-      top: '10px',
-      left: '18px',
-      fontSize: '14px',
-      color: 'unset',
-      opacity: '0.3',
-      cursor: 'pointer',
-      zIndex: '10006',
-      display: 'block'
+    top: '10px',
+    left: '18px',
+    fontSize: '14px',
+    color: 'unset',
+    opacity: '0.3',
+    cursor: 'pointer',
+    zIndex: '10006',
+    display: 'block'
   });
   doc.body.appendChild(scrollUIToggle);
   
@@ -911,10 +907,9 @@
     scrollUIToggle.addEventListener('click', () => {
     scrollUI.style.display = 'block';
   });
-  const scrollSCloseBtn = doc.createElement('button');
+  const scrollSCloseBtn = doc.createElement('div');
   scrollSCloseBtn.textContent = '✕';
   Object.assign(scrollSCloseBtn.style, {
-    all: 'initial',
     position: 'absolute',
     top: '4px',
     right: '4px',
@@ -945,7 +940,6 @@
   const panel = doc.createElement('div');
   panel.id = 'fontPanel';
   Object.assign(panel.style, {
-    lineHeight: 'initial',
     position: 'fixed',
     top: '10px',
     right: '10px',
@@ -979,16 +973,15 @@
     const btn = doc.createElement('button');
     btn.textContent = mode;
     Object.assign(btn.style, {
-      all: 'initial',
       fontSize: '13px',
-      padding: '2px 6px',
+      padding: '6px 4px 2px',
       border: '1px solid',
       borderRadius: '4px',
       color: 'unset',
       cursor: 'pointer',
       textAlign: 'left',
     });
-    if (mode === 'Font weight') btn.style.margin = '0 4px';
+    if (mode === 'Font weight') btn.style.margin = '0 7px';
     
     setActive(btn, mode === currentMode);
     
@@ -1149,7 +1142,6 @@
   // セレクトボックス
   const fontSelect = doc.createElement('select');
     Object.assign(fontSelect.style, {
-      all: 'initial',
       alignItems: 'center',
       border: '1px solid',
       color: 'unset',
@@ -1231,7 +1223,6 @@
   </svg>
   `;
   Object.assign(openBtn.style, {
-    all: 'initial',
     position: 'fixed',
     top: '10px',
     right: '18px',
@@ -1249,7 +1240,6 @@
   const closeBtn = doc.createElement('div');
   closeBtn.textContent = '✕';
   Object.assign(closeBtn.style, {
-    all: 'initial',
     position: 'absolute',
     top: '0px',
     right: '7px',
@@ -1301,7 +1291,6 @@
     style.textContent = `
       /* ---- #pickrContainer 関連 ---- */
       #pickrContainer {
-        all: initial;
         position: fixed;
         top: 10px;
         right: 10px;
@@ -1315,29 +1304,13 @@
         font-family: sans-serif;
         box-shadow: 0 0 4px;
       }
-
+    
       #pickrContainer,
       #pickrContainer *,
-      .pcr-app,
       .pcr-app * {
-        line-height: initial !important;
       }
-
-      #pickrContainer .row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 2px;
-        gap: 5px;
-      }
-
-      #pickrContainer .label {
-        font-weight: bold;
-        font-family: monospace;
-        font-size: 21px;
-      }
-
+    
       #pickrClose {
-        all: initial;
         font-size: 15px;
         font-weight: bolder;
         color: unset;
@@ -1346,17 +1319,7 @@
         top: 5px;
         right: 7px;
       }
-
-      #pickrContainer .row.contrast-row {
-        justify-content: flex-start;
-        gap: 4px;
-      }
-
-      #pickrContainer .row.contrast-row > strong {
-        display: inline-block;
-        min-width: 60px;
-      }
-
+    
       #dragHandle {
         cursor: move;
         padding: 0px;
@@ -1365,12 +1328,34 @@
         margin-right: 20px;
         background: #F4F4F4;
       }
-
+    
       #dragHandle:active {
         transform: none;
       }
-
-      /* ---- .color-swatch 関連 ---- */
+    
+      #pickrContainer .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+        gap: 5px;
+      }
+    
+      #pickrContainer .row.contrast-row {
+        justify-content: flex-start;
+        gap: 4px;
+      }
+    
+      #pickrContainer .row.contrast-row > strong {
+        display: inline-block;
+        min-width: 60px;
+      }
+    
+      #pickrContainer .label {
+        font-weight: bold;
+        font-family: monospace;
+        font-size: 21px;
+      }
+    
       .color-swatch {
         width: 30px;
         height: 30px;
@@ -1381,17 +1366,16 @@
         flex-direction: column;
         overflow: hidden;
       }
-
+    
       .color-swatch > div {
         flex: 1;
       }
-
+    
       .color-saved {
         border-bottom: 1px solid #999;
       }
-
+    
       .hex-display {
-        all: initial;
         font-family: monospace;
         font-size: 14px;
         font-weight: normal;
@@ -1403,21 +1387,20 @@
         width: 86px;
         height: 13px;
       }
-
+    
       .copy-btn {
-        all: initial;
         position: absolute;
         right: 55px;
         font-size: 11px;
-        block-size: 17px;
+        block-size: 18px;
+        padding: 1px;
         border: 1px solid #999;
         border-radius: 4px;
         background: #F0FFEC;
         cursor: pointer;
       }
-
+    
       .hex-load-btn {
-        all: initial;
         cursor: pointer;
         padding: 2px 2px;
         font-size: 1em;
@@ -1426,11 +1409,11 @@
         background: #dddddd;
         border-radius: 4px;
       }
-
+    
       .hex-load-btn:active {
         transform: translateY(1px);
       }
-
+    
       .switch-bgfg {
         all: initial;
         font-family: monospace;
@@ -1443,13 +1426,12 @@
         text-align: center;
         margin-left: 3px;
       }
-
+    
       .switch-bgfg:active {
         transform: translateY(1px);
       }
-
+    
       input.contrast-display {
-        all: initial;
         font-family: monospace;
         font-size: 14px;
         font-weight: normal;
@@ -1462,7 +1444,6 @@
       }
 
       #randomColorBtn {
-        all: initial;
         background: #E6FDFF;
         border: 1px solid #aaa;
         border-radius: 4px;
@@ -1470,25 +1451,22 @@
         font-size: 15px;
         font-family: monospace;
       }
-
+    
       #randomColorBtn:active {
         transform: translateY(1px);
       }
-
-      #bgLockIcon, #fgLockIcon {
-        all: unset;
+    
+      #bgLockIcon,
+      #fgLockIcon {
         font-size: 14px;
         margin: 0px 0px;
         border: 1px solid;
         display: inline-block;
       }
-
+    
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
         position: fixed !important;
-        box-sizing: initial !important;
-        left: initial !important;
-        bottom: initial !important;
         top: 150px !important;
         right: 10px !important;
         padding: 10px !important;
@@ -1498,50 +1476,45 @@
         background: unset !important;
         border: 1px solid !important;
       }
-
+    
       .pcr-selection {
         height: 114px !important;
       }
-
+    
       .pcr-color-palette {
         height: auto !important;
         border: 1px solid !important;
       }
-
+      
       .pickr .pcr-button {
-        all: unset;
-        display: inline-block;
-        position: relative;
-        height: 8.3px;
-        width: 8.3px;
-        padding: .5em;
+        height: 25px;
+        width: 25px;
+        margin-bottom: 0px !important;
         cursor: pointer;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
         border: 1px solid;
         border-radius: 2px;
         background-size: 0;
         transition: all .3s;
       }
-
+    
       .pcr-color-preview {
         width: 22px !important;
         margin-right: 10px !important;
         border: 1px solid; !important;
       }
-
-      .pcr-color-chooser{
+    
+      .pcr-color-chooser {
         margin-left: 10px !important;
       }
-
+    
       .pcr-last-color {
         margin-top: 0;
         margin-bottom: 0;
       }
 
-      .pcr-swatches {
-        all: initial !important;
+      .pcr-interaction {
       }
-
+    
       .pcr-result {
         height: 20px !important;
         margin-top: 10px !important;
@@ -1549,14 +1522,12 @@
         font-size: 15px !important;
         background: #fff !important;
         color: #000000 !important;
-        box-shadow: initial !important;
         border: 1px solid #ccc !important;
         border-radius: 4px !important;
+        box-shadow: 0 0 0px !important;
       }
-
+    
       .pcr-save {
-        all: unset;
-        box-shadow: initial !important;
         font-size: 12px !important;
         font-weight: normal !important;
         height: 22px !important;
@@ -1567,13 +1538,14 @@
         border-radius: 4px !important;
         background: #97DDC8! important;
         color: #000000 !important;
+        box-shadow: 0 0 0px !important;
       }
-
+    
       .pcr-save:active {
         transform: translateY(1px);
       }
     `;
-
+    
     doc.head.appendChild(style);
     const container = doc.createElement('div');
     container.id = 'pickrContainer';
@@ -1807,7 +1779,6 @@
               dragBtn.textContent = '🟰';
               dragBtn.className = 'pcr-drag-handle';
               dragBtn.style.cssText = `
-                all: unset;
                 cursor: move;
                 margin-left: 2.4px;
                 margin-top: 10px;
@@ -1902,20 +1873,17 @@
               hexCopyBtn.textContent = 'Copy';
               hexCopyBtn.className = 'pcr-copy';
               hexCopyBtn.style.cssText = `
-                all: unset;
                 position: absolute;
                 cursor: pointer;
                 border: 1px solid #999;
                 border-radius: 4px;
                 color: #000000;
                 background: #F0FFEC;
-                padding: initial;
                 margin-top: 5px;
                 font-size: 12px;
-                block-size: 18px;
-                width: 42px;
-                right: 94px;
-                top: 132px;
+                block-size: 19px;
+                right: 86px;
+                top: 135px;
                 text-align: center;
               `;
               // .pcr-result の右隣に追加
@@ -2158,7 +2126,6 @@
       `;
     
       Object.assign(pickrOpen.style, {
-        all: 'initial',
         cursor: 'pointer',
         position: 'fixed',
         top: '80px',
@@ -2218,7 +2185,6 @@
   // ==============================
   const onetapUI = doc.createElement('div');
   Object.assign(onetapUI.style, {
-    all: 'unset',
     position: 'fixed',
     top: '80px',
     left: '10px',
@@ -2245,7 +2211,7 @@
   onetapUI.innerHTML = `
     <div class="ui-header">
       <span>Apply Style with One Tap</span>
-      <button id="closeUIBtn" style="border:none; padding-left:10px;">✕</button>
+      <div id="closeUIBtn" style="cursor:pointer; padding-right:5px;">✕</div>
     </div>
     <div class="ui-buttons">
       <div class="button-set">
@@ -2289,7 +2255,6 @@
     Object.assign(btn.style, {
       fontSize: '14px',
       color: 'unset',
-      background: 'initial',
       padding: '2px 4px',
       border: '1px solid',
     });
@@ -2319,21 +2284,19 @@
   const labels = onetapUI.querySelectorAll('.label');
   labels.forEach(span => {
     Object.assign(span.style, {
-      all: 'initial',
       color: 'inherit',
       background: 'inherit',
       fontSize: '14px',
     });
   });
   // ☆ ボタン
-  const toggleBtn = doc.createElement('button');
+  const toggleBtn = doc.createElement('div');
   toggleBtn.innerHTML = `
   <svg width="14" height="14" viewBox="0 0 24 24">
     <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
   </svg>
   `;
   Object.assign(toggleBtn.style, {
-    all: 'initial',
     position: 'fixed',
     top: '80px',
     left: '18px',
