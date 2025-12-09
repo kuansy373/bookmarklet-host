@@ -1463,6 +1463,17 @@
         border: 1px solid;
         display: inline-block;
       }
+
+      .pickr .pcr-button {
+        height: 25px;
+        width: 25px;
+        margin: 0px;
+        cursor: pointer;
+        border: 1px solid;
+        border-radius: 2px;
+        background-size: 0;
+        transition: all .3s;
+      }
     
       /* ---- .pcr-app 関連 ---- */
       .pcr-app {
@@ -1484,17 +1495,11 @@
       .pcr-color-palette {
         height: auto !important;
         border: 1px solid !important;
+        border-radius: 0px !important;
       }
-      
-      .pickr .pcr-button {
-        height: 25px;
-        width: 25px;
-        margin-bottom: 0px !important;
-        cursor: pointer;
-        border: 1px solid;
-        border-radius: 2px;
-        background-size: 0;
-        transition: all .3s;
+
+      .pcr-palette {
+        border-radius: 0px !important;
       }
     
       .pcr-color-preview {
@@ -1506,18 +1511,23 @@
       .pcr-color-chooser {
         margin-left: 10px !important;
       }
-    
-      .pcr-last-color {
-        margin-top: 0;
-        margin-bottom: 0;
+
+      .pcr-current-color {
+        border-radius: 0px !important;
+      }
+
+      .pcr-swatches{
+        margin-top: .65em !important;
       }
 
       .pcr-interaction {
+        height: 25px !important;
+        margin: 0px !important;
       }
     
       .pcr-result {
         height: 20px !important;
-        margin-top: 10px !important;
+        margin: 0px !important;
         font-family: monospace !important;
         font-size: 15px !important;
         background: #fff !important;
@@ -1528,21 +1538,19 @@
       }
     
       .pcr-save {
+        position: relative !important;
+        right: 10px !important;
+        margin: 0px !important;
         font-size: 12px !important;
         font-weight: normal !important;
         height: 22px !important;
         width: 40px !important;
-        margin-top: 10px !important;
         padding: 0px !important;
         border: 1px solid #999 !important;
         border-radius: 4px !important;
         background: #97DDC8! important;
         color: #000000 !important;
         box-shadow: 0 0 0px !important;
-      }
-    
-      .pcr-save:active {
-        transform: translateY(1px);
       }
     `;
     
@@ -1779,19 +1787,14 @@
               dragBtn.textContent = '🟰';
               dragBtn.className = 'pcr-drag-handle';
               dragBtn.style.cssText = `
+                margin: 0px !important;
                 cursor: move;
-                margin-left: 2.4px;
-                margin-top: 10px;
-                font-size: 17px;
-                vertical-align: middle;
-                display: inline-block;
-                padding: 0px 4px 3px 4px;
+                font-size: 16px;
+                padding: 0px 4px 3px;
                 border: 1px solid #aaa;
                 border-radius: 4px;
                 background: #F4F4F4;
-                height: 22px;
-                width: 28px;
-                text-align: center;
+                height: 25px;
               `;
               saveBtn.insertAdjacentElement('afterend', dragBtn);
 
@@ -1873,18 +1876,16 @@
               hexCopyBtn.textContent = 'Copy';
               hexCopyBtn.className = 'pcr-copy';
               hexCopyBtn.style.cssText = `
-                position: absolute;
+                position: relative;
+                right: 20px;
+                margin: 0px !important;
                 cursor: pointer;
                 border: 1px solid #999;
                 border-radius: 4px;
                 color: #000000;
                 background: #F0FFEC;
-                margin-top: 5px;
                 font-size: 12px;
-                block-size: 19px;
-                right: 86px;
-                top: 135px;
-                text-align: center;
+                line-height: 17px;
               `;
               // .pcr-result の右隣に追加
               resultInput.insertAdjacentElement('afterend', hexCopyBtn);
