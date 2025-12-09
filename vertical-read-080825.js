@@ -104,6 +104,104 @@
     .replace(/\n{2,}/g, '\n')
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
+
+  // テキスト情報パネル定義
+  const panelStyls = {
+    panel: `
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #faf6ef;
+      color: #000;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Hiragino Mincho ProN', serif;
+      font-size: 13px;
+      z-index: 10000;
+      max-width: 350px;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+      line-height: 1.6;
+    `,
+    measurer: `
+      position: absolute;
+      visibility: hidden;
+      pointer-events: none;
+    `,
+    partsList: `
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 5px;
+      scrollbar-width: thin;
+      scrollbar-color: #c8b9a6 #f0ebe3;
+      overscroll-behavior: contain;
+    `,
+    partInfo: 'padding: 3px 0;',
+    header: `
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid;
+      padding-bottom: 5px;
+    `,
+    valueSpan: `
+      text-align: right;
+      display: inline-block;
+      float: right;
+    `,
+    infoRow: `
+      overflow: hidden;
+      margin-bottom: 3px;
+    `,
+    divider: `
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid;
+    `
+  };
+  
+  // HTML生成関数
+  function createPanelHTML(totalChars, numPages, charsPerPage) {
+    return `
+      <div style="${panelStyls.header}">
+        🔖 テキスト情報
+      </div>
+      <div>
+        <strong>総文字数:</strong>
+        <span style="${panelStyls.valueSpan}">
+          ${totalChars.toLocaleString()}
+        </span>
+      </div>
+      <div>
+        <strong>ページ数:</strong>
+        <span style="${panelStyls.valueSpan}">
+          ${numPages}
+        </span>
+      </div>
+      <div>
+        <strong>目標文字数/ページ:　</strong>
+        <span style="${panelStyls.valueSpan}">
+          ${charsPerPage.toLocaleString()}
+        </span>
+      </div>
+      <div style="${panelStyls.divider}">
+        <strong>各パートの文字数</strong>
+      </div>
+      <div id="partsList" style="${panelStyls.partsList}"></div>
+    `;
+  }
+  
+  function createPartInfoHTML(partNumber, charCount) {
+    return `
+      <strong>パート${partNumber}:</strong>
+      <span style="${panelStyls.valueSpan}">
+        ${charCount.toLocaleString()}文字
+      </span>
+    `;
+  }
+  
+  // デバッグパネルを作成
+  const debugPanel = document.createElement('div');
+  debugPanel.style.cssText = panelStyls.panel;
+  document.body.appendChild(debugPanel);
   
   // 可視文字長を測るための要素
   const measurer = document.createElement('div');
@@ -126,6 +224,10 @@
   
   console.log('ページ数:', numPages);
   console.log('1ページあたりの目標文字数:', charsPerPage);
+
+  // パネルに基本情報を表示
+  debugPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
+  const partsList = debugPanel.querySelector('#partsList');
   
   // <ruby>の外でspan分割する
   function chunkHTMLSafe(html, chunkSize) {
@@ -290,6 +392,12 @@
     const actualLen = endVisiblePos - actualStartPos;
     console.log(`パート${i + 1}: ${actualLen}文字`);
     pageCharCounts.push(actualLen);   // 文字数を配列に追加
+
+    // デバッグパネルにパート情報を追加
+    const partInfo = document.createElement('div');
+    partInfo.style.cssText = panelStyls.partInfo;
+    partInfo.innerHTML = createPartInfoHTML(i + 1, actualLen);
+    partsList.appendChild(partInfo);
     
     prevEndVisiblePos = endVisiblePos;
   }
