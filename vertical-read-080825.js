@@ -608,10 +608,10 @@
       
       // 範囲チェックを先に実行
       if (targetPage < 1 || targetPage > maxPage) {
-        alert(`1から${maxPage}の範囲で入力してください`);
+        win.alert(`1から${maxPage}の範囲で入力してください`);
       } else if (!isValidPage(targetIndex)) {
         // 範囲内だが無効なページ
-        alert(`1から${maxPage}の範囲で入力してください。\nページ${targetPage}は空ページです。`);
+        win.alert(`1から${maxPage}の範囲で入力してください。\nページ${targetPage}は空ページです。`);
       } else {
         // 有効なページへ移動
         overlayElements.overlay.style.display = 'none';
@@ -2220,7 +2220,7 @@
           return
         }
       }
-      alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
+      win.alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
     }
     doc.getElementById("randomColorBtn").onclick = changeColors;
     doc.getElementById("swapColorsBtn").onclick = () => {
@@ -2300,7 +2300,7 @@
       });
     });
     }).catch((err) => {
-      alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+      win.alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
       console.error("Pickr load error:", err);
     });
 
@@ -2487,7 +2487,7 @@
   // SAVEボタン
   async function saveStyle(name) {
     const target = doc.getElementById('novelDisplay');
-    if (!target) return alert('対象要素が見つかりません');
+    if (!target) return win.alert('対象要素が見つかりません');
     const computed = window.getComputedStyle(target);
     let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
     const fontFamily = fontSelect.value;
