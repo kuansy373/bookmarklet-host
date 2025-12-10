@@ -858,17 +858,20 @@
   
   // Border & Color
   ['scrollB', 'scrollC'].forEach((id, i) => {
-    doc.getElementById(id).addEventListener('change', e => {
+    const el = doc.getElementById(id);
+    el.addEventListener('change', e => {
       if (e.target.checked) {
-        doc.getElementById(i ? 'scrollB' : 'scrollC').checked = false;
-        applyToSliders(el => {
-          el.style.border = i ? 'none' : '1px solid';
-          el.style.setProperty("background", i ? "currentColor" : "transparent", "important");
+        const otherId = i ? 'scrollB' : 'scrollC';
+        const otherEl = doc.getElementById(otherId);
+        otherEl.checked = false;
+        applyToSliders(sl => {
+          sl.style.border = id === 'scrollB' ? '1px solid currentcolor' : 'none';
+          sl.style.setProperty("background", id === 'scrollC' ? "currentColor" : "transparent", "important");
         });
       } else {
-        applyToSliders(el => {
-          el.style.border = 'none';
-          el.style.setProperty("background", "transparent", "important");
+        applyToSliders(sl => {
+          sl.style.border = 'none';
+          sl.style.setProperty("background", "transparent", "important");
         });
       }
     });
@@ -2478,19 +2481,34 @@
     backgroundColor = rgbToHex(backgroundColor);
   
     // スクロールUIの値を取得
-    const scrollSettings = {
-      border: doc.getElementById('scrollB').checked,
-      colorIn: doc.getElementById('scrollC').checked,
-      shadow: Number(doc.getElementById('scrollS').value),
-      both: doc.getElementById('scrollBoth').checked,
-      right: doc.getElementById('scrollRight').checked,
-      left: doc.getElementById('scrollLeft').checked,
-      position: Number(doc.getElementById('scrollX').value),
-      width: Number(doc.getElementById('scrollW').value),
-      opacity: parseFloat(doc.getElementById('scrollO').value),
-      speedScale: parseFloat(doc.getElementById('scrollSpeedScale').value),
-      hideBall: doc.getElementById('scrollHide').checked,
-    };
+    const scrollSettings = (() => {
+      const map = {
+        border:       ['scrollB', 'checked'],
+        colorIn:      ['scrollC', 'checked'],
+        shadow:       ['scrollS', 'value',   Number],
+        both:         ['scrollBoth', 'checked'],
+        right:        ['scrollRight', 'checked'],
+        left:         ['scrollLeft', 'checked'],
+        position:     ['scrollX', 'value',   Number],
+        width:        ['scrollW', 'value',   Number],
+        opacity:      ['scrollO', 'value',   parseFloat],
+        speedScale:   ['scrollSpeedScale', 'value', parseFloat],
+        hideBall:     ['scrollHide', 'checked']
+      };
+      const result = {};
+      for (const key in map) {
+        const [id, prop, parser] = map[key];
+        const el = doc.getElementById(id);
+        if (!el) {
+          result[key] = null;
+          continue;
+        }
+        const raw = el[prop];
+        result[key] = parser ? parser(raw) : raw;
+      }
+      return result;
+    })();
+
   
     // 保存プレビューオブジェクト
     const savePreview = {
@@ -2790,33 +2808,73 @@
     // --- スクロールUIを反映 ---
     if (data.scrollSettings) {
       const s = data.scrollSettings;
+      const uiMap = {
+        scrollB:        { prop: 'checked', value: s.border },
+        scrollC:        { prop: 'checked', value: s.colorIn },
+        scrollS:        { prop: 'value',   value: s.shadow },
+        scrollBoth:     { prop: 'checked', value: s.both },
+        scrollRight:    { prop: 'checked', value: s.right },
+        scrollLeft:     { prop: 'checked', value: s.left },
+        scrollX:        { prop: 'value',   value: s.position },
+        scrollW:        { prop: 'value',   value: s.width },
+        scrollO:        { prop: 'value',   value: s.opacity },
+        scrollSpeedScale:{prop: 'value',   value: s.speedScale },
+        scrollHide:     { prop: 'checked', value: s.hideBall }
+      };
+      Object.entries(uiMap).forEach(([id, info]) => {
+        const el = doc.getElementById(id);
+        if (el) el[info.prop] = info.value;
+      });
   
-      doc.getElementById('scrollB').checked = s.border;
-      doc.getElementById('scrollC').checked = s.colorIn;
-      doc.getElementById('scrollS').value = s.shadow;
-      doc.getElementById('scrollBoth').checked = s.both;
-      doc.getElementById('scrollRight').checked = s.right;
-      doc.getElementById('scrollLeft').checked = s.left;
-      doc.getElementById('scrollX').value = s.position;
-      doc.getElementById('scrollW').value = s.width;
-      doc.getElementById('scrollO').value = s.opacity;
-      doc.getElementById('scrollSpeedScale').value = s.speedScale;
-      doc.getElementById('scrollHide').checked = s.hideBall;
+      // スタイルの直接適用
+      if (s.border) {
+        applyToSliders(el => {
+          el.style.border = '1px solid';
+          el.style.setProperty("background", "transparent", "important");
+        });
+      } else if (s.colorIn) {
+        applyToSliders(el => {
+          el.style.border = 'none';
+          el.style.setProperty("background", "currentColor", "important");
+        });
+      } else {
+        applyToSliders(el => {
+          el.style.border = 'none';
+          el.style.setProperty("background", "transparent", "important");
+        });
+      }
   
-      // イベント強制発火
-      doc.getElementById('scrollB').dispatchEvent(new Event('change'));
-      doc.getElementById('scrollC').dispatchEvent(new Event('change'));
-      doc.getElementById('scrollS').dispatchEvent(new Event('input'));
-      doc.getElementById('scrollRight').dispatchEvent(new Event('change'));
-      doc.getElementById('scrollLeft').dispatchEvent(new Event('change'));
-      doc.getElementById('scrollBoth').dispatchEvent(new Event('change'));
-      doc.getElementById('scrollX').dispatchEvent(new Event('input'));
-      doc.getElementById('scrollW').dispatchEvent(new Event('input'));
-      doc.getElementById('scrollO').dispatchEvent(new Event('input'));
-      doc.getElementById('scrollSpeedScale').dispatchEvent(new Event('input'));
-      doc.getElementById('scrollHide').dispatchEvent(new Event('change'));
+      const shadowVal = Number(s.shadow) || 0;
+      const shadowStyle = shadowVal < 0 ? `inset 0 0 ${Math.abs(shadowVal)}px` : `0 0 ${shadowVal}px`;
+      applyToSliders(el => el.style.boxShadow = shadowStyle);
+  
+      const posVal = parseFloat(s.position);
+      if (!isNaN(posVal)) {
+        applyToSliders(el => {
+          el.style[el === scrollSliderRight ? 'right' : 'left'] = `${posVal}px`;
+        });
+      }
+      const widthVal = parseFloat(s.width);
+      if (!isNaN(widthVal)) {
+        applyToSliders(el => el.style.width = `${widthVal}px`);
+      }
+      const opacityVal = parseFloat(s.opacity);
+      if (!isNaN(opacityVal) && opacityVal >= 0 && opacityVal <= 1) {
+        applyToSliders(el => el.style.opacity = opacityVal);
+      }
+      const speedVal = parseFloat(s.speedScale);
+      if (!isNaN(speedVal)) {
+        speedScale = Math.max(0, Math.min(20, speedVal));
+        syncScrollSpeed(scrollSliderRight.value);
+      }
+      const [height, bottom] = s.hideBall ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
+      applyToSliders(el => {
+        el.style.height = height;
+        el.style.bottom = bottom;
+      });
+      // Right/Left/Both の表示更新
+      updateDisplay();
     }
-  
     updateControls();
     return true;
   }
