@@ -1,7 +1,9 @@
 (() => {
+
   // ==============================
   // Vertical text
   // ==============================
+  
   let text = '';
   
   // HTMLエスケープ用関数（属性値を安全にする）
@@ -28,35 +30,25 @@
     function traverse(el) {
       for (const child of el.childNodes) {
   
-        // テキストノードを追加
         if (child.nodeType === Node.TEXT_NODE) {
           result += escapeHTML(child.textContent);
   
-        // 要素ノードの場合
         } else if (child.nodeType === Node.ELEMENT_NODE) {
           const tagName = child.tagName.toLowerCase();
   
-          // 以下のタグのみそのまま使用
           if (['ruby', 'rb', 'rp', 'rt', 'em'].includes(tagName)) {
             
             const attrs = Array.from(child.attributes)
-              // ① イベント属性除去 (onclick など)
               .filter(attr => !/^on/i.test(attr.name))
-              // ② ホワイトリストで制限
               .filter(attr => ALLOWED_ATTRS.includes(attr.name))
-              // ③ 値をエスケープして安全にする
               .map(attr => ` ${attr.name}="${escapeHTML(attr.value)}"`)
               .join('');
-            // 開始タグ
+            
             result += `<${tagName}${attrs}>`;
-            // 子ノードを再帰処理
             traverse(child);
-            // 閉じタグ
             result += `</${tagName}>`;
-          // brタグは改行として扱う
           } else if (tagName === 'br') {
             result += '\n';
-          // その他のタグはタグ自体を無視して中身だけ処理
           } else {
             traverse(child);
           }
@@ -105,7 +97,7 @@
     .replace(/\n/g, '　')
     .replace(/　{2,}/g, '　');
 
-  // テキスト情報パネル定義
+  // テキスト情報パネル
   const panelStyls = {
     panel: `
       position: fixed;
@@ -198,10 +190,10 @@
     `;
   }
   
-  // デバッグパネルを作成
-  const debugPanel = document.createElement('div');
-  debugPanel.style.cssText = panelStyls.panel;
-  document.body.appendChild(debugPanel);
+  // テキスト情報パネルを作成
+  const textInfoPanel = document.createElement('div');
+  textInfoPanel.style.cssText = panelStyls.panel;
+  document.body.appendChild(textInfoPanel);
   
   // 可視文字長を測るための要素
   const measurer = document.createElement('div');
@@ -226,8 +218,8 @@
   console.log('1ページあたりの目標文字数:', charsPerPage);
 
   // パネルに基本情報を表示
-  debugPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
-  const partsList = debugPanel.querySelector('#partsList');
+  textInfoPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
+  const partsList = textInfoPanel.querySelector('#partsList');
   
   // <ruby>の外でspan分割する
   function chunkHTMLSafe(html, chunkSize) {
@@ -387,6 +379,7 @@
         main: chunks
       });
     }
+
     // 実際の文字数を計算（重複部分を含む）
     const actualStartPos = i > 0 ? Math.max(0, prevEndVisiblePos - overlap) : 0;
     const actualLen = endVisiblePos - actualStartPos;
@@ -635,18 +628,21 @@
       promptShownForward = false;
       promptShownBackward = false;
     };
+
     // オーバーレイ背景クリックで閉じる
     const handleOverlayClick = (e) => {
       if (e.target === overlayElements.overlay) {
         handleNo();
       }
     };
+
     // イベントリスナー削除
     const cleanup = () => {
       overlayElements.yesButton.removeEventListener('click', handleYes);
       overlayElements.noButton.removeEventListener('click', handleNo);
       overlayElements.overlay.removeEventListener('click', handleOverlayClick);
     };
+
     // イベントリスナー追加
     overlayElements.yesButton.addEventListener('click', handleYes);
     overlayElements.noButton.addEventListener('click', handleNo);
@@ -748,6 +744,7 @@
     opacity: '1',
   });
   doc.body.appendChild(scrollSliderRight);
+
   // === 左スライダー ===
   const scrollSliderLeft = doc.createElement('input');
   scrollSliderLeft.type = 'range';
@@ -799,6 +796,7 @@
   // ==============================
   // Slider Settings
   // ==============================
+
   const scrollUI = doc.createElement('div');
   Object.assign(scrollUI.style, {
     position: 'fixed',
@@ -970,7 +968,7 @@
   speedScaleInput.addEventListener('input', e => {
     let num = parseFloat(e.target.value);
     if (!isNaN(num)) {
-      num = Math.max(0, Math.min(20, num)); // 0-20に制限
+      num = Math.max(0, Math.min(20, num));
       if (num !== parseFloat(e.target.value)) e.target.value = num;
       speedScale = num;
       syncScrollSpeed(scrollSliderRight.value);
@@ -994,12 +992,12 @@
     });
   });
   
-  // ===開閉ボタン△ ===
+  // 開くボタン △
   const scrollUIToggle = doc.createElement('div');
   scrollUIToggle.innerHTML = `
-  <svg width="14" height="14" viewBox="0 0 24 24">
-    <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
-  </svg>
+    <svg width="14" height="14" viewBox="0 0 24 24">
+      <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
+    </svg>
   `;
   Object.assign(scrollUIToggle.style, {
     position: 'fixed',
@@ -1018,14 +1016,16 @@
     scrollUIToggle.addEventListener('click', () => {
     scrollUI.style.display = 'block';
   });
+
+  // 閉じるボタン ✕
   const scrollSCloseBtn = doc.createElement('div');
   scrollSCloseBtn.textContent = '✕';
   Object.assign(scrollSCloseBtn.style, {
     position: 'absolute',
-    top: '4px',
-    right: '4px',
+    top: '5px',
+    right: '10px',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '16px',
     color: 'unset',
   });
   scrollUI.appendChild(scrollSCloseBtn);
@@ -1037,6 +1037,7 @@
   // ==============================
   // Font Control Panel
   // ==============================
+
   ['fontPanel', 'fontOpenBtn'].forEach(id => {
     const el = doc.getElementById(id);
     if (el) el.remove();
@@ -1064,6 +1065,7 @@
     display: 'none',
     fontFamily: 'sans-serif'
   });
+
   // モードボタン
   const modes = ['Font shadow','Font weight','Font size'];
   let currentMode = 'Font size';
@@ -1074,6 +1076,7 @@
     gap: '4px',
     marginBottom: '8px'
   });
+
   // 選択切り替えスタイル制御
   const setActive = (btn, isActive) => {
     btn.style.opacity = isActive ? '1' : '0.5';
@@ -1131,6 +1134,7 @@
     border: '1px solid',
     cursor: 'pointer'
   });
+
   const increaseBtn = doc.createElement('button');
   increaseBtn.id = 'sliderIncrease';
   increaseBtn.textContent = '▶';
@@ -1144,6 +1148,7 @@
     border: '1px solid',
     cursor: 'pointer'
   });
+
   // 増減ボタンの共通処理
   function adjustSlider(delta) {
     let value = parseInt(slider.value) + delta * parseInt(slider.step || 1);
@@ -1152,6 +1157,7 @@
       slider.dispatchEvent(new Event('input'));
     }
   }
+
   decreaseBtn.addEventListener('click', () => adjustSlider(-1));
   increaseBtn.addEventListener('click', () => adjustSlider(1));
     
@@ -1258,6 +1264,7 @@
       color: 'unset',
       marginLeft: '10px',
       width: '155px',
+      height: '25px',
       paddingLeft: '5px',
       fontSize: '14px',
   });
@@ -1325,13 +1332,13 @@
   // controlArea に追加
   controlArea.appendChild(fontFamilyContainer);
   
-  // 開閉ボタン〇
+  // 開くボタン 〇
   const openBtn = doc.createElement('div');
   openBtn.id = 'fontOpenBtn';
   openBtn.innerHTML = `
-  <svg width="14" height="14" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
-  </svg>
+    <svg width="14" height="14" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
+    </svg>
   `;
   Object.assign(openBtn.style, {
     position: 'fixed',
@@ -1342,33 +1349,38 @@
     cursor: 'pointer',
     zIndex: '10006'
   });
+  doc.body.appendChild(openBtn);
+
   openBtn.addEventListener('click', () => {
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
   });
-  doc.body.appendChild(openBtn);
-    // 閉じるボタン ✕
+
+  // 閉じるボタン ✕
   const closeBtn = doc.createElement('div');
   closeBtn.textContent = '✕';
   Object.assign(closeBtn.style, {
     position: 'absolute',
     top: '0px',
-    right: '7px',
+    right: '9px',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '16px',
     color: 'unset',
   });
+  panel.appendChild(closeBtn);
+
   closeBtn.addEventListener('click', () => {
     panel.style.display = 'none';
     openBtn.style.display = 'block';
   });
-  panel.appendChild(closeBtn);
+
   // 初期化
   updateControls();
   
   // ==============================
   // Color Pickr
   // ==============================
+
   if (window.__pickrLoaded) return;
   window.__pickrLoaded = true;
   
@@ -1383,7 +1395,7 @@
     doc.head.appendChild(el);
   });
   
-  // バージョン固定とSRI対応可能な形に変更
+  // バージョン固定とSRI対応可能な形で読み込み
   Promise.all([
     load('link', {
       rel: 'stylesheet',
@@ -1414,11 +1426,6 @@
         border-radius: 8px;
         font-family: sans-serif;
         box-shadow: 0 0 4px;
-      }
-    
-      #pickrContainer,
-      #pickrContainer *,
-      .pcr-app * {
       }
     
       #pickrClose {
@@ -1798,6 +1805,7 @@
       const nums = rgb.match(/\d+/g)?.map(Number);
       return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
     };
+
     window.applyStyle = (prop, value) => {
       if (!value) return;
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
@@ -1812,16 +1820,19 @@
         ${prop}: ${value};
       }`
     };
+
     const updateSwatch = (swatch, current, saved) => {
       if (!swatch) return;
       swatch.querySelector('.color-current').style.background = current;
       swatch.querySelector('.color-saved').style.background = saved
     };
+
     const updateColorHexDisplays = () => {
       doc.getElementById("bgHex").value = currentBg;
       doc.getElementById("fgHex").value = currentFg;
       updateLockIcons();
     };
+
     const getContrast = (fg, bg) => {
       const lum = (hex) => {
         const rgb = hex.match(/\w\w/g).map((v) => parseInt(v, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
@@ -1830,6 +1841,7 @@
       const [l1, l2] = [lum(fg), lum(bg)];
       return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
     };
+
     function hexToHSL(hex) {
       if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
         return { h: 0, s: 0, l: 0 };
@@ -1853,6 +1865,7 @@
       }
       return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
     }
+
     // --- Pickr関連・状態変数 ---
     const contrastEl = doc.getElementById('contrastRatio');
     const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
@@ -1860,6 +1873,7 @@
     let savedBg = getHex('backgroundColor') || '#ffffff';
     let currentFg = savedFg;
     let currentBg = savedBg;
+    
     // --- pcr-appドラッグ用グローバル変数を追加 ---
     let globalDragStyle = null;
     let globalDragRuleIndex = null;
@@ -2236,7 +2250,6 @@
           <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
         </svg>
       `;
-    
       Object.assign(pickrOpen.style, {
         cursor: 'pointer',
         position: 'fixed',
@@ -2247,7 +2260,6 @@
         zIndex: '20000'
       });
     
-      // UI を開く
       pickrOpen.onclick = () => {
         container.style.display = 'block';
         style.disabled = false;
@@ -2352,6 +2364,7 @@
     fontWeight: 'bold',
     marginBottom: '10px',
   });
+
   // ボタン群のスタイル
   const buttonsContainer = onetapUI.querySelector('.ui-buttons');
   Object.assign(buttonsContainer.style, {
@@ -2361,6 +2374,7 @@
     gap: '10px',
     fontSize: '14px',
   });
+
   // ボタンのスタイル
   const buttons = onetapUI.querySelectorAll('.button');
   buttons.forEach(btn => {
@@ -2371,6 +2385,7 @@
       border: '1px solid',
     });
   });
+
   // JSON入力欄のスタイル
   const jsonInputs = onetapUI.querySelectorAll('.json-input');
   jsonInputs.forEach(input => {
@@ -2383,6 +2398,7 @@
       fontFamily: 'monospace',
     });
   });
+
   const jsonStyle  = doc.createElement('style');
   jsonStyle.textContent = `
     #jsonInput::placeholder,
@@ -2392,6 +2408,7 @@
     }
   `;
   doc.head.appendChild(jsonStyle);
+
   // 数字、矢印のスタイル
   const labels = onetapUI.querySelectorAll('.label');
   labels.forEach(span => {
@@ -2401,12 +2418,13 @@
       fontSize: '14px',
     });
   });
+
   // ☆ ボタン
   const toggleBtn = doc.createElement('div');
   toggleBtn.innerHTML = `
-  <svg width="14" height="14" viewBox="0 0 24 24">
-    <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
-  </svg>
+    <svg width="14" height="14" viewBox="0 0 24 24">
+      <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
+    </svg>
   `;
   Object.assign(toggleBtn.style, {
     position: 'fixed',
@@ -2417,6 +2435,8 @@
     opacity: '0.3',
   });
   doc.body.appendChild(toggleBtn);
+
+  // UIをbodyに追加
   doc.body.appendChild(onetapUI);
   
   // --- ボタンごとのイベント登録 ---
@@ -2906,7 +2926,7 @@
     
   // APPLYボタン
   async function applyStyleByName(name) {
-    // ユーザーに確認
+    
     const proceed = win.confirm(`☆ ${name} を反映します！`);
     if (!proceed) return;
   
@@ -2925,93 +2945,106 @@
       win.alert('新しいタブを開けませんでした。ポップアップブロックを確認してください。');
       return;
     }
-  
-    // 新しいタブの内容を構築
-    newTab.document.write(`
-      <html>
-        <head>
-          <title>保存済みJSON</title>
-          <style>
-            body { font-family: sans-serif; padding: 16px; }
-            pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
-            .controls { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-            .controls-left { display: flex; align-items: center; }
-            button { margin-left: 8px; font-size: 15px; cursor: pointer; }
-            button:disabled { opacity: 0.5; cursor: not-allowed; }
-            #jsonDisplay[contenteditable="true"] { border: 3px dashed #000000; border-radius: 0px; }
-          </style>
-        </head>
-        <body>
-          <div class="controls">
-            <div class="controls-left">
-              <label id="prettyPrintLabel">
-                <input type="checkbox" id="prettyPrintCheckbox"> プリティプリント
-              </label>
-              <button id="copyJsonBtn">コピー</button>
-            </div>
-            <button id="editBtn">編集</button>
-          </div>
-          <pre id="jsonDisplay"></pre>
-          <script>
-            const savedStyles = ${JSON.stringify(savedStyles)};
-            let currentJson = savedStyles;
-            const jsonDisplay = document.getElementById('jsonDisplay');
-            const prettyCheckbox = document.getElementById('prettyPrintCheckbox');
-            const prettyLabel = document.getElementById('prettyPrintLabel');
-            const copyJsonBtn = document.getElementById('copyJsonBtn');
-            const editBtn = document.getElementById('editBtn');
-            let isEditing = false;
-  
-            const updateJsonDisplay = () => {
-              if (isEditing) return;
-              const jsonText = prettyCheckbox.checked
-                ? JSON.stringify(currentJson, null, 2)
-                : JSON.stringify(currentJson);
-            
-              jsonDisplay.textContent = jsonText;
-            };
-  
-            prettyCheckbox.addEventListener('change', updateJsonDisplay);
-  
-            copyJsonBtn.addEventListener('click', async () => {
-              try {
-                const jsonText = jsonDisplay.textContent;
-                await navigator.clipboard.writeText(jsonText);
-                alert('JSONをコピーしました！');
-              } catch (err) {
-                alert('コピーに失敗しました: ' + err);
-              }
-            });
 
-            editBtn.addEventListener('click', () => {
-              isEditing = !isEditing;
-              if (isEditing) {
-                editBtn.textContent = '編集中…';
-                jsonDisplay.contentEditable = 'true';
-                prettyCheckbox.disabled = true;
-                prettyLabel.style.opacity = "0.5";
-                copyJsonBtn.disabled = true;
-              } else {
-                editBtn.textContent = '編集';
-                jsonDisplay.contentEditable = 'false';
-                prettyCheckbox.disabled = false;
-                prettyLabel.style.opacity = "1";
-                copyJsonBtn.disabled = false;
-                try {
-                  currentJson = JSON.parse(jsonDisplay.textContent);
-                } catch (e) {
-                  alert("JSONの形式が正しくありません");
-                }
-              }
-            });
-  
-            updateJsonDisplay();
-          </script>
-        </body>
-      </html>
-    `);
-    newTab.document.close();
+    const newDoc = newTab.document;
+
+    // head要素
+    const head = newDoc.createElement("head");
+
+    const title = newDoc.createElement("title");
+    title.textContent = "保存済みJSON";
+    head.appendChild(title);
+
+    const style = newDoc.createElement("style");
+    style.textContent = `
+      body { font-family: sans-serif; padding: 16px; }
+      pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
+      .controls { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+      .controls-left { display: flex; align-items: center; }
+      button { margin-left: 8px; font-size: 15px; cursor: pointer; }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
+      #jsonDisplay[contenteditable="true"] { border: 3px dashed #000000; border-radius: 0px; }
+    `;
+    head.appendChild(style);
+
+    newDoc.head.replaceWith(head);
+
+
+    // body要素
+    const body = newDoc.body;
+    body.innerHTML = `
+      <div class="controls">
+        <div class="controls-left">
+          <label id="prettyPrintLabel">
+            <input type="checkbox" id="prettyPrintCheckbox"> プリティプリント
+          </label>
+          <button id="copyJsonBtn">コピー</button>
+        </div>
+        <button id="editBtn">編集</button>
+      </div>
+      <pre id="jsonDisplay"></pre>
+    `;
+
+    // scriptロジックをJSとして挿入（即実行される）
+    const script = newDoc.createElement("script");
+    script.textContent = `
+      const savedStyles = ${JSON.stringify(savedStyles)};
+      let currentJson = savedStyles;
+
+      const jsonDisplay = document.getElementById('jsonDisplay');
+      const prettyCheckbox = document.getElementById('prettyPrintCheckbox');
+      const prettyLabel = document.getElementById('prettyPrintLabel');
+      const copyJsonBtn = document.getElementById('copyJsonBtn');
+      const editBtn = document.getElementById('editBtn');
+      let isEditing = false;
+
+      const updateJsonDisplay = () => {
+        if (isEditing) return;
+        const jsonText = prettyCheckbox.checked
+          ? JSON.stringify(currentJson, null, 2)
+          : JSON.stringify(currentJson);
+        jsonDisplay.textContent = jsonText;
+      };
+
+      prettyCheckbox.addEventListener('change', updateJsonDisplay);
+
+      copyJsonBtn.addEventListener('click', async () => {
+        try {
+          const jsonText = jsonDisplay.textContent;
+          await navigator.clipboard.writeText(jsonText);
+          alert('JSONをコピーしました！');
+        } catch (err) {
+          alert('コピーに失敗しました: ' + err);
+        }
+      });
+
+      editBtn.addEventListener('click', () => {
+        isEditing = !isEditing;
+        if (isEditing) {
+          editBtn.textContent = '編集中…';
+          jsonDisplay.contentEditable = 'true';
+          prettyCheckbox.disabled = true;
+          prettyLabel.style.opacity = "0.5";
+          copyJsonBtn.disabled = true;
+        } else {
+          editBtn.textContent = '編集';
+          jsonDisplay.contentEditable = 'false';
+          prettyCheckbox.disabled = false;
+          prettyLabel.style.opacity = "1";
+          copyJsonBtn.disabled = false;
+          try {
+            currentJson = JSON.parse(jsonDisplay.textContent);
+          } catch (e) {
+            alert("JSONの形式が正しくありません");
+          }
+        }
+      });
+
+      updateJsonDisplay();
+    `;
+    newDoc.body.appendChild(script);
   };
+
   
   // --- JSONを一括保存するボタンのイベント登録 ---
   doc.getElementById('bulkSaveBtn').onclick = () => {
@@ -3040,4 +3073,5 @@
       win.alert('JSONの解析に失敗しました:\n' + e.message);
     }
   };
+
 })()
