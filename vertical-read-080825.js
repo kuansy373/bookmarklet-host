@@ -411,7 +411,7 @@
   // 新しいウィンドウを開いてセットアップ
   const w = window.open('', '_blank');
   w.document.write(`<!DOCTYPE html>
-  <html lang="ja">
+  <html lang="ja" style="scrollbar-width: thin;">
   <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -1807,6 +1807,7 @@
       return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
     };
 
+    // applyStyle関数
     window.applyStyle = (prop, value) => {
       if (!value) return;
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
@@ -1814,12 +1815,28 @@
       if (!el) {
         el = doc.createElement('style');
         el.id = id;
-        doc.head.appendChild(el)
+        doc.head.appendChild(el);
       }
       el.textContent = `
       *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
         ${prop}: ${value};
-      }`
+      }`;
+      
+      updateScrollbarColor();
+    };
+    
+    // scrollbar-colorを更新する関数
+    const updateScrollbarColor = () => {
+      let scrollbarEl = doc.getElementById('__scrollbarOverride');
+      if (!scrollbarEl) {
+        scrollbarEl = doc.createElement('style');
+        scrollbarEl.id = '__scrollbarOverride';
+        doc.head.appendChild(scrollbarEl);
+      }
+      scrollbarEl.textContent = `
+      * {
+        scrollbar-color: ${currentFg} ${currentBg};
+      }`;
     };
 
     const updateSwatch = (swatch, current, saved) => {
