@@ -111,6 +111,7 @@
       font-size: 13px;
       z-index: 10000;
       max-width: 350px;
+      min-height: 45vh;
       box-shadow: 0 6px 10px rgba(0,0,0,0.15);
       line-height: 1.6;
     `,
@@ -454,25 +455,25 @@
   const doc = win.document;
   
   // データを新しいウィンドウに渡す
-  w.parts = parts;
-  w.pageCharCounts = pageCharCounts;
+  win.parts = parts;
+  win.pageCharCounts = pageCharCounts;
   
   // レンダリング関数を新しいウィンドウに設定
-  w.renderPart = function(pageIndex) {
-    const container = w.document.getElementById('novelDisplay');
+  win.renderPart = function(pageIndex) {
+    const container = doc.getElementById('novelDisplay');
     container.innerHTML = '';
-    const frag = w.document.createDocumentFragment();
-    const page = w.parts[pageIndex] || { overlap: [], main: [] };
+    const frag = doc.createDocumentFragment();
+    const page = win.parts[pageIndex] || { overlap: [], main: [] };
     
     for (const chunkHTML of page.overlap) {
-      const span = w.document.createElement('span');
+      const span = doc.createElement('span');
       span.style.opacity = '0.5';
       span.innerHTML = chunkHTML;
       frag.appendChild(span);
     }
     
     for (const chunkHTML of page.main) {
-      const span = w.document.createElement('span');
+      const span = doc.createElement('span');
       span.innerHTML = chunkHTML;
       frag.appendChild(span);
     }
@@ -481,7 +482,7 @@
   };
 
   // 初期表示
-  w.renderPart(0);
+  win.renderPart(0);
   
   // ページ切り替えオーバーレイの作成
   function createOverlay() {
@@ -651,7 +652,7 @@
   
   // 初回表示
   let currentIndex = 0;
-  w.renderPart(currentIndex);
+  win.renderPart(currentIndex);
   
   // ページ切り替え可能フラグ
   let promptShownForward = false;
@@ -678,7 +679,7 @@
       showOverlay(nextPage, numPages, (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
-        w.renderPart(currentIndex);
+        win.renderPart(currentIndex);
         win.scrollTo(0, 0);
         win.setTimeout(() => {
           if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
@@ -704,7 +705,7 @@
       showOverlay(targetPageForPrompt, numPages , (targetPage) => {
         isSwitching = true;
         currentIndex = targetPage - 1;
-        w.renderPart(currentIndex);
+        win.renderPart(currentIndex);
         if (currentIndex === parts.length - 1) {
           win.scrollTo(0, 0);
         } else {
@@ -1410,7 +1411,7 @@
     })
   ]).then(() => {
     const style = doc.createElement('style');
-    const PickrClass = w.Pickr || window.Pickr;
+    const PickrClass = win.Pickr || window.Pickr;
     style.textContent = `
       /* ---- #pickrContainer 関連 ---- */
       #pickrContainer {
