@@ -2317,10 +2317,10 @@
         }
       });
     });
-    }).catch((err) => {
-      win.alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
-      console.error("Pickr load error:", err);
-    });
+  }).catch((err) => {
+    win.alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
+    console.error("Pickr load error:", err);
+  });
 
   // ==============================
   // JSONで各値を保存/反映
@@ -2357,16 +2357,16 @@
     </div>
     <div class="ui-buttons">
       <div class="button-set">
+        <input id="jsonInput" class="json-input" placeholder="個別のJSONを貼り付け" />
+        <span class="label">⇒</span>
+        <button id="applyJsonBtn" class="button">APPLY</button>
+      </div>
+      <div class="button-set">
         <input id="bulkJsonInput" class="json-input" placeholder="複数のJSONを貼り付け" />
         <span class="label">⇒</span>
         <button id="bulkSaveBtn" class="button">SAVE</button>
       </div>
       ${buttonSets}
-      <div class="button-set">
-        <input id="jsonInput" class="json-input" placeholder="個別のJSONを貼り付け" />
-        <span class="label">⇒</span>
-        <button id="applyJsonBtn" class="button">APPLY</button>
-      </div>
       <div class="button-set">
         <button id="viewAllJsonBtn" class="button">保存済みのすべてのJSONを表示</button>
       </div>
@@ -2987,7 +2987,6 @@
 
     newDoc.head.replaceWith(head);
 
-
     // body要素
     const body = newDoc.body;
     body.innerHTML = `
@@ -3062,7 +3061,6 @@
     `;
     newDoc.body.appendChild(script);
   };
-
   
   // --- JSONを一括保存するボタンのイベント登録 ---
   doc.getElementById('bulkSaveBtn').onclick = () => {
