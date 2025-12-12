@@ -1810,6 +1810,24 @@
     // applyStyle関数
     window.applyStyle = (prop, value) => {
       if (!value) return;
+
+      // scrollbar-color
+      if (prop === 'scrollbar-color') {
+        let el = doc.getElementById('__scrollbarOverride');
+        if (!el) {
+          el = doc.createElement('style');
+          el.id = '__scrollbarOverride';
+          doc.head.appendChild(el);
+        }
+        el.textContent = `
+        * {
+          scrollbar-color: ${value};
+        }`;
+
+        return;
+      }
+
+      // color / background-color
       const id = prop === 'color' ? '__fgOverride' : '__bgOverride';
       let el = doc.getElementById(id);
       if (!el) {
@@ -1821,9 +1839,10 @@
       *:not(#pickrContainer):not(#pickrContainer *):not(.pcr-app):not(.pcr-app *) {
         ${prop}: ${value};
       }`;
-      
+
       updateScrollbarColor();
     };
+
     
     // scrollbar-colorを更新する関数
     const updateScrollbarColor = () => {
@@ -2831,6 +2850,9 @@
       applyStyle('background-color', data.backgroundColor);
       const bgHex = doc.getElementById('bgHex');
       if (bgHex) bgHex.value = data.backgroundColor;
+    }
+    if (data.color && data.backgroundColor) {
+      applyStyle('scrollbar-color', `${data.color} ${data.backgroundColor}`);
     }
     if (data.fontSize) target.style.fontSize = data.fontSize;
     if (data.fontWeight) target.style.fontWeight = data.fontWeight;
