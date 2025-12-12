@@ -458,7 +458,7 @@
   win.parts = parts;
   win.pageCharCounts = pageCharCounts;
   
-  // レンダリング関数を新しいウィンドウに設定
+  // レンダリング関数
   win.renderPart = function(pageIndex) {
     const container = doc.getElementById('novelDisplay');
     container.innerHTML = '';
@@ -994,13 +994,13 @@
   });
   
   // 開くボタン △
-  const scrollUIToggle = doc.createElement('div');
-  scrollUIToggle.innerHTML = `
+  const sUIOpenBtn = doc.createElement('div');
+  sUIOpenBtn.innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24">
       <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
     </svg>
   `;
-  Object.assign(scrollUIToggle.style, {
+  Object.assign(sUIOpenBtn.style, {
     position: 'fixed',
     top: '10px',
     left: '18px',
@@ -1011,17 +1011,17 @@
     zIndex: '10006',
     display: 'block'
   });
-  doc.body.appendChild(scrollUIToggle);
+  doc.body.appendChild(sUIOpenBtn);
   
   scrollUI.style.display = 'none';
-    scrollUIToggle.addEventListener('click', () => {
+  sUIOpenBtn.addEventListener('click', () => {
     scrollUI.style.display = 'block';
   });
 
   // 閉じるボタン ✕
-  const scrollSCloseBtn = doc.createElement('div');
-  scrollSCloseBtn.textContent = '✕';
-  Object.assign(scrollSCloseBtn.style, {
+  const sUICloseBtn = doc.createElement('div');
+  sUICloseBtn.textContent = '✕';
+  Object.assign(sUICloseBtn.style, {
     position: 'absolute',
     top: '5px',
     right: '10px',
@@ -1029,9 +1029,9 @@
     fontSize: '16px',
     color: 'unset',
   });
-  scrollUI.appendChild(scrollSCloseBtn);
+  scrollUI.appendChild(sUICloseBtn);
   
-  scrollSCloseBtn.addEventListener('click', () => {
+  sUICloseBtn.addEventListener('click', () => {
     scrollUI.style.display = 'none';
   });
   
@@ -1334,14 +1334,14 @@
   controlArea.appendChild(fontFamilyContainer);
   
   // 開くボタン 〇
-  const openBtn = doc.createElement('div');
-  openBtn.id = 'fontOpenBtn';
-  openBtn.innerHTML = `
+  const fUIOpenBtn = doc.createElement('div');
+  fUIOpenBtn.id = 'fontOpenBtn';
+  fUIOpenBtn.innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
     </svg>
   `;
-  Object.assign(openBtn.style, {
+  Object.assign(fUIOpenBtn.style, {
     position: 'fixed',
     top: '10px',
     right: '18px',
@@ -1350,17 +1350,17 @@
     cursor: 'pointer',
     zIndex: '10006'
   });
-  doc.body.appendChild(openBtn);
+  doc.body.appendChild(fUIOpenBtn);
 
-  openBtn.addEventListener('click', () => {
+  fUIOpenBtn.addEventListener('click', () => {
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    openBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    fUIOpenBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
   });
 
   // 閉じるボタン ✕
-  const closeBtn = doc.createElement('div');
-  closeBtn.textContent = '✕';
-  Object.assign(closeBtn.style, {
+  const fUICloseBtn = doc.createElement('div');
+  fUICloseBtn.textContent = '✕';
+  Object.assign(fUICloseBtn.style, {
     position: 'absolute',
     top: '0px',
     right: '9px',
@@ -1368,11 +1368,11 @@
     fontSize: '16px',
     color: 'unset',
   });
-  panel.appendChild(closeBtn);
+  panel.appendChild(fUICloseBtn);
 
-  closeBtn.addEventListener('click', () => {
+  fUICloseBtn.addEventListener('click', () => {
     panel.style.display = 'none';
-    openBtn.style.display = 'block';
+    fUIOpenBtn.style.display = 'block';
   });
 
   // 初期化
@@ -2372,7 +2372,7 @@
   onetapUI.innerHTML = `
     <div class="ui-header">
       <span>Apply Style with One Tap</span>
-      <div id="closeUIBtn" style="cursor:pointer; padding-right:5px;">✕</div>
+      <div id="oUICloseBtn" style="cursor:pointer; padding-right:5px;">✕</div>
     </div>
     <div class="ui-buttons">
       <div class="button-set">
@@ -2456,14 +2456,14 @@
     });
   });
 
-  // ☆ ボタン
-  const toggleBtn = doc.createElement('div');
-  toggleBtn.innerHTML = `
+  // ☆ 開くボタン
+  const oUIOpenBtn = doc.createElement('div');
+  oUIOpenBtn.innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24">
       <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
     </svg>
   `;
-  Object.assign(toggleBtn.style, {
+  Object.assign(oUIOpenBtn.style, {
     position: 'fixed',
     top: '80px',
     left: '18px',
@@ -2471,7 +2471,7 @@
     zIndex: '10000',
     opacity: '0.3',
   });
-  doc.body.appendChild(toggleBtn);
+  doc.body.appendChild(oUIOpenBtn);
 
   // UIをbodyに追加
   doc.body.appendChild(onetapUI);
@@ -2502,12 +2502,12 @@
   // ページ読み込み時に呼ぶ
   initApplyButtonStyle();
   
-  // ☆ UIを開く
-  toggleBtn.onclick = () => {
+  // 開くボタン ☆
+  oUIOpenBtn.onclick = () => {
     onetapUI.style.display = 'block';
   };
-  // ✕ UIを閉じる
-  doc.getElementById('closeUIBtn').onclick = () => {
+  // 閉じるボタン ✕
+  doc.getElementById('oUICloseBtn').onclick = () => {
     onetapUI.style.display = 'none';
   };
   
