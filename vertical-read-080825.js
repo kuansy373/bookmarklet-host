@@ -3020,7 +3020,7 @@
 
     const style = newDoc.createElement("style");
     style.textContent = `
-      body { font-family: sans-serif; padding: 16px; width: 100%; max-width: fit-content; }
+      body { font-family: sans-serif; padding: 16px; }
       pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
       .controls { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
       .controls-left { display: flex; align-items: center; }
@@ -3103,6 +3103,14 @@
       });
 
       updateJsonDisplay();
+
+      // 初期表示のレイアウト崩れ対策
+      requestAnimationFrame(() => {
+        jsonDisplay.style.display = 'none';
+        jsonDisplay.offsetHeight;
+        jsonDisplay.style.display = '';
+      });
+      
     `;
     newDoc.body.appendChild(script);
   };
