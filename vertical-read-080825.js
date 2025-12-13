@@ -117,11 +117,6 @@
       min-width: max-content;
       max-width: max-content;
     `,
-    measurer: `
-      position: absolute;
-      visibility: hidden;
-      pointer-events: none;
-    `,
     partsList: `
       max-height: 270px;
       overflow-y: auto;
@@ -3022,6 +3017,11 @@
     const title = newDoc.createElement("title");
     title.textContent = "保存済みJSON";
     head.appendChild(title);
+
+    const metaViewport = newDoc.createElement("meta");
+    metaViewport.name = "viewport";
+    metaViewport.content = "width=device-width, initial-scale=1.0";
+    head.appendChild(metaViewport);
 
     const style = newDoc.createElement("style");
     style.textContent = `
