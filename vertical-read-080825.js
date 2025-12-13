@@ -114,6 +114,7 @@
       min-height: 35vh;
       box-shadow: 0 6px 10px rgba(0,0,0,0.15);
       line-height: 1.6;
+      max-width: max-content;
     `,
     measurer: `
       position: absolute;
@@ -121,7 +122,7 @@
       pointer-events: none;
     `,
     partsList: `
-      max-height: 300px;
+      max-height: 270px;
       overflow-y: auto;
       margin-top: 5px;
       scrollbar-width: thin;
@@ -1494,6 +1495,7 @@
         border-radius: 8px;
         font-family: sans-serif;
         box-shadow: 0 0 4px;
+        max-width: max-content;
       }
     
       #pickrClose {
