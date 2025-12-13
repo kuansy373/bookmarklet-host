@@ -3018,14 +3018,9 @@
     title.textContent = "保存済みJSON";
     head.appendChild(title);
 
-    const metaViewport = newDoc.createElement("meta");
-    metaViewport.name = "viewport";
-    metaViewport.content = "width=device-width, initial-scale=1.0";
-    head.appendChild(metaViewport);
-
     const style = newDoc.createElement("style");
     style.textContent = `
-      body { font-family: sans-serif; padding: 16px; }
+      body { font-family: sans-serif; padding: 16px; width: 100%; max-width: fit-content; }
       pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
       .controls { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
       .controls-left { display: flex; align-items: center; }
