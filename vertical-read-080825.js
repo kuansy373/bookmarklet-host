@@ -111,7 +111,7 @@
       font-size: 13px;
       z-index: 10000;
       max-width: 350px;
-      min-height: 45vh;
+      min-height: 35vh;
       box-shadow: 0 6px 10px rgba(0,0,0,0.15);
       line-height: 1.6;
     `,
@@ -135,6 +135,16 @@
       border-bottom: 1px solid;
       padding-bottom: 5px;
     `,
+    dragHandle:`
+      float: right;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      background: #F4F4F4;
+      font-size: 14px;
+      padding: 1px 3px;
+      margin-top: -3px;
+      cursor: move;
+    `,
     valueSpan: `
       text-align: right;
       display: inline-block;
@@ -156,6 +166,7 @@
     return `
       <div style="${panelStyls.header}">
         🔖 テキスト情報
+        <div id="dragHandle" style="${panelStyls.dragHandle}">🟰</div>
       </div>
       <div>
         <strong>総文字数:</strong>
@@ -221,6 +232,62 @@
   // パネルに基本情報を表示
   textInfoPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
   const partsList = textInfoPanel.querySelector('#partsList');
+
+  // ドラッグ関数
+  function makeDraggable(dragHandle, dragTarget, dragDoc) {
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+  
+    dragHandle.addEventListener('mousedown', e => {
+      isDragging = true;
+      const rect = dragTarget.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      e.preventDefault();
+    });
+  
+    dragDoc.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      dragTarget.style.left = e.clientX - offsetX + 'px';
+      dragTarget.style.top  = e.clientY - offsetY + 'px';
+      dragTarget.style.right = 'auto';
+      dragTarget.style.bottom = 'auto';
+    });
+  
+    dragDoc.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  
+    // タッチ対応
+    dragHandle.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const rect = dragTarget.getBoundingClientRect();
+      offsetX = touch.clientX - rect.left;
+      offsetY = touch.clientY - rect.top;
+      isDragging = true;
+      e.preventDefault();
+    });
+  
+    dragDoc.addEventListener('touchmove', e => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      dragTarget.style.left = touch.clientX - offsetX + 'px';
+      dragTarget.style.top  = touch.clientY - offsetY + 'px';
+    }, { passive: false });
+  
+    dragDoc.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+  }
+  
+  // ドラッグ関数呼び出し
+  makeDraggable(
+    textInfoPanel.querySelector('#dragHandle'),
+    textInfoPanel,
+    document
+  );
   
   // <ruby>の外でspan分割する
   function chunkHTMLSafe(html, chunkSize) {
@@ -1688,7 +1755,7 @@
         <button id="bgHexLoad" class="hex-load-btn">⇦</button>
         <input id="bgHex" class="hex-display" value="-">
         <button class="copy-btn" data-target="bgHex">Copy</button>
-        <button id="dragHandle" class="hex-load-btn">🟰</button>
+        <div id="dragHandle" class="hex-load-btn">🟰</div>
       </div>
     
       <div class="row">
@@ -1745,57 +1812,14 @@
     `;
     doc.body.appendChild(container);
 
-    // --- ドラッグ処理 ---
-    (function() {
-      const dragHandle = doc.getElementById('dragHandle');
-      const container = doc.getElementById('pickrContainer');
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
-
-      // --- マウス操作 ---
-      dragHandle.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - container.getBoundingClientRect().left;
-        offsetY = e.clientY - container.getBoundingClientRect().top;
-        e.preventDefault();
-      });
-
-      doc.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        container.style.left = e.clientX - offsetX + 'px';
-        container.style.top = e.clientY - offsetY + 'px';
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
-      });
-
-      doc.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-
-      // --- タッチ操作 ---
-      dragHandle.addEventListener('touchstart', (e) => {
-        if (e.touches.length !== 1) return;
-        const touch = e.touches[0];
-        isDragging = true;
-        offsetX = touch.clientX - container.getBoundingClientRect().left;
-        offsetY = touch.clientY - container.getBoundingClientRect().top;
-        e.preventDefault();
-      });
-
-      doc.addEventListener('touchmove', (e) => {
-        if (!isDragging || e.touches.length !== 1) return;
-        const touch = e.touches[0];
-        container.style.left = touch.clientX - offsetX + 'px';
-        container.style.top = touch.clientY - offsetY + 'px';
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
-      }, { passive: false });
-
-      doc.addEventListener('touchend', () => {
-        isDragging = false;
-      });
-    })();
+    // ドラッグ関数呼び出し
+    const dragHandle = doc.getElementById('dragHandle');
+    const dragTarget  = doc.getElementById('pickrContainer');
+    makeDraggable(
+      doc.getElementById('dragHandle'),
+      doc.getElementById('pickrContainer'),
+      doc
+    );
 
     // --- ユーティリティ関数 ---
     const getHex = (prop) => {
