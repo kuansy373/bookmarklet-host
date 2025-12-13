@@ -114,6 +114,7 @@
       min-height: 35vh;
       box-shadow: 0 6px 10px rgba(0,0,0,0.15);
       line-height: 1.6;
+      min-width: max-content;
       max-width: max-content;
     `,
     measurer: `
@@ -188,7 +189,7 @@
         </span>
       </div>
       <div style="${panelStyls.divider}">
-        <strong>各パートの文字数</strong>
+        <strong>各ページの文字数</strong>
       </div>
       <div id="partsList" style="${panelStyls.partsList}"></div>
     `;
@@ -196,7 +197,7 @@
   
   function createPartInfoHTML(partNumber, charCount) {
     return `
-      <strong>パート${partNumber}:</strong>
+      <strong>ページ${partNumber}:</strong>
       <span style="${panelStyls.valueSpan}">
         ${charCount.toLocaleString()}文字
       </span>
@@ -452,10 +453,10 @@
     // 実際の文字数を計算（重複部分を含む）
     const actualStartPos = i > 0 ? Math.max(0, prevEndVisiblePos - overlap) : 0;
     const actualLen = endVisiblePos - actualStartPos;
-    console.log(`パート${i + 1}: ${actualLen}文字`);
+    console.log(`ページ${i + 1}: ${actualLen}文字`);
     pageCharCounts.push(actualLen);   // 文字数を配列に追加
 
-    // デバッグパネルにパート情報を追加
+    // デバッグパネルにページ情報を追加
     const partInfo = document.createElement('div');
     partInfo.style.cssText = panelStyls.partInfo;
     partInfo.innerHTML = createPartInfoHTML(i + 1, actualLen);
@@ -1495,6 +1496,7 @@
         border-radius: 8px;
         font-family: sans-serif;
         box-shadow: 0 0 4px;
+        min-width: max-content;
         max-width: max-content;
       }
     
