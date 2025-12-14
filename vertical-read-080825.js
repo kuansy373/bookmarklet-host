@@ -108,24 +108,28 @@
         right: 10px;
         background: #faf6ef;
         color: #000;
-        padding: 15px;
-        padding-bottom: 0px;
         border-radius: 8px;
         font-family: 'Hiragino Mincho ProN', serif;
         font-size: 13px;
         z-index: 10000;
-        max-width: 350px;
         min-height: 35vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         line-height: 1.6;
         min-width: max-content;
         max-width: max-content;
       `,
+      contentContainer: `
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px 15px 0px;
+      `,
       partsList: `
         max-height: 270px;
         overflow-y: auto;
         margin-top: 5px;
-        border-bottom: 1px solid #aaa;
         scrollbar-width: thin;
         scrollbar-color: #c8b9a6 #f0ebe3;
         overscroll-behavior: contain;
@@ -149,8 +153,6 @@
         cursor: move;
       `,
       valueSpan: `
-        text-align: right;
-        display: inline-block;
         float: right;
       `,
       infoRow: `
@@ -163,9 +165,11 @@
         border-top: 1px solid;
       `,
       popupRetry: `
-        padding: 6px 6px 10px;
+        padding: 4px;
         font-size: 12px;
-        color: #444;
+        text-indent: 11px;
+        background: #fffbf2;
+        border-top: 1px solid #aaa;
         cursor: pointer;
         user-select: none;
       `
@@ -174,32 +178,35 @@
     // HTML生成関数
     function createPanelHTML(totalChars, numPages, charsPerPage) {
       return `
-        <div style="${panelStyls.header}">
-          🔖 テキスト情報
-          <div id="dragHandle" style="${panelStyls.dragHandle}">🟰</div>
+        <div id="contentContainer" style="${panelStyls.contentContainer}">
+          <div style="${panelStyls.header}">
+            🔖 テキスト情報
+            <div id="dragHandle" style="${panelStyls.dragHandle}">🟰</div>
+          </div>
+          <div>
+            <strong>総文字数:</strong>
+            <span style="${panelStyls.valueSpan}">
+              ${totalChars.toLocaleString()}
+            </span>
+          </div>
+          <div>
+            <strong>ページ数:</strong>
+            <span style="${panelStyls.valueSpan}">
+              ${numPages}
+            </span>
+          </div>
+          <div>
+            <strong>目標文字数/ページ:　</strong>
+            <span style="${panelStyls.valueSpan}">
+              ${charsPerPage.toLocaleString()}
+            </span>
+          </div>
+          <div style="${panelStyls.divider}">
+            <strong>各ページの文字数</strong>
+          </div>
+            <div id="partsList" style="${panelStyls.partsList}"></div>
+          </div>
         </div>
-        <div>
-          <strong>総文字数:</strong>
-          <span style="${panelStyls.valueSpan}">
-            ${totalChars.toLocaleString()}
-          </span>
-        </div>
-        <div>
-          <strong>ページ数:</strong>
-          <span style="${panelStyls.valueSpan}">
-            ${numPages}
-          </span>
-        </div>
-        <div>
-          <strong>目標文字数/ページ:　</strong>
-          <span style="${panelStyls.valueSpan}">
-            ${charsPerPage.toLocaleString()}
-          </span>
-        </div>
-        <div style="${panelStyls.divider}">
-          <strong>各ページの文字数</strong>
-        </div>
-        <div id="partsList" style="${panelStyls.partsList}"></div>
         <div id="popupRetry" style="${panelStyls.popupRetry}">
           小説タブを開く
         </div>
@@ -252,10 +259,11 @@
     if (popupRetry) {
       popupRetry.addEventListener('click', () => openNovelWindow());
     
-      ['mouseenter', 'mouseleave'].forEach(event => {
-        popupRetry.addEventListener(event, () => {
-          popupRetry.style.color = event === 'mouseenter' ? '#000' : '#444';
-          popupRetry.style.textDecoration = event === 'mouseenter' ? 'underline' : 'none';
+      ['mouseenter', 'mouseleave'].forEach(evtType => {
+        popupRetry.addEventListener(evtType, () => {
+          popupRetry.style.color = evtType === 'mouseenter' ? '#000' : '#444';
+          popupRetry.style.background = evtType === 'mouseenter' ? '#faf6ef' : '#fffbf2';
+          popupRetry.style.textDecoration = evtType === 'mouseenter' ? 'underline' : 'none';
         });
       });
     }
@@ -2743,6 +2751,7 @@
               cursor: pointer;
               font-size: 12px;
             `;
+            
             jsonCopyBtn.onclick = async () => {
               if (jsonCopyBtn.disabled) return;
               try {
