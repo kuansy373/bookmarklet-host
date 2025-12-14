@@ -557,12 +557,16 @@
       const blob = new Blob([html], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
 
-      const w = window.open(url, '_blank');
-      if (!w) return;
+      const win = window.open(url, '_blank');
+      if (!win) return;
       
-      w.addEventListener('load', () => {
-        const win = w;
+      win.addEventListener('load', () => {
         const doc = win.document;
+
+        // タブが閉じられたときにURLを解放
+        win.addEventListener('unload', () => {
+          URL.revokeObjectURL(url);
+        });
         
         // データを新しいウィンドウに渡す
         win.parts = parts;
