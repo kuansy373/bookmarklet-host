@@ -109,6 +109,7 @@
         background: #faf6ef;
         color: #000;
         padding: 15px;
+        padding-bottom: 0px;
         border-radius: 8px;
         font-family: 'Hiragino Mincho ProN', serif;
         font-size: 13px;
@@ -124,9 +125,11 @@
         max-height: 270px;
         overflow-y: auto;
         margin-top: 5px;
+        border-bottom: 1px solid #aaa;
         scrollbar-width: thin;
         scrollbar-color: #c8b9a6 #f0ebe3;
         overscroll-behavior: contain;
+        content-visibility: auto;
       `,
       partInfo: 'padding: 3px 0;',
       header: `
@@ -160,14 +163,10 @@
         border-top: 1px solid;
       `,
       popupRetry: `
-        margin-top: 12px;
-        padding-top: 8px;
-        border-top: 1px dashed #aaa;
+        padding: 6px 6px 10px;
         font-size: 12px;
         color: #444;
         cursor: pointer;
-        text-decoration: underline;
-        text-align: center;
         user-select: none;
       `
     };
@@ -202,7 +201,7 @@
         </div>
         <div id="partsList" style="${panelStyls.partsList}"></div>
         <div id="popupRetry" style="${panelStyls.popupRetry}">
-          ポップアップブロックにより小説タブが開かない場合はここをクリック
+          小説タブを開く
         </div>
       `;
     }
@@ -249,9 +248,15 @@
 
     // 再実行リンク
     const popupRetry = textInfoPanel.querySelector('#popupRetry');
+    
     if (popupRetry) {
-      popupRetry.addEventListener('click', () => {
-        openNovelWindow();
+      popupRetry.addEventListener('click', () => openNovelWindow());
+    
+      ['mouseenter', 'mouseleave'].forEach(event => {
+        popupRetry.addEventListener(event, () => {
+          popupRetry.style.color = event === 'mouseenter' ? '#000' : '#444';
+          popupRetry.style.textDecoration = event === 'mouseenter' ? 'underline' : 'none';
+        });
       });
     }
   
