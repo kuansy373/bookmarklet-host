@@ -1525,7 +1525,7 @@
           })
         ]).then(() => {
           const style = doc.createElement('style');
-          const PickrClass = win.Pickr || window.Pickr;
+          const PickrClass = win.Pickr;
           style.textContent = `
             /* ---- #pickrContainer 関連 ---- */
             #pickrContainer {
@@ -2159,8 +2159,8 @@
               applyStyle(prop, hex);
               updateSwatch(swatch, hex, hex);
               updateContrast();
-              if (isFg) window.__fgHSL = hexToHSL(hex);
-              else window.__bgHSL = hexToHSL(hex);
+              if (isFg) win.__fgHSL = hexToHSL(hex);
+              else win.__bgHSL = hexToHSL(hex);
             });
             pickr.on('hide', () => {
               setCurrent(getSaved());
@@ -2300,22 +2300,22 @@
             let trials = 0;
             const maxTrials = 300;
             // --- HSLオブジェクトが不正な場合は必ず初期化 ---
-            if (!window.__bgHSL || typeof window.__bgHSL.h !== 'number' || typeof window.__bgHSL.s !== 'number' || typeof window.__bgHSL.l !== 'number') {
-              window.__bgHSL = hexToHSL(currentBg);
+            if (!win.__bgHSL || typeof win.__bgHSL.h !== 'number' || typeof win.__bgHSL.s !== 'number' || typeof win.__bgHSL.l !== 'number') {
+              win.__bgHSL = hexToHSL(currentBg);
             }
-            if (!window.__fgHSL || typeof window.__fgHSL.h !== 'number' || typeof window.__fgHSL.s !== 'number' || typeof window.__fgHSL.l !== 'number') {
-              window.__fgHSL = hexToHSL(currentFg);
+            if (!win.__fgHSL || typeof win.__fgHSL.h !== 'number' || typeof win.__fgHSL.s !== 'number' || typeof win.__fgHSL.l !== 'number') {
+              win.__fgHSL = hexToHSL(currentFg);
             }
             while (trials < maxTrials) {
               trials++;
               if (!bgLocked) {
-                window.__bgHSL = getRandomHSL()
+                win.__bgHSL = getRandomHSL()
               }
               if (!fgLocked) {
-                window.__fgHSL = getRandomHSL()
+                win.__fgHSL = getRandomHSL()
               }
-              const bgHex = hslToHex(window.__bgHSL.h, window.__bgHSL.s, window.__bgHSL.l);
-              const fgHex = hslToHex(window.__fgHSL.h, window.__fgHSL.s, window.__fgHSL.l);
+              const bgHex = hslToHex(win.__bgHSL.h, win.__bgHSL.s, win.__bgHSL.l);
+              const fgHex = hslToHex(win.__fgHSL.h, win.__fgHSL.s, win.__fgHSL.l);
               const ratio = parseFloat(getContrast(fgHex, bgHex));
               if (ratio >= contrastMin && ratio <= contrastMax) {
                 if (!bgLocked) currentBg = savedBg = bgHex;
@@ -2343,8 +2343,8 @@
             updateSwatch(doc.getElementById("fgSwatch"), currentFg, savedFg);
             updateColorHexDisplays();
             updateContrast();
-            window.__bgHSL = hexToHSL(currentBg);
-            window.__fgHSL = hexToHSL(currentFg);
+            win.__bgHSL = hexToHSL(currentBg);
+            win.__fgHSL = hexToHSL(currentFg);
             updateLockIcons();
           };
           // Pickr UI コンテナとスタイルを初期非表示にする
