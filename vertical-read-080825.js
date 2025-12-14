@@ -1036,16 +1036,16 @@
         }));
         setupXWInput('scrollW', val => applyToSliders(el => el.style.width = `${val}px`));
         
-        function setupXWInput(inputId, applyStyle) {
+        function setupXWInput(inputId, applyWideXpos) {
           const input = doc.getElementById(inputId);
           input.addEventListener('input', e => {
             const val = parseFloat(e.target.value);
-            if (!isNaN(val)) applyStyle(val);
+            if (!isNaN(val)) applyWideXpos(val);
           });
           input.addEventListener('blur', e => {
             if (e.target.value === '') {
               e.target.value = '0';
-              applyStyle(0);
+              applyWideXpos(0);
             }
           });
         }
@@ -1496,8 +1496,8 @@
         // Color Pickr
         // ==============================
       
-        if (window.__pickrLoaded) return;
-        window.__pickrLoaded = true;
+        if (win.__pickrLoaded) return;
+        win.__pickrLoaded = true;
         
         const load = (tag, attrs) => new Promise((resolve, reject) => {
           const el = doc.createElement(tag);
@@ -1881,7 +1881,7 @@
           };
       
           // applyStyle関数
-          window.applyStyle = (prop, value) => {
+          let applyStyle = (prop, value) => {
             if (!value) return;
       
             // scrollbar-color
@@ -2350,7 +2350,6 @@
           // Pickr UI コンテナとスタイルを初期非表示にする
           container.style.display = 'none';
           style.disabled = true;
-          window.__pickrLoaded = false;
           // □ ボタン作成関数（スタイルも内部に集約）
           function createPickrOpenButton() {
             const pickrOpen = doc.createElement('div');
@@ -2374,7 +2373,6 @@
               container.style.display = 'block';
               style.disabled = false;
               pickrOpen.remove();
-              window.__pickrLoaded = true;
             };
           
             doc.body.appendChild(pickrOpen);
@@ -2389,7 +2387,6 @@
             // UI を閉じる
             container.style.display = 'none';
             style.disabled = true;
-            window.__pickrLoaded = false;
           
             // □ ボタンを再生成
             createPickrOpenButton();
