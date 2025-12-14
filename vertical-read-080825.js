@@ -1509,6 +1509,9 @@
           el.onerror = reject;
           doc.head.appendChild(el);
         });
+
+        // スコープ確保のためthenの外で宣言
+        let applyStyle;
         
         // バージョン固定とSRI対応可能な形で読み込み
         Promise.all([
@@ -1881,7 +1884,7 @@
           };
       
           // applyStyle関数
-          let applyStyle = (prop, value) => {
+          applyStyle = function (prop, value) {
             if (!value) return;
       
             // scrollbar-color
@@ -1915,7 +1918,6 @@
       
             updateScrollbarColor();
           };
-      
           
           // scrollbar-colorを更新する関数
           const updateScrollbarColor = () => {
