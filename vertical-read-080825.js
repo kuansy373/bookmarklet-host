@@ -1637,7 +1637,7 @@
               position: absolute;
               right: 55px;
               font-size: 11px;
-              block-size: 18px;
+              block-size: 19px;
               padding: 1px;
               border: 1px solid #999;
               border-radius: 4px;
