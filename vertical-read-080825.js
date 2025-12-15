@@ -1161,7 +1161,7 @@
         // 操作対象は #novelDisplay
         let target = doc.getElementById('novelDisplay');
         if (!target) {
-          console.error('#novelDisplay が見つかりません（new window側）');
+          console.error('#novelDisplay が見つかりません（win側）');
         }
         // パネルコンテナ
         const panel = doc.createElement('div');
@@ -2550,8 +2550,8 @@
         
         // --- ボタンごとのイベント登録 ---
         for (let i = 1; i <= 8; i++) {
-          doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`style${i}`);
-          doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`style${i}`);
+          doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`Style${i}`);
+          doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`Style${i}`);
         }
         
         // 保存されたスタイルを保持するローカル変数
@@ -2559,7 +2559,7 @@
         
         // APPLYボタンの色を初期化
         function initApplyButtonStyle() {
-          const styles = ['style1', 'style2', 'style3', 'style4', 'style5', 'style6', 'style7', 'style8'];
+          const styles = ['Style1', 'Style2', 'Style3', 'Style4', 'Style5', 'Style6', 'Style7', 'Style8'];
         
           for (const styleName of styles) {
             const applyBtn = doc.getElementById(`applyBtn${styleName.slice(-1)}`);
@@ -2658,13 +2658,13 @@
           savedStyles[name] = savePreview;
         
           // 保存成功後にAPPLYボタンに色を反映
-          const num = name.replace('style', '');
+          const num = name.replace('Style', '');
           const applyBtn = doc.getElementById(`applyBtn${num}`);
           if (applyBtn) {
             applyBtn.style.color = color;
             applyBtn.style.backgroundColor = backgroundColor;
           }
-          win.alert(`☆ ${name} を保存しました！`);
+          win.alert(`☆ 保存しました！`);
         }
         
         let __saveConfirmOpen = false;
@@ -2706,7 +2706,7 @@
             
             // タイトル
             const title = doc.createElement('h3');
-            title.textContent = `☆ JSONデータを保存しますか？`;
+            title.textContent = `${name}に保存しますか？`;
             title.id = 'title';
             title.style.cssText = `
               margin: 0 0 16px 0;
@@ -3012,7 +3012,7 @@
           return true;
         }
         
-        // JSON APPLYボタン
+        // jsonInputからのAPPLYボタン
         doc.getElementById('applyJsonBtn').onclick = async () => {
           const jsonInput = doc.getElementById('jsonInput');
           const jsonText = jsonInput.value.trim();
@@ -3023,14 +3023,31 @@
           }
         
           try {
-            const data = JSON.parse(jsonText);
+            let data = JSON.parse(jsonText); // メソッドでJSON構文のチェック
+
+            const keys = Object.keys(data); // 自前でのJSONチェック
+
+            // Styleで始まるキーだけを抽出
+            const styleKeys = keys.filter(k => k.startsWith('Style'));
+
+            if (styleKeys.length > 0) {
+              if (styleKeys.length === 1 && keys.length === 1) {
+                // StyleX が1つだけ → 中身を使う
+                data = data[styleKeys[0]];
+              } else {
+                // Styleが複数、または Style以外と混在
+                win.alert('個別のJSONを入力してください');
+                jsonInput.value = '';
+                return;
+              }
+            }
         
             const proceed = win.confirm(`☆ JSONデータを反映します！`);
             if (!proceed) return;
         
             if (applyStyleData(data)) {
               onetapUI.style.display = 'none';
-              jsonInput.value = ''; // 入力欄をクリア
+              jsonInput.value = '';
             }
           } catch (e) {
             win.alert('JSONの解析に失敗しました:\n' + e.message);
