@@ -522,7 +522,7 @@
       body {
         display: flex;
         justify-content: center;
-        font-family: '游明朝', 'Yu Mincho', YuMincho, 'Hiragino Mincho Pro', serif;
+        font-family: '游明朝', 'Yu Mincho', 'YuMincho', 'Hiragino Mincho Pro', serif;
         font-feature-settings: 'pkna';
         text-shadow: 0 0 0px;
         -moz-osx-font-smoothing: grayscale;
@@ -546,6 +546,13 @@
       }
       ruby rt {
         font-size: 0.5em;
+      }
+      #yesButton,
+      #noButton,
+      #jsonCopyBtn,
+      #cancelBtn,
+      #saveBtn {
+        font-family: inherit;
       }
       </style>
       </head>
@@ -723,10 +730,10 @@
             
             // 範囲チェックを先に実行
             if (targetPage < 1 || targetPage > maxPage) {
-              win.alert(`1から${maxPage}の範囲で入力してください`);
+              win.alert(`1から${maxPage}の範囲で入力してください。`);
             } else if (!isValidPage(targetIndex)) {
               // 範囲内だが無効なページ
-              win.alert(`1から${maxPage}の範囲で入力してください。\nページ${targetPage}は空ページです。`);
+              win.alert(`1から${maxPage}の範囲で入力してください。\nページ${targetPage}は無効なページです。`);
             } else {
               // 有効なページへ移動
               overlayElements.overlay.style.display = 'none';
@@ -2135,7 +2142,7 @@
                         if (resultInput && resultInput.value !== "-") {
                           win.navigator.clipboard.writeText(resultInput.value).then(function(){
                             button.textContent = "Copied!";
-                            win.setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+                            win.setTimeout(function(){ button.textContent = "Copy"; }, 1500);
                           }).catch(function(err){
                             win.console.error("コピーに失敗しました:", err);
                           });
@@ -2401,7 +2408,7 @@
               if (targetInput && targetInput.value !== "-") {
                 win.navigator.clipboard.writeText(targetInput.value).then(function(){
                   button.textContent = "Copied!";
-                  win.setTimeout(function(){ button.textContent = "Copy"; }, 1100);
+                  win.setTimeout(function(){ button.textContent = "Copy"; }, 1500);
                 }).catch(function(err){
                   console.error("コピーに失敗しました:", err);
                 });
@@ -2698,6 +2705,7 @@
               padding: 24px;
               border-radius: 8px;
               max-width: 500px;
+              min-width: 300px;
               max-height: 50vh;
               overflow-y: auto;
               overscroll-behavior: contain;
@@ -2706,7 +2714,7 @@
             
             // タイトル
             const title = doc.createElement('h3');
-            title.textContent = `${name}に保存しますか？`;
+            title.textContent = `☆ ${name} に保存しますか？`;
             title.id = 'title';
             title.style.cssText = `
               margin: 0 0 16px 0;
@@ -2765,7 +2773,7 @@
                 win.setTimeout(() => {
                   jsonCopyBtn.textContent = 'コピー';
                   jsonCopyBtn.disabled = false;
-                }, 1100);
+                }, 1500);
               } catch (err) {
                 jsonCopyBtn.disabled = false;
                 win.alert('コピーに失敗しました: ' + err);
