@@ -2915,26 +2915,86 @@
         }
 
         // jsonInputのSAVEボタン
+        function hasValidStyleProperty(styleObj, validKeys) {
+          if (
+            styleObj === null ||
+            typeof styleObj !== 'object' ||
+            Array.isArray(styleObj)
+          ) {
+            return false;
+          }
+
+          return Object.keys(styleObj).some(key => validKeys.has(key));
+        }
+
+        // jsonInputのSAVEボタン
         doc.getElementById('bulkSaveBtn').onclick = () => {
           const bulkJsonInput = doc.getElementById('bulkJsonInput');
           const jsonText = bulkJsonInput.value.trim();
-        
+          const VALID_STYLE_KEYS = new Set([
+            'color',
+            'backgroundColor',
+            'fontSize',
+            'fontWeight',
+            'textShadow',
+            'fontFamily',
+            'scrollSettings'
+          ]);
+
           if (!jsonText) {
             win.alert('JSONデータを入力してください');
             return;
           }
-        
+
           try {
-            const parsedData = JSON.parse(jsonText);
-        
-            // 保存処理
-            Object.keys(parsedData).forEach(key => {
-              savedStyles[key] = parsedData[key];
-            });
-        
+            let parsedData = JSON.parse(jsonText);
+            const keys = Object.keys(parsedData);
+
+            // Styleキーを抽出
+            const styleKeys = keys.filter(k => /^Style\d+$/.test(k));
+
+            // --- Styleキーなしの場合 ---
+            if (styleKeys.length === 0) {
+
+              // 無効なデータをはじく
+              if (parsedData === null || typeof parsedData !== 'object' || Array.isArray(parsedData)) {
+                win.alert('JSONの形式が正しくありません');
+                return;
+              }
+
+              // 既存のStyle番号を取得し、空いているStyle数字を付与
+              const usedNums = Object.keys(savedStyles)
+                .map(k => /^Style(\d+)$/.exec(k))
+                .filter(Boolean)
+                .map(m => Number(m[1]));
+
+              let newNum = 1;
+              while (usedNums.includes(newNum)) {
+                newNum++;
+              }
+
+              parsedData = {
+                [`Style${newNum}`]: parsedData
+              };
+
+            }
+            
+            // --- 保存処理 ---
+            for (const key of Object.keys(parsedData)) {
+              const styleObj = parsedData[key];
+
+              if (!hasValidStyleProperty(styleObj, VALID_STYLE_KEYS)) {
+                win.alert(`${key} に有効なスタイルプロパティがありません`);
+                return;
+              }
+
+              savedStyles[key] = styleObj;
+            }
+
             win.alert('JSONデータを保存しました！');
             bulkJsonInput.value = '';
             initApplyButtonStyle();
+
           } catch (e) {
             win.alert('JSONの解析に失敗しました:\n' + e.message);
             bulkJsonInput.value = '';
