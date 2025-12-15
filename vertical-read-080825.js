@@ -3088,6 +3088,11 @@
       
           // head要素
           const head = newDoc.createElement("head");
+          
+          const meta = newDoc.createElement("meta");
+          meta.name = "viewport";
+          meta.content = "width=device-width, initial-scale=1";
+          head.appendChild(meta);
       
           const title = newDoc.createElement("title");
           title.textContent = "保存済みJSON";
@@ -3104,7 +3109,8 @@
             #jsonDisplay[contenteditable="true"] { border: 3px dashed #000000; border-radius: 0px; }
           `;
           head.appendChild(style);
-      
+
+          // ブラウザが生成した空の<head>を組み立てた<head>に差し替え
           newDoc.head.replaceWith(head);
       
           // body要素
@@ -3179,7 +3185,7 @@
       
             updateJsonDisplay();
       
-            // 初期表示のレイアウト崩れ対策
+            // CSSOM、レイアウト計算途中のDOM構築によるviewport崩れ対策
             requestAnimationFrame(() => {
               jsonDisplay.style.display = 'none';
               jsonDisplay.offsetHeight;
