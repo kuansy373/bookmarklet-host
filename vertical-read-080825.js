@@ -546,6 +546,7 @@
       }
       ruby rt {
         font-size: 0.5em;
+        background: transparent;
       }
       #yesButton,
       #noButton,
@@ -2884,7 +2885,7 @@
             overlay.appendChild(box);
             doc.body.appendChild(overlay);
         
-            // 現在のフォントを新しく作られた要素に適用
+            // 現在のフォントを要素に適用
             const overlayElements = [
               doc.getElementById('title'),
               doc.getElementById('prettyLabel'),
@@ -2912,8 +2913,92 @@
             };
           });
         }
+
+        // jsonInputのSAVEボタン
+        doc.getElementById('bulkSaveBtn').onclick = () => {
+          const bulkJsonInput = doc.getElementById('bulkJsonInput');
+          const jsonText = bulkJsonInput.value.trim();
         
-        // 共通のスタイル適用関数
+          if (!jsonText) {
+            win.alert('JSONデータを入力してください');
+            return;
+          }
+        
+          try {
+            const parsedData = JSON.parse(jsonText);
+        
+            // 保存処理
+            Object.keys(parsedData).forEach(key => {
+              savedStyles[key] = parsedData[key];
+            });
+        
+            win.alert('JSONデータを保存しました！');
+            bulkJsonInput.value = '';
+            initApplyButtonStyle();
+          } catch (e) {
+            win.alert('JSONの解析に失敗しました:\n' + e.message);
+            bulkJsonInput.value = '';
+          }
+        };
+
+        // APPLYボタン
+        async function applyStyleByName(name) {
+          
+          const proceed = win.confirm(`☆ ${name} を反映します！`);
+          if (!proceed) return;
+        
+          const data = savedStyles[name];
+          if (!data) return win.alert(`${name} は保存されていません`);
+        
+          if (applyStyleData(data)) {
+            onetapUI.style.display = 'none';
+          }
+        }
+        
+        // jsonInputのAPPLYボタン
+        doc.getElementById('applyJsonBtn').onclick = async () => {
+          const jsonInput = doc.getElementById('jsonInput');
+          const jsonText = jsonInput.value.trim();
+        
+          if (!jsonText) {
+            win.alert('JSONデータを入力してください');
+            return;
+          }
+        
+          try {
+            let data = JSON.parse(jsonText); // メソッドでJSON構文のチェック
+
+            const keys = Object.keys(data); // 自前でのJSONチェック
+
+            // Styleで始まるキーだけを抽出
+            const styleKeys = keys.filter(k => k.startsWith('Style'));
+
+            if (styleKeys.length > 0) {
+              if (styleKeys.length === 1 && keys.length === 1) {
+                // StyleX が1つだけ → 中身を使う
+                data = data[styleKeys[0]];
+              } else {
+                // Styleが複数、または Style以外と混在
+                win.alert('個別のJSONを入力してください');
+                jsonInput.value = '';
+                return;
+              }
+            }
+        
+            const proceed = win.confirm(`☆ JSONデータを反映します！`);
+            if (!proceed) return;
+        
+            if (applyStyleData(data)) {
+              onetapUI.style.display = 'none';
+              jsonInput.value = '';
+            }
+          } catch (e) {
+            win.alert('JSONの解析に失敗しました:\n' + e.message);
+            jsonInput.value = '';
+          }
+        };
+
+        // スタイル適用関数
         function applyStyleData(data) {
           const target = doc.getElementById('novelDisplay');
           if (!target) {
@@ -3018,62 +3103,6 @@
           }
           updateControls();
           return true;
-        }
-        
-        // jsonInputからのAPPLYボタン
-        doc.getElementById('applyJsonBtn').onclick = async () => {
-          const jsonInput = doc.getElementById('jsonInput');
-          const jsonText = jsonInput.value.trim();
-        
-          if (!jsonText) {
-            win.alert('JSONデータを入力してください');
-            return;
-          }
-        
-          try {
-            let data = JSON.parse(jsonText); // メソッドでJSON構文のチェック
-
-            const keys = Object.keys(data); // 自前でのJSONチェック
-
-            // Styleで始まるキーだけを抽出
-            const styleKeys = keys.filter(k => k.startsWith('Style'));
-
-            if (styleKeys.length > 0) {
-              if (styleKeys.length === 1 && keys.length === 1) {
-                // StyleX が1つだけ → 中身を使う
-                data = data[styleKeys[0]];
-              } else {
-                // Styleが複数、または Style以外と混在
-                win.alert('個別のJSONを入力してください');
-                jsonInput.value = '';
-                return;
-              }
-            }
-        
-            const proceed = win.confirm(`☆ JSONデータを反映します！`);
-            if (!proceed) return;
-        
-            if (applyStyleData(data)) {
-              onetapUI.style.display = 'none';
-              jsonInput.value = '';
-            }
-          } catch (e) {
-            win.alert('JSONの解析に失敗しました:\n' + e.message);
-          }
-        };
-          
-        // APPLYボタン
-        async function applyStyleByName(name) {
-          
-          const proceed = win.confirm(`☆ ${name} を反映します！`);
-          if (!proceed) return;
-        
-          const data = savedStyles[name];
-          if (!data) return win.alert(`${name} は保存されていません`);
-        
-          if (applyStyleData(data)) {
-            onetapUI.style.display = 'none';
-          }
         }
         
         // --- 保存済みのすべてのJSONを表示するボタンのイベント登録 ---
@@ -3194,34 +3223,6 @@
             
           `;
           newDoc.body.appendChild(script);
-        };
-        
-        // --- JSONを一括保存するボタンのイベント登録 ---
-        doc.getElementById('bulkSaveBtn').onclick = () => {
-          const bulkJsonInput = doc.getElementById('bulkJsonInput');
-          const jsonText = bulkJsonInput.value.trim();
-        
-          if (!jsonText) {
-            win.alert('JSONデータを入力してください');
-            return;
-          }
-        
-          try {
-            const parsedData = JSON.parse(jsonText);
-        
-            // 保存処理
-            Object.keys(parsedData).forEach(key => {
-              savedStyles[key] = parsedData[key];
-            });
-        
-            win.alert('JSONデータを保存しました！');
-            bulkJsonInput.value = ''; // 入力欄クリア
-        
-            // APPLYボタンの色を更新
-            initApplyButtonStyle();
-          } catch (e) {
-            win.alert('JSONの解析に失敗しました:\n' + e.message);
-          }
         };
       });
     }
