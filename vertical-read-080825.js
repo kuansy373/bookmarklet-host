@@ -439,7 +439,7 @@
         for (const delimiter of delimiters) {
           for (let j = searchStart; j < searchEnd; j++) {
             if (fullText[j] === delimiter) {
-              bestPos = j + 1;
+              bestPos = j;
               found = true;
               break;
             }
@@ -808,16 +808,18 @@
             showOverlay(nextPage, numPages, (targetPage) => {
               isSwitching = true;
               currentIndex = targetPage - 1;
-              win.renderPart(currentIndex);
-              win.scrollTo(0, 0);
-              win.setTimeout(() => {
-                if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-                if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-                if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
-                isSwitching = false;
-              }, 50);
-              promptShownForward = false;
-              promptShownBackward = false;
+              win.requestAnimationFrame(() => {
+                win.renderPart(currentIndex);
+                win.scrollTo(0, 0);
+                win.setTimeout(() => {
+                  if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
+                  if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
+                  if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+                  isSwitching = false;
+                }, 50);
+                promptShownForward = false;
+                promptShownBackward = false;
+              });
             });
           } else if (scrollBottom < bodyHeight - win.innerHeight / 4) {
             // 最上部から（25%）離れたらフラグON
@@ -835,20 +837,21 @@
               isSwitching = true;
               currentIndex = targetPage - 1;
               win.renderPart(currentIndex);
-              if (currentIndex === parts.length - 1) {
-                win.scrollTo(0, 0);
-              } else {
-                const prevPartHeight = win.scrollHeight;
-                win.scrollTo(0, prevPartHeight - win.innerHeight);
-              }
-              win.setTimeout(() => {
-                if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-                if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-                if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
-                isSwitching = false;
-              }, 50);
-              promptShownForward = false;
-              promptShownBackward = false;
+              win.requestAnimationFrame(() => {
+                if (currentIndex === parts.length - 1) {
+                  win.scrollTo(0, 0);
+                } else {
+                  win.scrollTo(0, 1e9);
+                }
+                win.setTimeout(() => {
+                  if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
+                  if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
+                  if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+                  isSwitching = false;
+                }, 50);
+                promptShownForward = false;
+                promptShownBackward = false;
+              });
             });
           } else if (scrollTop > (currentIndex === 0 ? win.innerHeight / 1.5625 : win.innerHeight / 4)) {
             // 最上部から（1ページ目:64%、それ以外:25%）離れたらフラグON
