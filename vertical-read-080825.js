@@ -363,7 +363,7 @@
     }
     
     // テキスト全体から可視文字位置と対応するHTML位置のマップを作成
-    function buildPositionMap(container) {
+    function buildPositionMap(element) {
       const map = [];
       let visiblePos = 0;
     
@@ -382,7 +382,7 @@
         }
       }
     
-      walk(container);
+      walk(element);
       return map;
     }
     
@@ -556,7 +556,7 @@
         will-change: scroll-position;
         transform: translateZ(0);
       }
-      rt {
+      ruby rt {
         font-size: 0.5em;
         background: transparent !important;
       }
