@@ -544,9 +544,9 @@
         will-change: scroll-position;
         transform: translateZ(0);
       }
-      ruby rt {
+      rt {
         font-size: 0.5em;
-        background: transparent;
+        background: transparent; !important;
       }
       #yesButton,
       #noButton,
@@ -570,11 +570,6 @@
       
       win.addEventListener('load', () => {
         const doc = win.document;
-
-        // タブが閉じられたときにURLを解放
-        win.addEventListener('unload', () => {
-          URL.revokeObjectURL(url);
-        });
         
         // データを新しいウィンドウに渡す
         win.parts = parts;
@@ -938,12 +933,12 @@
           <label><input id="scrollB" class="settingCheckbox" type="checkbox"><span class="labelText"> Border</span></label><br>
           <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
           <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
+          <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
           <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
           <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
           <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
           <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
           <label>Width: <input id="scrollW" class="settingInputbox" type="number" value="80"> px</label><br>
-          <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
           <label>Speed scale: <input id="scrollSpeedScale" class="settingInputbox" type="number" min="0" max="20" step="1" value="10"> (0~20)</label><br>
           <label><input id="scrollHide" class="settingCheckbox" type="checkbox"><span class="labelText"> Slider ball</span></label><br>
         `;
@@ -1011,6 +1006,32 @@
             applyToSliders(el => el.style.boxShadow = '0 0 0px');
           }
         });
+
+        // Opacity
+        const opacityInput = doc.getElementById('scrollO');
+        let lastValue = opacityInput.value;
+        
+        opacityInput.addEventListener('input', e => {
+          if (e.target.value === '0' && lastValue !== '0.') {
+            e.target.value = '0.';
+          }
+          const num = parseFloat(e.target.value);
+          if (!isNaN(num) && num >= 0 && num <= 1) {
+            applyToSliders(el => el.style.opacity = num);
+          }
+          lastValue = e.target.value;
+        });
+        
+        opacityInput.addEventListener('focus', e => {
+          if (e.target.value === '0') e.target.value = '0.';
+        });
+        
+        opacityInput.addEventListener('blur', e => {
+          if (e.target.value === '0.' || e.target.value === '') {
+            e.target.value = '0';
+            applyToSliders(el => el.style.opacity = 0);
+          }
+        });
         
         // Right/Left/Both
         const rightbox = doc.getElementById('scrollRight');
@@ -1057,32 +1078,6 @@
             }
           });
         }
-        
-        // Opacity
-        const opacityInput = doc.getElementById('scrollO');
-        let lastValue = opacityInput.value;
-        
-        opacityInput.addEventListener('input', e => {
-          if (e.target.value === '0' && lastValue !== '0.') {
-            e.target.value = '0.';
-          }
-          const num = parseFloat(e.target.value);
-          if (!isNaN(num) && num >= 0 && num <= 1) {
-            applyToSliders(el => el.style.opacity = num);
-          }
-          lastValue = e.target.value;
-        });
-        
-        opacityInput.addEventListener('focus', e => {
-          if (e.target.value === '0') e.target.value = '0.';
-        });
-        
-        opacityInput.addEventListener('blur', e => {
-          if (e.target.value === '0.' || e.target.value === '') {
-            e.target.value = '0';
-            applyToSliders(el => el.style.opacity = 0);
-          }
-        });
         
         // Speed Scale
         const speedScaleInput = doc.getElementById('scrollSpeedScale');
@@ -2914,16 +2909,13 @@
           });
         }
 
-        // jsonInputのSAVEボタン
-        function hasValidStyleProperty(styleObj, validKeys) {
-          if (
-            styleObj === null ||
-            typeof styleObj !== 'object' ||
-            Array.isArray(styleObj)
-          ) {
-            return false;
-          }
+        function isPlainObject(obj) {
+          return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
+        }
 
+        function hasValidStyleProperty(styleObj, validKeys) {
+          if (!isPlainObject(styleObj)) return false;
+        
           return Object.keys(styleObj).some(key => validKeys.has(key));
         }
 
@@ -2945,60 +2937,61 @@
             win.alert('JSONデータを入力してください');
             return;
           }
-
+          
+          let parsedData;
           try {
-            let parsedData = JSON.parse(jsonText);
-            const keys = Object.keys(parsedData);
-
-            // Styleキーを抽出
-            const styleKeys = keys.filter(k => /^Style\d+$/.test(k));
-
-            // --- Styleキーなしの場合 ---
-            if (styleKeys.length === 0) {
-
-              // 無効なデータをはじく
-              if (parsedData === null || typeof parsedData !== 'object' || Array.isArray(parsedData)) {
-                win.alert('JSONの形式が正しくありません');
-                return;
-              }
-
-              // 既存のStyle番号を取得し、空いているStyle数字を付与
-              const usedNums = Object.keys(savedStyles)
-                .map(k => /^Style(\d+)$/.exec(k))
-                .filter(Boolean)
-                .map(m => Number(m[1]));
-
-              let newNum = 1;
-              while (usedNums.includes(newNum)) {
-                newNum++;
-              }
-
-              parsedData = {
-                [`Style${newNum}`]: parsedData
-              };
-
-            }
-            
-            // --- 保存処理 ---
-            for (const key of Object.keys(parsedData)) {
-              const styleObj = parsedData[key];
-
-              if (!hasValidStyleProperty(styleObj, VALID_STYLE_KEYS)) {
-                win.alert(`${key} に有効なスタイルプロパティがありません`);
-                return;
-              }
-
-              savedStyles[key] = styleObj;
-            }
-
-            win.alert('JSONデータを保存しました！');
-            bulkJsonInput.value = '';
-            initApplyButtonStyle();
-
+            parsedData = JSON.parse(jsonText);
           } catch (e) {
             win.alert('JSONの解析に失敗しました:\n' + e.message);
-            bulkJsonInput.value = '';
+            return;
           }
+          
+          if (!isPlainObject(parsedData)) {
+            win.alert('JSONの形式が正しくありません');
+            return;
+          }
+
+          const keys = Object.keys(parsedData);
+
+          // Styleキーを抽出
+          const styleKeys = keys.filter(k => /^Style\d+$/.test(k));
+
+          // --- Styleキーなしの場合 ---
+          if (styleKeys.length === 0) {
+
+            // 既存のStyle番号を取得し、空いているStyle数字を付与
+            const usedNums = Object.keys(savedStyles)
+              .map(k => /^Style(\d+)$/.exec(k))
+              .filter(Boolean)
+              .map(m => Number(m[1]));
+
+            let newNum = 1;
+            while (usedNums.includes(newNum)) {
+              newNum++;
+            }
+
+            parsedData = {
+              [`Style${newNum}`]: parsedData
+            };
+
+          }
+          
+          // --- 保存処理 ---
+          for (const key of Object.keys(parsedData)) {
+            const styleObj = parsedData[key];
+
+            if (!hasValidStyleProperty(styleObj, VALID_STYLE_KEYS)) {
+              win.alert(`${key} に有効なスタイルプロパティがありません`);
+              return;
+            }
+
+            savedStyles[key] = styleObj;
+          }
+
+          win.alert('JSONデータを保存しました！');
+          bulkJsonInput.value = '';
+          initApplyButtonStyle();
+
         };
 
         // APPLYボタン
