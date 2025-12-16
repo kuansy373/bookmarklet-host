@@ -363,56 +363,52 @@
     }
     
     // テキスト全体から可視文字位置と対応するHTML位置のマップを作成
-    function buildPositionMap(html) {
-      const map = []; // [{visiblePos, htmlPos}]
-      let htmlPos = 0;
+    function buildPositionMap(container) {
+      const map = [];
       let visiblePos = 0;
-      let inTag = false;
-      
-      while (htmlPos < html.length) {
-        const ch = html[htmlPos];
-        
-        if (ch === '<') {
-          inTag = true;
-          htmlPos++;
-          continue;
+    
+      function walk(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const len = node.textContent.length;
+          for (let i = 0; i < len; i++) {
+            map.push({
+              visiblePos: visiblePos++,
+              node,
+              offset: i
+            });
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          node.childNodes.forEach(walk);
         }
-        
-        if (ch === '>') {
-          inTag = false;
-          htmlPos++;
-          continue;
-        }
-        
-        if (!inTag) {
-          map.push({ visiblePos, htmlPos });
-          visiblePos++;
-        }
-        
-        htmlPos++;
       }
-      
-      map.push({ visiblePos, htmlPos: html.length }); // 最後の位置
+    
+      walk(container);
       return map;
     }
     
-    // 可視文字位置からHTML位置を取得
-    function getHtmlPos(map, targetVisiblePos) {
-      // map は visiblePos 昇順である想定
-      let lo = 0, hi = map.length - 1;
-      while (lo < hi) {
-        const mid = Math.floor((lo + hi) / 2);
-        if (map[mid].visiblePos < targetVisiblePos) lo = mid + 1;
-        else hi = mid;
-      }
-      return map[lo] ? map[lo].htmlPos : (map.length ? map[map.length - 1].htmlPos : 0);
+    const posMap = buildPositionMap(measurer);
+    
+    function rangeFromVisiblePos(map, startPos, endPos) {
+      const range = document.createRange();
+    
+      const start = map[startPos];
+      const end = map[endPos];
+    
+      if (!start || !end) return null;
+    
+      range.setStart(start.node, start.offset);
+      range.setEnd(end.node, end.offset + 1);
+    
+      return range;
     }
     
-    const fullHTML = text;
-    
-    // 位置マップを作成
-    const posMap = buildPositionMap(fullHTML);
-    
+    function rangeToHTML(range) {
+      const frag = range.cloneContents();
+      const div = document.createElement('div');
+      div.appendChild(frag);
+      return div.innerHTML;
+    }
+        
     // 均等分割でパートを作成
     const parts = [];
     
@@ -429,7 +425,7 @@
       
       // 最後のページは残り全部
       if (i === numPages - 1) {
-        endVisiblePos = fullText.length;
+        endVisiblePos = Math.min(endVisiblePos, posMap.length - 1);
       } else {
         // 切り替え目標位置より先方5%の範囲で区切りのいい文字を探す
         const searchStart = endVisiblePos;
@@ -455,18 +451,34 @@
       }
       
       // HTML位置に変換
-      const startHtmlPos = getHtmlPos(posMap, startVisiblePos);
-      const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
+      const range = rangeFromVisiblePos(
+        posMap,
+        startVisiblePos,
+        endVisiblePos
+      );
       
-      let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
+      let partHTML = range ? rangeToHTML(range) : '';
     
       // 重複処理
       if (i > 0 && overlap > 0) {
-        const overlapEndHtmlPos = getHtmlPos(posMap, startVisiblePos + overlap);
-        const overlapLengthInHTML = overlapEndHtmlPos - startHtmlPos;
+        let overlapPart = '';
+        let mainPart = partHTML;
         
-        const overlapPart = partHTML.slice(0, overlapLengthInHTML);
-        const mainPart = partHTML.slice(overlapLengthInHTML);
+        if (i > 0 && overlap > 0) {
+          const overlapRange = rangeFromVisiblePos(
+            posMap,
+            startVisiblePos,
+            startVisiblePos + overlap
+          );
+          overlapPart = overlapRange ? rangeToHTML(overlapRange) : '';
+        
+          const mainRange = rangeFromVisiblePos(
+            posMap,
+            startVisiblePos + overlap,
+            endVisiblePos
+          );
+          mainPart = mainRange ? rangeToHTML(mainRange) : '';
+        }
         
         // メイン部分のみ50文字チャンク分割
         const mainChunks = chunkHTMLSafe(mainPart, 50);
@@ -546,7 +558,7 @@
       }
       rt {
         font-size: 0.5em;
-        background: transparent; !important;
+        background: transparent !important;
       }
       #yesButton,
       #noButton,
