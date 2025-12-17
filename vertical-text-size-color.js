@@ -544,7 +544,7 @@
         will-change: scroll-position;
         transform: translateZ(0);
       }
-      rt {
+      ruby rt {
         font-size: 0.5em;
         background: transparent !important;
       }
@@ -717,6 +717,7 @@
           overlayElements.message.textContent = '';
           overlayElements.pageInput.value = defaultPage;
           overlayElements.pageInput.max = maxPage;
+          disableBodyScroll();
           overlayElements.overlay.style.display = 'flex';
           
           // はい
@@ -733,6 +734,7 @@
             } else {
               // 有効なページへ移動
               overlayElements.overlay.style.display = 'none';
+              enableBodyScroll();
               cleanup();
               onYes(targetPage);
             }
@@ -741,6 +743,7 @@
           // いいえ
           const handleNo = () => {
             overlayElements.overlay.style.display = 'none';
+            enableBodyScroll();
             cleanup();
             isSwitching = false;
             promptShownForward = false;
@@ -845,6 +848,16 @@
           if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
           if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
           if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+        }
+        
+        function disableBodyScroll() {
+          doc.body.style.overflow = 'hidden';
+          doc.documentElement.style.overflow = 'hidden';
+        }
+        
+        function enableBodyScroll() {
+          doc.body.style.overflow = '';
+          doc.documentElement.style.overflow = '';
         }
         
         // === 右スライダー ===
@@ -2681,6 +2694,7 @@
           if (__saveConfirmOpen) return Promise.resolve(false);
           __saveConfirmOpen = true;
           isSwitching = true;
+          disableBodyScroll();
           
           return new Promise((resolve) => {
             // オーバーレイを作成
@@ -2830,6 +2844,7 @@
               if (overlay.parentNode) doc.body.removeChild(overlay);
               __saveConfirmOpen = false;
               isSwitching = false;
+              enableBodyScroll();
               doc.removeEventListener('keydown', handleKeydown); // イベントリスナーを削除
               resolve(result);
             };
