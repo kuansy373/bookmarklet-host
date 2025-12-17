@@ -793,15 +793,13 @@
             isValidPage(currentIndex + 1)
           ) {
             const nextPage = currentIndex + 2;
+            resetScrollSliders();
             showOverlay(nextPage, numPages, (targetPage) => {
               isSwitching = true;
               currentIndex = targetPage - 1;
               win.renderPart(currentIndex);
               win.scrollTo(0, 0);
               win.setTimeout(() => {
-                if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-                if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-                if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
                 isSwitching = false;
               }, 50);
               promptShownForward = false;
@@ -819,6 +817,7 @@
             promptShownBackward
           ) {
             const targetPageForPrompt = currentIndex === 0 ? validPageCount  : currentIndex;
+            resetScrollSliders();
             showOverlay(targetPageForPrompt, numPages , (targetPage) => {
               isSwitching = true;
               currentIndex = targetPage - 1;
@@ -830,9 +829,6 @@
                   win.scrollTo(0, 1e9);
                 }
                 win.setTimeout(() => {
-                  if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
-                  if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
-                  if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
                   isSwitching = false;
                 }, 50);
                 promptShownForward = false;
@@ -844,6 +840,12 @@
             promptShownBackward = true;
           }
         });
+
+        function resetScrollSliders() {
+          if (typeof scrollSliderRight !== 'undefined') scrollSliderRight.value = 0;
+          if (typeof scrollSliderLeft !== 'undefined') scrollSliderLeft.value = 0;
+          if (typeof scrollSpeed !== 'undefined') scrollSpeed = 0;
+        }
         
         // === 右スライダー ===
         const scrollSliderRight = doc.createElement('input');
