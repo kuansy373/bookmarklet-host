@@ -234,6 +234,7 @@
     
     // HTMLから可視文字数を取得
     measurer.innerHTML = text;
+    measurer.querySelectorAll('rt, rp').forEach(el => el.remove());
     const fullText = measurer.textContent;
     const totalVisibleChars = fullText.length;
     
@@ -364,35 +365,52 @@
     
     // テキスト全体から可視文字位置と対応するHTML位置のマップを作成
     function buildPositionMap(html) {
-      const map = []; // [{visiblePos, htmlPos}]
+      const map = [];
       let htmlPos = 0;
       let visiblePos = 0;
       let inTag = false;
-      
+    
+      // rt / rp の中かどうか
+      const skipStack = [];
+      let skipVisible = false;
+    
       while (htmlPos < html.length) {
         const ch = html[htmlPos];
-        
+    
+        // タグ開始
         if (ch === '<') {
-          inTag = true;
-          htmlPos++;
+          const end = html.indexOf('>', htmlPos + 1);
+          if (end === -1) break;
+    
+          const tagContent = html.slice(htmlPos + 1, end);
+          const isClosing = /^\s*\//.test(tagContent);
+          const nameMatch = tagContent.replace(/^\s*\//, '').match(/^([a-zA-Z0-9-]+)/);
+          const tagName = nameMatch ? nameMatch[1].toLowerCase() : '';
+    
+          if (tagName === 'rt' || tagName === 'rp') {
+            if (!isClosing) {
+              skipStack.push(tagName);
+              skipVisible = true;
+            } else {
+              skipStack.pop();
+              skipVisible = skipStack.length > 0;
+            }
+          }
+    
+          htmlPos = end + 1;
           continue;
         }
-        
-        if (ch === '>') {
-          inTag = false;
-          htmlPos++;
-          continue;
-        }
-        
-        if (!inTag) {
+    
+        // テキストノード文字
+        if (!skipVisible) {
           map.push({ visiblePos, htmlPos });
           visiblePos++;
         }
-        
+    
         htmlPos++;
       }
-      
-      map.push({ visiblePos, htmlPos: html.length }); // 最後の位置
+    
+      map.push({ visiblePos, htmlPos: html.length });
       return map;
     }
     
@@ -2694,6 +2712,7 @@
           if (__saveConfirmOpen) return Promise.resolve(false);
           __saveConfirmOpen = true;
           isSwitching = true;
+          resetScrollSliders();
           disableBodyScroll();
           
           return new Promise((resolve) => {
