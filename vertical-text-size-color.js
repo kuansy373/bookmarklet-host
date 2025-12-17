@@ -456,7 +456,7 @@
       
       // HTML位置に変換
       const startHtmlPos = getHtmlPos(posMap, startVisiblePos);
-      const endHtmlPos = getHtmlPos(posMap, endVisiblePos);
+      const endHtmlPos = i === numPages - 1 ? fullHTML.length : getHtmlPos(posMap, endVisiblePos);
       
       let partHTML = fullHTML.slice(startHtmlPos, endHtmlPos);
     
