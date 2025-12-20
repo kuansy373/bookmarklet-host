@@ -2338,6 +2338,12 @@
           function changeColors() {
             const bgLocked = doc.getElementById("color-toggle-bg-lock").checked;
             const fgLocked = doc.getElementById("color-toggle-fg-lock").checked;
+            
+            if (bgLocked && fgLocked) {
+              win.alert("BGとFGの両方がロックされています");
+              return;
+            }
+
             const contrastMin = parseFloat(doc.getElementById("contrastMin").value) || 1;
             const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
             let trials = 0;
@@ -2380,7 +2386,7 @@
                 return;
               }
             }
-            win.alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
+            win.alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした")
           }
           doc.getElementById("randomColorBtn").onclick = changeColors;
           doc.getElementById("swapColorsBtn").onclick = () => {
