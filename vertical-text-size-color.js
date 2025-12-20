@@ -9,7 +9,7 @@
     
     let text = '';
     
-    // HTMLエスケープ用関数（属性値を安全にする）
+    // HTMLエスケープ用関数
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, function (m) {
         return ({
@@ -22,7 +22,7 @@
       });
     }
     
-    // 許可する属性（ホワイトリスト）
+    // 許可する属性
     const ALLOWED_ATTRS = ['class', 'id', 'lang', 'title', 'dir'];
     
     // rubyタグなどを保持したままテキストを抽出する関数
@@ -175,7 +175,6 @@
       `
     };
     
-    // HTML生成関数
     function createPanelHTML(totalChars, numPages, charsPerPage) {
       return `
         <div id="contentContainer" style="${panelStyls.contentContainer}">
@@ -222,7 +221,7 @@
       `;
     }
     
-    // テキスト情報パネルを作成
+    // テキスト情報パネル作成
     const textInfoPanel = document.createElement('div');
     textInfoPanel.style.cssText = panelStyls.panel;
     document.body.appendChild(textInfoPanel);
@@ -243,7 +242,7 @@
     // 1ページあたりの上限文字数
     const MAX_PER_PAGE = 10000;
     
-    // 必要なページ数を計算（文字数均等分割）
+    // 必要なページ数を計算
     const numPages = Math.ceil(totalVisibleChars / MAX_PER_PAGE);
     const charsPerPage = Math.ceil(totalVisibleChars / numPages);
     
@@ -295,7 +294,6 @@
         isDragging = false;
       });
     
-      // タッチ対応
       dragHandle.addEventListener('touchstart', e => {
         if (e.touches.length !== 1) return;
         const touch = e.touches[0];
@@ -325,6 +323,7 @@
       document
     );
 
+    // HTMLタグ解析関数
     function parseTag(html, start) {
       const end = html.indexOf('>', start + 1);
       if (end === -1) return null;
@@ -341,7 +340,7 @@
       };
     }
     
-    // <ruby>の外でspan分割する
+    // <ruby>の外でspan分割する関数
     function chunkHTMLSafe(html, chunkSize) {
       const chunks = [];
       const len = html.length;
@@ -442,13 +441,15 @@
     
     const fullHTML = text;
 
-    function adjustVisiblePosToRubyBoundary(posMap, visiblePos) {
+    // ページ分割がルビタグ内を避ける関数
+    function avoidInsideRuby(posMap, visiblePos) {
       while (visiblePos > 0 && posMap[visiblePos]?.rubyDepth > 0) {
         visiblePos--;
       }
       return visiblePos;
     }
 
+    // 各ページを作成する関数
     function createPagePart({
       pageIndex,
       numPages,
@@ -463,7 +464,7 @@
     
       if (pageIndex > 0) {
         const rawOverlapStart = Math.max(0, prevEndVisiblePos - overlap);
-        startVisiblePos = adjustVisiblePosToRubyBoundary(posMap, rawOverlapStart);
+        startVisiblePos = avoidInsideRuby(posMap, rawOverlapStart);
       }
     
       let endVisiblePos = startVisiblePos + charsPerPage;
@@ -536,10 +537,10 @@
       };
     }
     
-    // 位置マップを作成
+    // 位置マップ作成
     const posMap = buildPositionMap(fullHTML);
     
-    // 均等分割でパートを作成
+    // 均等分割でパート作成
     const parts = [];
     
     let prevEndVisiblePos = 0;  // 前ページの終わり位置を保持
@@ -3187,7 +3188,6 @@
             win.alert('対象要素が見つかりません');
             return false;
           }
-        
           // color
           if (data.color) {
             const hex = data.color;
