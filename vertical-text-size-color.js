@@ -3192,40 +3192,26 @@
           if (data.color) {
             const hex = data.color;
             applyStyle('color', hex);
-
-            // 内部状態を同期
             colorState.currentFg = colorState.savedFg = hex;
             win.__fgHSL = hexToHSL(hex);
-
             const fgHex = doc.getElementById('fgHex');
             if (fgHex) fgHex.value = hex;
-
           }
-
-          // backgroundColor
+          // background
           if (data.backgroundColor) {
             const hex = data.backgroundColor;
             applyStyle('background-color', hex);
-
-            // 内部状態を同期
             colorState.currentBg = colorState.savedBg = hex;
             win.__bgHSL = hexToHSL(hex);
-
             const bgHex = doc.getElementById('bgHex');
             if (bgHex) bgHex.value = hex;
-
           }
-
-          // --- scrollbar ---
+          // scrollbar-color
           if (data.color && data.backgroundColor) {
             applyStyle('scrollbar-color', `${data.color} ${data.backgroundColor}`);
           }
-
-          // --- コントラスト等 ---
           updateContrast();
           updateColorHexDisplays();
-          updateLockIcons();
-
           if (data.fontSize) target.style.fontSize = data.fontSize;
           if (data.fontWeight) target.style.fontWeight = data.fontWeight;
           if (data.textShadow !== null && data.textShadow !== undefined) {
@@ -3237,7 +3223,7 @@
             fontSelect.dispatchEvent(new Event('change'));
           }
         
-          // --- スクロールUIのval反映 ---
+          // スライダーセッティングUIの状態反映
           if (data.scrollSettings) {
             const s = data.scrollSettings;
             const uiMap = {
@@ -3304,7 +3290,6 @@
               el.style.height = height;
               el.style.bottom = bottom;
             });
-            // Right/Left/Both の表示更新
             updateDisplay();
           }
           updateControls();
