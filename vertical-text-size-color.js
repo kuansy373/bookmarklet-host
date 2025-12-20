@@ -1604,6 +1604,9 @@
 
         // スコープ確保のためthenの外で宣言
         let applyStyle;
+        let colorState;
+        let updateContrast;
+        let updateColorHexDisplays;
         
         // バージョン固定とSRI対応可能な形で読み込み
         Promise.all([
@@ -2021,7 +2024,7 @@
             }
             scrollbarEl.textContent = `
             * {
-              scrollbar-color: ${currentFg} ${currentBg};
+              scrollbar-color: ${colorState.currentFg} ${colorState.currentBg};
             }`;
           };
       
@@ -2031,52 +2034,30 @@
             swatch.querySelector('.color-saved').style.background = saved
           };
       
-          const updateColorHexDisplays = () => {
-            doc.getElementById("bgHex").value = currentBg;
-            doc.getElementById("fgHex").value = currentFg;
+          updateColorHexDisplays = () => {
+            doc.getElementById("bgHex").value = colorState.currentBg;
+            doc.getElementById("fgHex").value = colorState.currentFg;
             updateLockIcons();
           };
       
-          const getContrast = (fg, bg) => {
-            const lum = (hex) => {
-              const rgb = hex.match(/\w\w/g).map((v) => parseInt(v, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
-              return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
-            };
-            const [l1, l2] = [lum(fg), lum(bg)];
-            return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
-          };
-      
-          function hexToHSL(hex) {
-            if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
-              return { h: 0, s: 0, l: 0 };
-            }
-            let r = parseInt(hex.substr(1,2),16)/255;
-            let g = parseInt(hex.substr(3,2),16)/255;
-            let b = parseInt(hex.substr(5,2),16)/255;
-            let max = Math.max(r,g,b), min = Math.min(r,g,b);
-            let h, s, l = (max + min)/2;
-            if(max == min){
-              h = s = 0;
-            } else {
-              let d = max - min;
-              s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-              switch(max){
-                case r: h = (g - b)/d + (g < b ? 6 : 0); break;
-                case g: h = (b - r)/d + 2; break;
-                case b: h = (r - g)/d + 4; break;
-              }
-              h *= 60;
-            }
-            return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
-          }
-      
           // --- Pickr関連・状態変数 ---
           const contrastEl = doc.getElementById('contrastRatio');
-          const updateContrast = () => (contrastEl.textContent = getContrast(currentFg, currentBg));
-          let savedFg = getHex('color') || '#000000';
-          let savedBg = getHex('backgroundColor') || '#ffffff';
-          let currentFg = savedFg;
-          let currentBg = savedBg;
+
+          colorState = {
+            savedFg: getHex('color') || '#000000',
+            currentFg: null,
+            savedBg: getHex('backgroundColor') || '#ffffff',
+            currentBg: null,
+          };
+
+          colorState.currentFg = colorState.savedFg;
+          colorState.currentBg = colorState.savedBg;
+
+          updateContrast = () =>
+            (contrastEl.textContent = getContrast(
+              colorState.currentFg,
+              colorState.currentBg
+            ));
           
           // --- pcr-appドラッグ用グローバル変数を追加 ---
           let globalDragStyle = null;
@@ -2084,11 +2065,24 @@
       
           const initPickr = (id, prop) => {
             const swatch = doc.getElementById(id + 'Swatch');
-            const isFg = prop === 'color';
-            const getSaved = () => (isFg ? savedFg : savedBg);
-            const setSaved = (v) => (isFg ? (savedFg = v) : (savedBg = v));
-            const getCurrent = () => (isFg ? currentFg : currentBg);
-            const setCurrent = (v) => (isFg ? (currentFg = v) : (currentBg = v));
+            const isFg = id === 'fg';
+
+            const setCurrent = (v) => {
+              if (isFg) colorState.currentFg = v;
+              else      colorState.currentBg = v;
+            };
+
+            const setSaved = (v) => {
+              if (isFg) colorState.savedFg = v;
+              else      colorState.savedBg = v;
+            };
+
+            const getCurrent = () =>
+              isFg ? colorState.currentFg : colorState.currentBg;
+
+            const getSaved = () =>
+              isFg ? colorState.savedFg : colorState.savedBg;
+
             const pickr = PickrClass.create({
               el: `#${id}Swatch`,
               theme: 'classic',
@@ -2277,21 +2271,23 @@
             win.alert('Pickrの初期化に失敗しました: ' + (e && e.message ? e.message : e));
             bgPickr = {
               setColor: (color) => {
-                currentBg = savedBg = color;
+                colorState.currentBg = color;
+                colorState.savedBg = color;
                 applyStyle('background-color', color);
                 updateSwatch(doc.getElementById('bgSwatch'), color, color);
-                updateContrast()
+                updateContrast();
               },
               show: () => {},
               destroyAndRemove: () => {},
             };
             fgPickr = {
               setColor: (color) => {
-                currentFg = savedFg = color;
-                applyStyle('color', color);
-                updateSwatch(doc.getElementById('fgSwatch'), color, color);
-                updateContrast()
-              },
+              colorState.currentFg = color;
+              colorState.savedFg = color;
+              applyStyle('color', color);
+              updateSwatch(doc.getElementById('fgSwatch'), color, color);
+              updateContrast();
+            },
               show: () => {},
               destroyAndRemove: () => {},
             }
@@ -2337,54 +2333,6 @@
             fgPickr.show();
             updateLockIcons();
           };
-      
-          function hslToHex(h, s, l) {
-            s /= 100;
-            l /= 100;
-            const c = (1 - Math.abs(2 * l - 1)) * s;
-            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-            const m = l - c / 2;
-            let r = 0,
-              g = 0,
-              b = 0;
-            if (0 <= h && h < 60) {
-              r = c;
-              g = x;
-              b = 0
-            } else if (60 <= h && h < 120) {
-              r = x;
-              g = c;
-              b = 0
-            } else if (120 <= h && h < 180) {
-              r = 0;
-              g = c;
-              b = x
-            } else if (180 <= h && h < 240) {
-              r = 0;
-              g = x;
-              b = c
-            } else if (240 <= h && h < 300) {
-              r = x;
-              g = 0;
-              b = c
-            } else if (300 <= h && h < 360) {
-              r = c;
-              g = 0;
-              b = x
-            }
-            r = Math.round((r + m) * 255);
-            g = Math.round((g + m) * 255);
-            b = Math.round((b + m) * 255);
-            return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
-          }
-          // ランダムに生成される色のhsl範囲
-          function getRandomHSL() {
-            return {
-              h: Math.floor(Math.random() * 360),
-              s: Math.floor(Math.random() * 101) ,
-              l: Math.floor(Math.random() * 101)
-            }
-          }
         
           function changeColors() {
             const bgLocked = doc.getElementById("color-toggle-bg-lock").checked;
@@ -2395,10 +2343,10 @@
             const maxTrials = 300;
             // --- HSLオブジェクトが不正な場合は必ず初期化 ---
             if (!win.__bgHSL || typeof win.__bgHSL.h !== 'number' || typeof win.__bgHSL.s !== 'number' || typeof win.__bgHSL.l !== 'number') {
-              win.__bgHSL = hexToHSL(currentBg);
+              win.__bgHSL = hexToHSL(colorState.currentBg);
             }
             if (!win.__fgHSL || typeof win.__fgHSL.h !== 'number' || typeof win.__fgHSL.s !== 'number' || typeof win.__fgHSL.l !== 'number') {
-              win.__fgHSL = hexToHSL(currentFg);
+              win.__fgHSL = hexToHSL(colorState.currentFg);
             }
             while (trials < maxTrials) {
               trials++;
@@ -2412,16 +2360,23 @@
               const fgHex = hslToHex(win.__fgHSL.h, win.__fgHSL.s, win.__fgHSL.l);
               const ratio = parseFloat(getContrast(fgHex, bgHex));
               if (ratio >= contrastMin && ratio <= contrastMax) {
-                if (!bgLocked) currentBg = savedBg = bgHex;
-                if (!fgLocked) currentFg = savedFg = fgHex;
-                applyStyle("background-color", savedBg);
-                applyStyle("color", savedFg);
-                updateSwatch(doc.getElementById("bgSwatch"), savedBg, savedBg);
-                updateSwatch(doc.getElementById("fgSwatch"), savedFg, savedFg);
-                updateContrast();
+                if (!bgLocked) {
+                  colorState.currentBg = bgHex;
+                  colorState.savedBg = bgHex;
+                }
+                if (!fgLocked) {
+                  colorState.currentFg = fgHex;
+                  colorState.savedFg = fgHex;
+                }
+                
+                applyStyle("background-color", colorState.savedBg);
+                applyStyle("color", colorState.savedFg);
+                updateSwatch(doc.getElementById("bgSwatch"), colorState.currentBg, colorState.currentBg);
+                updateSwatch(doc.getElementById("fgSwatch"), colorState.currentFg, colorState.currentFg);
                 updateColorHexDisplays();
+                updateContrast();
                 updateLockIcons();
-                return
+                return;
               }
             }
             win.alert("指定されたコントラスト範囲に合うランダム色の組み合わせが見つかりませんでした。")
@@ -2429,16 +2384,17 @@
           doc.getElementById("randomColorBtn").onclick = changeColors;
           doc.getElementById("swapColorsBtn").onclick = () => {
             // ロック状態を無視して完全にスワップ
-            [currentFg, currentBg] = [currentBg, currentFg];
-            [savedFg, savedBg] = [currentFg, currentBg];
-            applyStyle("color", currentFg);
-            applyStyle("background-color", currentBg);
-            updateSwatch(doc.getElementById("bgSwatch"), currentBg, savedBg);
-            updateSwatch(doc.getElementById("fgSwatch"), currentFg, savedFg);
+            [colorState.currentFg, colorState.currentBg] = [colorState.currentBg, colorState.currentFg];
+            [colorState.savedFg, colorState.savedBg] = [colorState.savedBg, colorState.savedFg];
+
+            applyStyle("color", colorState.currentFg);
+            applyStyle("background-color", colorState.currentBg);
+            updateSwatch(doc.getElementById("bgSwatch"), colorState.currentBg, colorState.savedBg);
+            updateSwatch(doc.getElementById("fgSwatch"), colorState.currentFg, colorState.savedFg);
             updateColorHexDisplays();
             updateContrast();
-            win.__bgHSL = hexToHSL(currentBg);
-            win.__fgHSL = hexToHSL(currentFg);
+            win.__bgHSL = hexToHSL(colorState.currentBg);
+            win.__fgHSL = hexToHSL(colorState.currentFg);
             updateLockIcons();
           };
           // Pickr UI コンテナとスタイルを初期非表示にする
@@ -2504,6 +2460,87 @@
           win.alert("Pickr の読み込みに失敗しました。CSP によってブロックされている可能性があります。");
           console.error("Pickr load error:", err);
         });
+
+        function hexToHSL(hex) {
+          if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
+            return { h: 0, s: 0, l: 0 };
+          }
+          let r = parseInt(hex.substr(1,2),16)/255;
+          let g = parseInt(hex.substr(3,2),16)/255;
+          let b = parseInt(hex.substr(5,2),16)/255;
+          let max = Math.max(r,g,b), min = Math.min(r,g,b);
+          let h, s, l = (max + min)/2;
+          if(max == min){
+            h = s = 0;
+          } else {
+            let d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch(max){
+              case r: h = (g - b)/d + (g < b ? 6 : 0); break;
+              case g: h = (b - r)/d + 2; break;
+              case b: h = (r - g)/d + 4; break;
+            }
+            h *= 60;
+          }
+          return {h: Math.round(h), s: Math.round(s*100), l: Math.round(l*100)};
+        }
+
+        function hslToHex(h, s, l) {
+          s /= 100;
+          l /= 100;
+          const c = (1 - Math.abs(2 * l - 1)) * s;
+          const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+          const m = l - c / 2;
+          let r = 0,
+            g = 0,
+            b = 0;
+          if (0 <= h && h < 60) {
+            r = c;
+            g = x;
+            b = 0
+          } else if (60 <= h && h < 120) {
+            r = x;
+            g = c;
+            b = 0
+          } else if (120 <= h && h < 180) {
+            r = 0;
+            g = c;
+            b = x
+          } else if (180 <= h && h < 240) {
+            r = 0;
+            g = x;
+            b = c
+          } else if (240 <= h && h < 300) {
+            r = x;
+            g = 0;
+            b = c
+          } else if (300 <= h && h < 360) {
+            r = c;
+            g = 0;
+            b = x
+          }
+          r = Math.round((r + m) * 255);
+          g = Math.round((g + m) * 255);
+          b = Math.round((b + m) * 255);
+          return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("")
+        }
+
+        function getRandomHSL() {
+          return {
+            h: Math.floor(Math.random() * 360),
+            s: Math.floor(Math.random() * 101) ,
+            l: Math.floor(Math.random() * 101)
+          }
+        }
+
+        function getContrast(fg, bg) {
+          const lum = (hex) => {
+            const rgb = hex.match(/\w\w/g).map((v) => parseInt(v, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+            return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+          };
+          const [l1, l2] = [lum(fg), lum(bg)];
+          return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
+        }
       
         // ==============================
         // JSONで各値を保存/反映
@@ -3151,20 +3188,44 @@
             return false;
           }
         
-          // --- 文字スタイル反映 ---
+          // color
           if (data.color) {
-            applyStyle('color', data.color);
+            const hex = data.color;
+            applyStyle('color', hex);
+
+            // 内部状態を同期
+            colorState.currentFg = colorState.savedFg = hex;
+            win.__fgHSL = hexToHSL(hex);
+
             const fgHex = doc.getElementById('fgHex');
-            if (fgHex) fgHex.value = data.color;
+            if (fgHex) fgHex.value = hex;
+
           }
+
+          // backgroundColor
           if (data.backgroundColor) {
-            applyStyle('background-color', data.backgroundColor);
+            const hex = data.backgroundColor;
+            applyStyle('background-color', hex);
+
+            // 内部状態を同期
+            colorState.currentBg = colorState.savedBg = hex;
+            win.__bgHSL = hexToHSL(hex);
+
             const bgHex = doc.getElementById('bgHex');
-            if (bgHex) bgHex.value = data.backgroundColor;
+            if (bgHex) bgHex.value = hex;
+
           }
+
+          // --- scrollbar ---
           if (data.color && data.backgroundColor) {
             applyStyle('scrollbar-color', `${data.color} ${data.backgroundColor}`);
           }
+
+          // --- コントラスト等 ---
+          updateContrast();
+          updateColorHexDisplays();
+          updateLockIcons();
+
           if (data.fontSize) target.style.fontSize = data.fontSize;
           if (data.fontWeight) target.style.fontWeight = data.fontWeight;
           if (data.textShadow !== null && data.textShadow !== undefined) {
