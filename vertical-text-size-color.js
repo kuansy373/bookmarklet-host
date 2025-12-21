@@ -2,14 +2,9 @@
   
   // webページのDOM完成を待って実行
   function run() {
-
-    // ==============================
-    // Vertical text
-    // ==============================
     
     let text = '';
     
-    // HTMLエスケープ用関数
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, function (m) {
         return ({
@@ -22,14 +17,10 @@
       });
     }
     
-    // 許可する属性
-    const ALLOWED_ATTRS = ['class', 'id', 'lang', 'title', 'dir'];
-    
-    // rubyタグなどを保持したままテキストを抽出する関数
     function extractWithRubyTags(node) {
+      const ALLOWED_ATTRS = new Set(['class', 'id', 'lang', 'title', 'dir']);
       let result = '';
-    
-      // ノードを再帰的に巡回する
+
       function traverse(el) {
         for (const child of el.childNodes) {
     
@@ -65,23 +56,23 @@
     
     document.querySelectorAll(
       // 青空文庫
-      'body > h1, ' +        // タイトル
-      'body > h2, ' +        // サブタイトル
-      'body > h3, ' +        // 小見出し
-      '.metadata, ' +        // メタ情報（作者名など）
-      '.main_text, ' +       // 本文テキスト
+      'body > h1, ' +
+      'body > h2, ' +
+      'body > h3, ' +
+      '.metadata, ' +
+      '.main_text, ' +
       // 小説家になろう
-      '.p-novel__title, ' +  // 小説タイトル
-      '.p-novel__text, ' +   // 本文テキスト
+      '.p-novel__title, ' +
+      '.p-novel__text, ' +
       // カクヨム
-      '.widget-episodeTitle, ' +  // エピソードタイトル
-      '.widget-episodeBody p, ' + // 本文段落
+      '.widget-episodeTitle, ' +
+      '.widget-episodeBody p, ' +
       // アルファポリス
-      '.novel-title, ' +     // 小説タイトル
-      '.novel-body p, ' +    // 本文段落
-      '.chapter-title, ' +   // 章タイトル
-      '.episode-title, ' +   // エピソードタイトル
-      '#novelBody'           // 本文全体コンテナ
+      '.novel-title, ' +
+      '.novel-body p, ' +
+      '.chapter-title, ' +
+      '.episode-title, ' +
+      '#novelBody'
     )
     .forEach(node => {
       text += extractWithRubyTags(node);
@@ -2338,17 +2329,14 @@
           function changeColors() {
             const bgLocked = doc.getElementById("color-toggle-bg-lock").checked;
             const fgLocked = doc.getElementById("color-toggle-fg-lock").checked;
-            
-            if (bgLocked && fgLocked) {
-              win.alert("BGとFGの両方がロックされています");
+            if (bgLocked && fgLocked) { win.alert("BGとFGの両方がロックされています");
               return;
             }
-
             const contrastMin = parseFloat(doc.getElementById("contrastMin").value) || 1;
             const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
             let trials = 0;
             const maxTrials = 300;
-            // --- HSLオブジェクトが不正な場合は必ず初期化 ---
+            // --- HSLオブジェクトが不正な場合は初期化 ---
             if (!win.__bgHSL || typeof win.__bgHSL.h !== 'number' || typeof win.__bgHSL.s !== 'number' || typeof win.__bgHSL.l !== 'number') {
               win.__bgHSL = hexToHSL(colorState.currentBg);
             }
