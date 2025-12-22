@@ -800,6 +800,7 @@
               enableBodyScroll();
               cleanup();
               onYes(targetPage);
+              resetScrollSliders();
             }
           };
           
@@ -808,6 +809,7 @@
             overlayElements.overlay.style.display = 'none';
             enableBodyScroll();
             cleanup();
+            resetScrollSliders();
             isSwitching = false;
             promptShownForward = false;
             promptShownBackward = false;
@@ -859,7 +861,6 @@
             isValidPage(currentIndex + 1)
           ) {
             const nextPage = currentIndex + 2;
-            resetScrollSliders();
             showOverlay(nextPage, numPages, (targetPage) => {
               isSwitching = true;
               currentIndex = targetPage - 1;
