@@ -1189,6 +1189,16 @@
           });
         });
         
+        // 開くボタン共通スタイル
+        const baseOpenBtnStyle = {
+          position: 'fixed',
+          cursor: 'pointer',
+          fontSize: '14px',
+          color: 'unset',
+          opacity: '0.3',
+          display: 'block'
+        };
+        
         // 開くボタン △
         const sUIOpenBtn = doc.createElement('div');
         sUIOpenBtn.innerHTML = `
@@ -1196,16 +1206,10 @@
             <polygon points="12,6.144 20,20 4,20" fill="none" stroke="currentColor" stroke-width="1"/>
           </svg>
         `;
-        Object.assign(sUIOpenBtn.style, {
-          position: 'fixed',
+        Object.assign(sUIOpenBtn.style, baseOpenBtnStyle, {
           top: '10px',
           left: '18px',
-          fontSize: '14px',
-          color: 'unset',
-          opacity: '0.3',
-          cursor: 'pointer',
           zIndex: '10006',
-          display: 'block'
         });
         doc.body.appendChild(sUIOpenBtn);
         
@@ -1537,13 +1541,9 @@
             <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
           </svg>
         `;
-        Object.assign(fUIOpenBtn.style, {
-          position: 'fixed',
+        Object.assign(fUIOpenBtn.style, baseOpenBtnStyle, {
           top: '10px',
           right: '18px',
-          opacity: '0.3',
-          color: 'unset',
-          cursor: 'pointer',
           zIndex: '10006'
         });
         doc.body.appendChild(fUIOpenBtn);
@@ -2395,31 +2395,26 @@
           style.disabled = true;
           // □ ボタン作成関数（スタイルも内部に集約）
           function createPickrOpenButton() {
-            const pickrOpen = doc.createElement('div');
-            pickrOpen.id = 'pickrOpen';
-            pickrOpen.innerHTML = `
+            const pUIOpenBtn = doc.createElement('div');
+            pUIOpenBtn.innerHTML = `
               <svg width="14" height="14" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
               </svg>
             `;
-            Object.assign(pickrOpen.style, {
-              cursor: 'pointer',
-              position: 'fixed',
+            Object.assign(pUIOpenBtn.style, baseOpenBtnStyle, {
               top: '80px',
               right: '18px',
-              opacity: '0.3',
-              color: 'unset',
               zIndex: '20000'
             });
           
-            pickrOpen.onclick = () => {
+            pUIOpenBtn.onclick = () => {
               container.style.display = 'block';
               style.disabled = false;
-              pickrOpen.remove();
+              pUIOpenBtn.remove();
             };
           
-            doc.body.appendChild(pickrOpen);
-            return pickrOpen;
+            doc.body.appendChild(pUIOpenBtn);
+            return pUIOpenBtn;
           }
           
           // 最初の □ ボタンを作成
@@ -2657,13 +2652,10 @@
             <polygon points="12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10" fill="none" stroke="currentColor" stroke-width="1"/>
           </svg>
         `;
-        Object.assign(oUIOpenBtn.style, {
-          position: 'fixed',
+        Object.assign(oUIOpenBtn.style, baseOpenBtnStyle, {
           top: '80px',
           left: '18px',
-          cursor: 'pointer',
           zIndex: '10000',
-          opacity: '0.3',
         });
         doc.body.appendChild(oUIOpenBtn);
       
