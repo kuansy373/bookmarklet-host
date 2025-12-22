@@ -1217,18 +1217,25 @@
         sUIOpenBtn.addEventListener('click', () => {
           scrollUI.style.display = 'block';
         });
-      
+
+        // 閉じるボタン生成関数
+        const createCloseBtn = () => {
+          const closeBtn = doc.createElement('div');
+          closeBtn.textContent = '✕';
+          Object.assign(closeBtn.style, {
+            position: 'absolute',
+            top: '5px',
+            right: '10px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            color: 'unset',
+            userSelect: 'none'
+          });
+          return closeBtn;
+        };
+        
         // 閉じるボタン ✕
-        const sUICloseBtn = doc.createElement('div');
-        sUICloseBtn.textContent = '✕';
-        Object.assign(sUICloseBtn.style, {
-          position: 'absolute',
-          top: '5px',
-          right: '10px',
-          cursor: 'pointer',
-          fontSize: '16px',
-          color: 'unset',
-        });
+        const sUICloseBtn = createCloseBtn();
         scrollUI.appendChild(sUICloseBtn);
         
         sUICloseBtn.addEventListener('click', () => {
@@ -1549,26 +1556,19 @@
         doc.body.appendChild(fUIOpenBtn);
       
         fUIOpenBtn.addEventListener('click', () => {
-          panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-          fUIOpenBtn.style.display = panel.style.display === 'none' ? 'block' : 'none';
+          panel.style.display = 'block';
         });
       
         // 閉じるボタン ✕
-        const fUICloseBtn = doc.createElement('div');
-        fUICloseBtn.textContent = '✕';
+        const fUICloseBtn = createCloseBtn();
         Object.assign(fUICloseBtn.style, {
-          position: 'absolute',
           top: '0px',
           right: '9px',
-          cursor: 'pointer',
-          fontSize: '16px',
-          color: 'unset',
         });
         panel.appendChild(fUICloseBtn);
-      
+        
         fUICloseBtn.addEventListener('click', () => {
           panel.style.display = 'none';
-          fUIOpenBtn.style.display = 'block';
         });
       
         // 初期化
@@ -2390,11 +2390,12 @@
             win.__fgHSL = hexToHSL(colorState.currentFg);
             updateLockIcons();
           };
-          // Pickr UI コンテナとスタイルを初期非表示にする
+          // Pickr UI コンテナとスタイルは初期非表示
           container.style.display = 'none';
           style.disabled = true;
-          // □ ボタン作成関数（スタイルも内部に集約）
+          // □ ボタン作成関数
           function createPickrOpenButton() {
+            // 開くボタン □
             const pUIOpenBtn = doc.createElement('div');
             pUIOpenBtn.innerHTML = `
               <svg width="14" height="14" viewBox="0 0 24 24">
@@ -2559,10 +2560,7 @@
         ).join('');
         
         onetapUI.innerHTML = `
-          <div class="ui-header">
-            <span>Apply Style with One Tap</span>
-            <div id="oUICloseBtn" style="cursor:pointer; padding-right:5px;">✕</div>
-          </div>
+          <div style="font-weight:bold; margin-bottom:10px;">Apply Style with One Tap</div>
           <div class="ui-buttons">
             <div class="button-set">
               <input id="jsonInput" class="json-input" placeholder="個別のJSONを貼り付け" />
@@ -2580,16 +2578,6 @@
             </div>
           </div>
         `;
-        
-        // ヘッダーのスタイル
-        const header = onetapUI.querySelector('.ui-header');
-        Object.assign(header.style, {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontWeight: 'bold',
-          marginBottom: '10px',
-        });
       
         // ボタン群のスタイル
         const buttonsContainer = onetapUI.querySelector('.ui-buttons');
@@ -2644,8 +2632,8 @@
             fontSize: '14px',
           });
         });
-      
-        // ☆ 開くボタン
+
+        // 開くボタン ☆
         const oUIOpenBtn = doc.createElement('div');
         oUIOpenBtn.innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24">
@@ -2658,6 +2646,18 @@
           zIndex: '10000',
         });
         doc.body.appendChild(oUIOpenBtn);
+
+        oUIOpenBtn.addEventListener('click', () => {
+          onetapUI.style.display = 'block';
+        });
+        
+        // 閉じるボタン ✕
+        const oUICloseBtn = createCloseBtn();
+        onetapUI.appendChild(oUICloseBtn);
+
+        oUICloseBtn.addEventListener('click', () => {
+          onetapUI.style.display = 'none';
+        });
       
         // UIをbodyに追加
         doc.body.appendChild(onetapUI);
@@ -2687,15 +2687,6 @@
         
         // ページ読み込み時に呼ぶ
         initApplyButtonStyle();
-        
-        // 開くボタン ☆
-        oUIOpenBtn.onclick = () => {
-          onetapUI.style.display = 'block';
-        };
-        // 閉じるボタン ✕
-        doc.getElementById('oUICloseBtn').onclick = () => {
-          onetapUI.style.display = 'none';
-        };
         
         // RGB → HEX 変換関数
         function rgbToHex(rgb) {
