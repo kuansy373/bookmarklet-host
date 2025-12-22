@@ -1766,6 +1766,11 @@
               text-align: center;
             }
       
+            .btn-wrapper {
+              position: relative;
+              display: inline-block;
+            }
+      
             #randomColorBtn {
               background: #E6FDFF;
               border: 1px solid #aaa;
@@ -1773,6 +1778,16 @@
               padding: 2px 6px;
               font-size: 15px;
               font-family: monospace;
+            }
+            
+            .click-block {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 10px;
+              height: 100%;
+              background: transparent;
+              pointer-events: auto;
             }
           
             #randomColorBtn:active {
@@ -1918,7 +1933,10 @@
                 <input type="checkbox" id="color-toggle-fg-lock" style="display:none;">
                 <span id="fgLockIcon">🔓</span>
               </label>
-              <button id="randomColorBtn">🎨Random</button>
+              <div class="btn-wrapper">
+                <button id="randomColorBtn">🎨Random</button>
+                <div class="click-block"></div>
+              </div>
             </div>
           
             <div class="row contrast-row" style="align-items: center;">
@@ -2585,7 +2603,7 @@
           display: 'flex',
           flexDirection: 'column',
           marginLeft: '5px',
-          gap: '10px',
+          gap: '9px',
           fontSize: '14px',
         });
       
