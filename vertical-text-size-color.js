@@ -18,8 +18,10 @@
     }
     
     function extractWithRubyTags(node) {
-      const ALLOWED_ATTRS = new Set(['class', 'id', 'lang', 'title', 'dir']);
+      
       let result = '';
+      const ALLOWED_TAGS = new Set(['ruby', 'rb', 'rp', 'rt', 'em']);
+      const ALLOWED_ATTRS = new Set(['class', 'id', 'lang', 'title', 'dir']);
 
       function traverse(el) {
         for (const child of el.childNodes) {
@@ -30,11 +32,10 @@
           } else if (child.nodeType === Node.ELEMENT_NODE) {
             const tagName = child.tagName.toLowerCase();
     
-            if (['ruby', 'rb', 'rp', 'rt', 'em'].includes(tagName)) {
-              
+            if (ALLOWED_TAGS.has(tagName)) {
               const attrs = Array.from(child.attributes)
                 .filter(attr => !/^on/i.test(attr.name))
-                .filter(attr => ALLOWED_ATTRS.includes(attr.name))
+                .filter(attr => ALLOWED_ATTRS.has(attr.name))
                 .map(attr => ` ${attr.name}="${escapeHTML(attr.value)}"`)
                 .join('');
               
