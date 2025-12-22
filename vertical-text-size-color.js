@@ -93,7 +93,7 @@
       .replace(/　{2,}/g, '　');
   
     // テキスト情報パネル
-    const panelStyls = {
+    const panelStyles = {
       panel: `
         position: fixed;
         top: 10px;
@@ -169,36 +169,36 @@
     
     function createPanelHTML(totalChars, numPages, charsPerPage) {
       return `
-        <div id="contentContainer" style="${panelStyls.contentContainer}">
-          <div style="${panelStyls.header}">
+        <div id="contentContainer" style="${panelStyles.contentContainer}">
+          <div style="${panelStyles.header}">
             🔖 テキスト情報
-            <div id="dragHandle" style="${panelStyls.dragHandle}">🟰</div>
+            <div id="dragHandle" style="${panelStyles.dragHandle}">🟰</div>
           </div>
           <div>
             <strong>総文字数:</strong>
-            <span style="${panelStyls.valueSpan}">
+            <span style="${panelStyles.valueSpan}">
               ${totalChars.toLocaleString()}
             </span>
           </div>
           <div>
             <strong>ページ数:</strong>
-            <span style="${panelStyls.valueSpan}">
+            <span style="${panelStyles.valueSpan}">
               ${numPages}
             </span>
           </div>
           <div>
             <strong>目標文字数/ページ:　</strong>
-            <span style="${panelStyls.valueSpan}">
+            <span style="${panelStyles.valueSpan}">
               ${charsPerPage.toLocaleString()}
             </span>
           </div>
-          <div style="${panelStyls.divider}">
+          <div style="${panelStyles.divider}">
             <strong>各ページの文字数</strong>
           </div>
-            <div id="partsList" style="${panelStyls.partsList}"></div>
+            <div id="partsList" style="${panelStyles.partsList}"></div>
           </div>
         </div>
-        <div id="popupRetry" style="${panelStyls.popupRetry}">
+        <div id="popupRetry" style="${panelStyles.popupRetry}">
           小説タブを開く
         </div>
       `;
@@ -207,7 +207,7 @@
     function createPartInfoHTML(partNumber, charCount) {
       return `
         <strong>ページ${partNumber}:</strong>
-        <span style="${panelStyls.valueSpan}">
+        <span style="${panelStyles.valueSpan}">
           ${charCount.toLocaleString()}文字
         </span>
       `;
@@ -215,7 +215,7 @@
     
     // テキスト情報パネル作成
     const textInfoPanel = document.createElement('div');
-    textInfoPanel.style.cssText = panelStyls.panel;
+    textInfoPanel.style.cssText = panelStyles.panel;
     document.body.appendChild(textInfoPanel);
     
     // 可視文字長を測るための要素
@@ -228,7 +228,6 @@
     measurer.querySelectorAll('rt, rp').forEach(el => el.remove());
     const fullText = measurer.textContent;
     const totalVisibleChars = fullText.length;
-    
     console.log('総文字数:', totalVisibleChars);
     
     // 1ページあたりの上限文字数
@@ -237,7 +236,6 @@
     // 必要なページ数を計算
     const numPages = Math.ceil(totalVisibleChars / MAX_PER_PAGE);
     const charsPerPage = Math.ceil(totalVisibleChars / numPages);
-    
     console.log('ページ数:', numPages);
     console.log('1ページあたりの目標文字数:', charsPerPage);
   
@@ -553,11 +551,10 @@
     
       parts.push(part);
       pageCharCounts.push(actualLen);
-    
       console.log(`ページ${i + 1}: ${actualLen}文字`);
     
       const partInfo = document.createElement('div');
-      partInfo.style.cssText = panelStyls.partInfo;
+      partInfo.style.cssText = panelStyles.partInfo;
       partInfo.innerHTML = createPartInfoHTML(i + 1, actualLen);
       partsList.appendChild(partInfo);
     
