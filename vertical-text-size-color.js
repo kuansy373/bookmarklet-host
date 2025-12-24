@@ -212,7 +212,8 @@
         </span>
       `;
     }
-    // パネル作成
+    
+    // パネル追加
     const textInfoPanel = document.createElement('div');
     textInfoPanel.style.cssText = panelStyles.panel;
     document.body.appendChild(textInfoPanel);
@@ -238,7 +239,7 @@
     console.log('ページ数:', numPages);
     console.log('1ページあたりの目標文字数:', charsPerPage);
   
-    // パネル追加
+    // パネル作成
     textInfoPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
     const partsList = textInfoPanel.querySelector('#partsList');
 
@@ -572,7 +573,7 @@
     // 有効なページ数を計算
     const validPageCount = pageCharCounts.filter(count => count > 0).length;
     
-    // 新しいウィンドウを開いてセットアップ
+    // 新しいウィンドウを開く関数
     function openNovelWindow() {
       const html = `<!DOCTYPE html>
       <html lang="ja" style="scrollbar-width: thin;">
@@ -1577,10 +1578,14 @@
         // ==============================
         // Color Pickr
         // ==============================
-      
-        if (win.__pickrLoaded) return;
-        win.__pickrLoaded = true;
         
+        // スコープ確保
+        let applyStyle;
+        let colorState;
+        let updateContrast;
+        let updateColorHexDisplays;
+
+        // 読み込み制御関数
         const load = (tag, attrs) => new Promise((resolve, reject) => {
           const el = doc.createElement(tag);
           for (const [k, v] of Object.entries(attrs)) {
@@ -1591,12 +1596,6 @@
           el.onerror = reject;
           doc.head.appendChild(el);
         });
-
-        // スコープ確保のためthenの外で宣言
-        let applyStyle;
-        let colorState;
-        let updateContrast;
-        let updateColorHexDisplays;
         
         // バージョン固定とSRI対応可能な形で読み込み
         Promise.all([
@@ -2562,6 +2561,7 @@
         // ==============================
         // JSONで各値を保存/反映
         // ==============================
+        
         const onetapUI = doc.createElement('div');
         Object.assign(onetapUI.style, {
           position: 'fixed',
