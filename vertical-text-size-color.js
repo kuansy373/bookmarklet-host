@@ -1,6 +1,6 @@
 (() => {
   
-  // webページのDOM完成を待って実行
+  // webページのDOM完成を待つ
   function run() {
     
     let text = '';
@@ -212,8 +212,7 @@
         </span>
       `;
     }
-    
-    // テキスト情報パネル作成
+    // パネル作成
     const textInfoPanel = document.createElement('div');
     textInfoPanel.style.cssText = panelStyles.panel;
     document.body.appendChild(textInfoPanel);
@@ -239,11 +238,11 @@
     console.log('ページ数:', numPages);
     console.log('1ページあたりの目標文字数:', charsPerPage);
   
-    // パネルに基本情報を表示
+    // パネル追加
     textInfoPanel.innerHTML = createPanelHTML(totalVisibleChars, numPages, charsPerPage);
     const partsList = textInfoPanel.querySelector('#partsList');
 
-    // 再実行リンク
+    // 小説タブを開く
     const popupRetry = textInfoPanel.querySelector('#popupRetry');
     
     if (popupRetry) {
@@ -2256,6 +2255,7 @@
               applyStyle(prop, hex);
               updateSwatch(swatch, hex, hex);
               updateContrast();
+              updateLockIcons();
               if (isFg) win.__fgHSL = hexToHSL(hex);
               else win.__bgHSL = hexToHSL(hex);
             });
@@ -2307,14 +2307,23 @@
           function updateLockIcons() {
             const bgLocked = doc.getElementById('color-toggle-bg-lock').checked;
             const fgLocked = doc.getElementById('color-toggle-fg-lock').checked;
-            const bgColor = doc.getElementById('bgHex').value;
-            const fgColor = doc.getElementById('fgHex').value;
+            
             const bgLockIcon = doc.getElementById('bgLockIcon');
             const fgLockIcon = doc.getElementById('fgLockIcon');
             bgLockIcon.textContent = bgLocked ? '🔒' : '🔓';
             fgLockIcon.textContent = fgLocked ? '🔒' : '🔓';
+            
+            const bgColor = bgLocked
+              ? colorState.savedBg
+              : doc.getElementById('bgHex').value;
+
+            const fgColor = fgLocked
+              ? colorState.savedFg
+              : doc.getElementById('fgHex').value;
+            
             bgLockIcon.style.background = bgColor;
             fgLockIcon.style.background = fgColor;
+            
             bgLockIcon.style.border = bgLocked ? `6px ridge ${bgColor}` : '';
             fgLockIcon.style.border = fgLocked ? `6px ridge ${fgColor}` : '';
             bgLockIcon.style.borderRadius = bgLocked ? '0px' : '4px';
