@@ -1,6 +1,6 @@
 (() => {
   
-  // webページのDOM完成を待つ
+  // webページのDOM完成を待って実行
   function run() {
     
     let text = '';
@@ -664,7 +664,7 @@
         // 初期表示
         win.renderPart(0);
         
-        // ページ切り替えオーバーレイの作成
+        // ページ切り替えオーバーレイ作成関数
         function createOverlay() {
           const overlay = doc.createElement('div');
           overlay.id = 'page-switch-overlay';
@@ -775,7 +775,8 @@
         }
         
         const overlayElements = createOverlay();
-        
+
+        // オーバーレイ表示関数
         function showOverlay(defaultPage, maxPage, onYes) {
           overlayElements.message.textContent = '';
           overlayElements.pageInput.value = defaultPage;
@@ -815,7 +816,7 @@
             promptShownBackward = false;
           };
       
-          // オーバーレイ背景クリックで閉じる
+          // オーバーレイ背景クリック
           const handleOverlayClick = (e) => {
             if (e.target === overlayElements.overlay) {
               handleNo();
@@ -924,44 +925,32 @@
           doc.documentElement.style.overflow = '';
         }
         
-        // === 右スライダー ===
-        const scrollSliderRight = doc.createElement('input');
-        scrollSliderRight.type = 'range';
-        scrollSliderRight.min = 0;
-        scrollSliderRight.max = 25;
-        scrollSliderRight.value = 0;
-        Object.assign(scrollSliderRight.style, {
-          appearance: 'none',
-          border: 'none',
-          position: 'fixed',
-          height: '210vh',
-          bottom: '-108vh',
-          right: '30px',
-          zIndex: '9999',
-          width: '80px',
-          opacity: '1',
-        });
-        doc.body.appendChild(scrollSliderRight);
-      
-        // === 左スライダー ===
-        const scrollSliderLeft = doc.createElement('input');
-        scrollSliderLeft.type = 'range';
-        scrollSliderLeft.min = 0;
-        scrollSliderLeft.max = 25;
-        scrollSliderLeft.value = 0;
-        Object.assign(scrollSliderLeft.style, {
-          appearance: 'none',
-          border: 'none',
-          position: 'fixed',
-          height: '210vh',
-          bottom: '-108vh',
-          left: '30px',
-          zIndex: '9999',
-          width: '80px',
-          opacity: '1',
-          direction: 'rtl', // 左用は増加方向反転
-        });
-        doc.body.appendChild(scrollSliderLeft);
+        // スライダー作成関数
+        function createSlider(position, additionalStyle = {}) {
+          const slider = doc.createElement('input');
+          slider.type = 'range';
+          slider.min = 0;
+          slider.max = 25;
+          slider.value = 0;
+          Object.assign(slider.style, {
+            appearance: 'none',
+            border: 'none',
+            position: 'fixed',
+            height: '210vh',
+            bottom: '-108vh',
+            zIndex: '9999',
+            width: '80px',
+            opacity: '1',
+            [position]: '30px',
+            ...additionalStyle,
+          });
+          doc.body.appendChild(slider);
+          return slider;
+        }
+        
+        // 左右スライダー作成
+        const scrollSliderRight = createSlider('right');
+        const scrollSliderLeft = createSlider('left', { direction: 'rtl' });
         
         // === スクロール処理 ===
         const scroller = doc.scrollingElement || doc.documentElement;
