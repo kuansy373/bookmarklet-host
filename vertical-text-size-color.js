@@ -1054,7 +1054,7 @@
               const otherEl = doc.getElementById(otherId);
               otherEl.checked = false;
               applyToSliders(sl => {
-                sl.style.border = id === 'scrollB' ? '1px solid currentcolor' : 'none';
+                sl.style.border = id === 'scrollB' ? '1px solid currentColor' : 'none';
                 sl.style.setProperty("background", id === 'scrollC' ? "currentColor" : "transparent", "important");
               });
             } else {
@@ -2862,7 +2862,7 @@
               padding: 6px 12px;
               margin-left: auto;
               color: unset;
-              border: 1px solid currentcolor;
+              border: 1px solid currentColor;
               border-radius: 4px;
               cursor: pointer;
               font-size: 12px;
