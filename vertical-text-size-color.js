@@ -1252,11 +1252,11 @@
           if (el) el.remove();
         });
         
-        // 操作対象は #novelDisplay
         let target = doc.getElementById('novelDisplay');
         if (!target) {
-          console.error('#novelDisplay が見つかりません（win側）');
+          console.error('#novelDisplay が見つかりません');
         }
+        
         // パネルコンテナ
         const panel = doc.createElement('div');
         panel.id = 'fontPanel';
@@ -2106,138 +2106,125 @@
             });
             
             pickr.on('init', instance => {
-              // --- pcr-appドラッグボタン追加 ---
-              win.setTimeout(() => {
-                // すべてのpcr-appにドラッグボタンを追加
-                doc.querySelectorAll('.pcr-app').forEach(app => {
-                  if (app.querySelector('.pcr-drag-handle')) return;
-                  const saveBtn = app.querySelector('.pcr-save');
-                  if (saveBtn) {
-                    const dragBtn = doc.createElement('button');
-                    dragBtn.textContent = '🟰';
-                    dragBtn.className = 'pcr-drag-handle';
-                    dragBtn.style.cssText = `
-                      margin: 0px !important;
-                      cursor: move;
-                      font-size: 16px;
-                      padding: 0px 4px 3px;
-                      border: 1px solid #aaa;
-                      border-radius: 4px;
-                      background: #F4F4F4;
-                      height: 25px;
-                    `;
-                    saveBtn.insertAdjacentElement('afterend', dragBtn);
-      
-                    // --- ドラッグ処理 ---
-                    let isDragging = false, offsetX = 0, offsetY = 0;
-      
-                    // --- グローバルなドラッグ用CSSルールを使う ---
-                    function applyDragCss(left, top) {
-                      if (!globalDragStyle) {
-                        globalDragStyle = doc.createElement('style');
-                        globalDragStyle.setAttribute('data-pcr-drag', '1');
-                        doc.head.appendChild(globalDragStyle);
-                      }
-                      const sheet = globalDragStyle.sheet;
-                      if (globalDragRuleIndex !== null) {
-                        sheet.deleteRule(globalDragRuleIndex);
-                        globalDragRuleIndex = null;
-                      }
-                      const rule = `.pcr-app { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; position: fixed !important; }`;
-                      globalDragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
-                    }
-      
-                    dragBtn.addEventListener('mousedown', e => {
-                      isDragging = true;
-                      const rect = app.getBoundingClientRect();
-                      offsetX = e.clientX - rect.left;
-                      offsetY = e.clientY - rect.top;
-                      applyDragCss(rect.left, rect.top);
-                      e.preventDefault();
-                      e.stopPropagation();
-                    });
-                    doc.addEventListener('mousemove', e => {
-                      if (!isDragging) return;
-                      applyDragCss(e.clientX - offsetX, e.clientY - offsetY);
-                    });
-                    doc.addEventListener('mouseup', () => {
-                      if (isDragging) {
-                        isDragging = false;
-                      }
-                    });
-      
-                    // タッチ対応
-                    dragBtn.addEventListener('touchstart', e => {
-                      if (e.touches.length !== 1) return;
-                      isDragging = true;
-                      const touch = e.touches[0];
-                      const rect = app.getBoundingClientRect();
-                      offsetX = touch.clientX - rect.left;
-                      offsetY = touch.clientY - rect.top;
-                      applyDragCss(rect.left, rect.top);
-                      e.preventDefault();
-                      e.stopPropagation();
-                    });
-                    doc.addEventListener('touchmove', e => {
-                      if (!isDragging || e.touches.length !== 1) return;
-                      const touch = e.touches[0];
-                      applyDragCss(touch.clientX - offsetX, touch.clientY - offsetY);
-                    }, { passive: false });
-                    doc.addEventListener('touchend', () => {
-                      if (isDragging) {
-                        isDragging = false;
-                      }
-                    });
-                  }
-                });
-              }, 0);
-            });
-              
-            pickr.on('init', instance => {
               win.setTimeout(() => {
                 doc.querySelectorAll('.pcr-app').forEach(app => {
-                  // すでにコピー用ボタンがあればスキップ
-                  if (app.querySelector('.pcr-copy')) return;
+                  // --- pcr-appドラッグボタン追加 ---
+                  if (!app.querySelector('.pcr-drag-handle')) {
+                    const saveBtn = app.querySelector('.pcr-save');
+                    if (saveBtn) {
+                      const dragBtn = doc.createElement('button');
+                      dragBtn.textContent = '🟰';
+                      dragBtn.className = 'pcr-drag-handle';
+                      dragBtn.style.cssText = `
+                        margin: 0px !important;
+                        cursor: move;
+                        font-size: 16px;
+                        padding: 0px 4px 3px;
+                        border: 1px solid #aaa;
+                        border-radius: 4px;
+                        background: #F4F4F4;
+                        height: 25px;
+                      `;
+                      saveBtn.insertAdjacentElement('afterend', dragBtn);
             
-                  const resultInput = app.querySelector('.pcr-result');
-                  if (resultInput) {
-                    // Copy ボタン生成
-                    const hexCopyBtn = doc.createElement('button');
-                    hexCopyBtn.textContent = 'Copy';
-                    hexCopyBtn.className = 'pcr-copy';
-                    hexCopyBtn.style.cssText = `
-                      position: relative;
-                      right: 20px;
-                      margin: 0px !important;
-                      cursor: pointer;
-                      border: 1px solid #999;
-                      border-radius: 4px;
-                      color: #000000;
-                      background: #F0FFEC;
-                      font-size: 12px;
-                      line-height: 17px;
-                    `;
-                    // .pcr-result の右隣に追加
-                    resultInput.insertAdjacentElement('afterend', hexCopyBtn);
-                    // クリック時にクリップボードへコピー
-                    doc.querySelectorAll(".pcr-copy").forEach(function(button){
-                      button.addEventListener("click", function(){
-                        const app = button.closest('.pcr-app');
-                        const resultInput = app.querySelector('.pcr-result');
-                    
+                      // --- ドラッグ処理 ---
+                      let isDragging = false, offsetX = 0, offsetY = 0;
+            
+                      // --- グローバルなドラッグ用CSSルールを使う ---
+                      function applyDragCss(left, top) {
+                        if (!globalDragStyle) {
+                          globalDragStyle = doc.createElement('style');
+                          globalDragStyle.setAttribute('data-pcr-drag', '1');
+                          doc.head.appendChild(globalDragStyle);
+                        }
+                        const sheet = globalDragStyle.sheet;
+                        if (globalDragRuleIndex !== null) {
+                          sheet.deleteRule(globalDragRuleIndex);
+                          globalDragRuleIndex = null;
+                        }
+                        const rule = `.pcr-app { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; position: fixed !important; }`;
+                        globalDragRuleIndex = sheet.insertRule(rule, sheet.cssRules.length);
+                      }
+            
+                      dragBtn.addEventListener('mousedown', e => {
+                        isDragging = true;
+                        const rect = app.getBoundingClientRect();
+                        offsetX = e.clientX - rect.left;
+                        offsetY = e.clientY - rect.top;
+                        applyDragCss(rect.left, rect.top);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      });
+                      doc.addEventListener('mousemove', e => {
+                        if (!isDragging) return;
+                        applyDragCss(e.clientX - offsetX, e.clientY - offsetY);
+                      });
+                      doc.addEventListener('mouseup', () => {
+                        if (isDragging) {
+                          isDragging = false;
+                        }
+                      });
+            
+                      // タッチ対応
+                      dragBtn.addEventListener('touchstart', e => {
+                        if (e.touches.length !== 1) return;
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        const rect = app.getBoundingClientRect();
+                        offsetX = touch.clientX - rect.left;
+                        offsetY = touch.clientY - rect.top;
+                        applyDragCss(rect.left, rect.top);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      });
+                      doc.addEventListener('touchmove', e => {
+                        if (!isDragging || e.touches.length !== 1) return;
+                        const touch = e.touches[0];
+                        applyDragCss(touch.clientX - offsetX, touch.clientY - offsetY);
+                      }, { passive: false });
+                      doc.addEventListener('touchend', () => {
+                        if (isDragging) {
+                          isDragging = false;
+                        }
+                      });
+                    }
+                  }
+            
+                  // --- Copyボタン追加 ---
+                  if (!app.querySelector('.pcr-copy')) {
+                    const resultInput = app.querySelector('.pcr-result');
+                    if (resultInput) {
+                      const hexCopyBtn = doc.createElement('button');
+                      hexCopyBtn.textContent = 'Copy';
+                      hexCopyBtn.className = 'pcr-copy';
+                      hexCopyBtn.style.cssText = `
+                        position: relative;
+                        right: 20px;
+                        margin: 0px !important;
+                        cursor: pointer;
+                        border: 1px solid #999;
+                        border-radius: 4px;
+                        color: #000000;
+                        background: #F0FFEC;
+                        font-size: 12px;
+                        line-height: 17px;
+                      `;
+                      resultInput.insertAdjacentElement('afterend', hexCopyBtn);
+                      
+                      hexCopyBtn.addEventListener("click", function(){
                         if (resultInput && resultInput.value !== "-") {
                           win.navigator.clipboard.writeText(resultInput.value).then(function(){
-                            button.textContent = "Copied!";
-                            win.setTimeout(function(){ button.textContent = "Copy"; }, 1500);
+                            hexCopyBtn.textContent = "Copied!";
+                            win.setTimeout(function(){ hexCopyBtn.textContent = "Copy"; }, 1500);
                           }).catch(function(err){
                             win.console.error("コピーに失敗しました:", err);
                           });
                         }
                       });
-                    });
+                    }
                   }
                 });
-              });
+              }, 0);
             });
       
             pickr.on('change', (color) => {
