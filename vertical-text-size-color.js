@@ -632,6 +632,8 @@
       if (!win) return;
       
       win.addEventListener('load', () => {
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        
         const doc = win.document;
         
         // データを新しいウィンドウに渡す
@@ -3399,7 +3401,7 @@
           `;
           newDoc.body.appendChild(script);
         };
-      });
+      }, { once: true });
     }
     openNovelWindow();
   }
