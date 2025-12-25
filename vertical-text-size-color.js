@@ -1975,14 +1975,10 @@
             doc
           );
       
-          // --- ユーティリティ関数 ---
+          // bodyの色を取得してHex変換
           const getHex = (prop) => {
             const rgb = getComputedStyle(doc.body)[prop];
-            if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
-              return null
-            }
-            const nums = rgb.match(/\d+/g)?.map(Number);
-            return nums && nums.length >= 3 ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') : null
+            return rgbToHex(rgb);
           };
       
           // applyStyle関数
@@ -2705,12 +2701,13 @@
         
         // RGB → HEX 変換関数
         function rgbToHex(rgb) {
-          const result = rgb.match(/\d+/g);
-          if (!result) return rgb; // マッチしなければそのまま返す
-          let r = parseInt(result[0], 10).toString(16).padStart(2, "0");
-          let g = parseInt(result[1], 10).toString(16).padStart(2, "0");
-          let b = parseInt(result[2], 10).toString(16).padStart(2, "0");
-          return `#${r}${g}${b}`;
+          if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
+            return null;
+          }
+          const nums = rgb.match(/\d+/g)?.map(Number);
+          return nums && nums.length >= 3 
+            ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') 
+            : null;
         }
         
         // SAVEボタン
