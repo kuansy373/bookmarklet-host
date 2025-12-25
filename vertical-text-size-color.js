@@ -2997,10 +2997,10 @@
             // エンターキーで「保存する」ボタンを押す処理
             const handleKeydown = (e) => {
               if (e.key === 'Enter') {
-                saveBtn.click(); // 「保存する」ボタンをクリック
+                saveBtn.click();
               }
             };
-            doc.addEventListener('keydown', handleKeydown); // キーイベントを登録
+            doc.addEventListener('keydown', handleKeydown);
             
             // 組み立て
             previewContainer.appendChild(preview);
@@ -3302,12 +3302,17 @@
         // --- 保存済みのすべてのJSONを表示するボタンのイベント登録 ---
         doc.getElementById('viewAllJsonBtn').onclick = () => {
           const newTab = win.open();
-          if (!newTab) {
-            win.alert('新しいタブを開けませんでした。ポップアップブロックを確認してください。');
-            return;
-          }
-      
           const newDoc = newTab.document;
+
+          // 保存済みスタイルをキー順にソート
+          const sortedStyles = ((o) =>
+            Object.keys(o)
+              .sort((a, b) =>
+                parseInt(a.replace(/\D/g, ''), 10) -
+                parseInt(b.replace(/\D/g, ''), 10)
+              )
+              .reduce((r, k) => (r[k] = o[k], r), {})
+          )(savedStyles);
       
           // head要素
           const head = newDoc.createElement("head");
@@ -3354,7 +3359,7 @@
           // scriptロジックをJSとして挿入（即実行される）
           const script = newDoc.createElement("script");
           script.textContent = `
-            const savedStyles = ${JSON.stringify(savedStyles)};
+            const savedStyles = ${JSON.stringify(sortedStyles)};
             let currentJson = savedStyles;
       
             const jsonDisplay = document.getElementById('jsonDisplay');
