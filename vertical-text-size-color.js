@@ -2705,7 +2705,7 @@
         async function saveStyle(name) {
           const target = doc.getElementById('novelDisplay');
           if (!target) return win.alert('対象要素が見つかりません');
-          const computed = window.getComputedStyle(target);
+          const computed = win.getComputedStyle(target);
           let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
           const fontFamily = fontSelect.value;
         
