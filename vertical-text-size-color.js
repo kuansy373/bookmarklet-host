@@ -970,14 +970,16 @@
         function syncScrollSpeed(value) {
           scrollSpeed = parseInt(value, 10) * speedScale;
         }
-        scrollSliderRight.addEventListener('input', () => {
-          syncScrollSpeed(scrollSliderRight.value);
-          scrollSliderLeft.value = scrollSliderRight.value;
+        
+        // 両方のスライダーの値を同期
+        [scrollSliderRight, scrollSliderLeft].forEach(slider => {
+          slider.addEventListener('input', () => {
+            syncScrollSpeed(slider.value);
+            scrollSliderRight.value = slider.value;
+            scrollSliderLeft.value = slider.value;
+          });
         });
-        scrollSliderLeft.addEventListener('input', () => {
-          syncScrollSpeed(scrollSliderLeft.value);
-          scrollSliderRight.value = scrollSliderLeft.value;
-        });
+        
         win.requestAnimationFrame(forceScroll);
           
         // ==============================
@@ -1964,7 +1966,7 @@
             doc
           );
       
-          // bodyの色を取得してHex変換
+          // bodyの色を取得しrgb→Hex変換する関数
           const getHex = (prop) => {
             const rgb = getComputedStyle(doc.body)[prop];
             return rgbToHex(rgb);
@@ -2375,7 +2377,7 @@
           }
           doc.getElementById("randomColorBtn").onclick = changeColors;
           doc.getElementById("swapColorsBtn").onclick = () => {
-            // ロック状態を無視して完全にスワップ
+            // ロック状態を無視してスワップ
             [colorState.currentFg, colorState.currentBg] = [colorState.currentBg, colorState.currentFg];
             [colorState.savedFg, colorState.savedBg] = [colorState.savedBg, colorState.savedFg];
 
@@ -2389,7 +2391,7 @@
             win.__fgHSL = hexToHSL(colorState.currentFg);
             updateLockIcons();
           };
-          // Pickr UI コンテナとスタイルは初期非表示
+          // 初期非表示
           container.style.display = 'none';
           style.disabled = true;
           // □ ボタン作成関数
@@ -2662,7 +2664,7 @@
         // UIをbodyに追加
         doc.body.appendChild(onetapUI);
         
-        // --- ボタンごとのイベント登録 ---
+        // ボタンごとのイベント登録
         for (let i = 1; i <= 8; i++) {
           doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`Style${i}`);
           doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`Style${i}`);
@@ -2777,7 +2779,7 @@
         // オーバーレイを表示する関数
         function showSaveConfirmOverlay(name, savePreview) {
           
-          // 既にオーバーレイが開いていれば二重表示を防ぐ
+          // 二重表示を防ぐ
           if (__saveConfirmOpen) return Promise.resolve(false);
           __saveConfirmOpen = true;
           isSwitching = true;
@@ -2785,7 +2787,7 @@
           disableBodyScroll();
           
           return new Promise((resolve) => {
-            // オーバーレイを作成
+            // オーバーレイ
             const overlay = doc.createElement('div');
             overlay.style.cssText = `
               position: fixed;
@@ -2986,7 +2988,7 @@
             overlay.appendChild(box);
             doc.body.appendChild(overlay);
         
-            // 現在のフォントを要素に適用
+            // 現在のfontFamilyを要素に適用
             const overlayElements = [
               doc.getElementById('title'),
               doc.getElementById('prettyLabel'),
@@ -3008,7 +3010,8 @@
             /// フォーカスをオーバーレイに移してキーボードの影響を抑える
             overlay.tabIndex = -1;
             overlay.focus();
-            // オーバーレイ領域をクリックで閉じる
+            
+            // オーバーレイ背景クリック
             overlay.onclick = (e) => {
               if (e.target === overlay) cleanupAndResolve(false);
             };
@@ -3062,7 +3065,7 @@
           // Styleキーを抽出
           const styleKeys = keys.filter(k => /^Style\d+$/.test(k));
 
-          // --- Styleキーなしの場合 ---
+          // Styleキーなしの場合
           if (styleKeys.length === 0) {
 
             // 既存のStyle番号を取得し、空いているStyle数字を付与
@@ -3082,7 +3085,7 @@
 
           }
           
-          // --- 保存処理 ---
+          // 保存処理
           for (const key of Object.keys(parsedData)) {
             const styleObj = parsedData[key];
 
@@ -3125,9 +3128,9 @@
           }
         
           try {
-            let data = JSON.parse(jsonText); // メソッドでJSON構文のチェック
+            let data = JSON.parse(jsonText); // JSON構文チェック
 
-            const keys = Object.keys(data); // 自前でのJSONチェック
+            const keys = Object.keys(data); // キーチェック
 
             // Styleで始まるキーだけを抽出
             const styleKeys = keys.filter(k => k.startsWith('Style'));
