@@ -946,7 +946,29 @@
             [position]: '30px',
             ...additionalStyle,
           });
+          
+          // タッチイベント無効化用のラップ要素を作成
+          const touchBlocker = doc.createElement('div');
+          Object.assign(touchBlocker.style, {
+            position: 'fixed',
+            height: '210vh',
+            bottom: '-108vh',
+            zIndex: '9998', // スライダーより1つ下
+            width: '80px',
+            [position]: '30px',
+            pointerEvents: 'auto',
+            ...additionalStyle,
+          });
+          
+          // 下方向へのタッチスクロールを無効化
+          touchBlocker.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+          }, { passive: false });
+          
+          // ラップ要素とスライダーを追加
+          doc.body.appendChild(touchBlocker);
           doc.body.appendChild(slider);
+          
           return slider;
         }
         
@@ -981,27 +1003,7 @@
             scrollSliderLeft.value = slider.value;
           });
         });
-
         win.requestAnimationFrame(forceScroll);
-
-        const preventScroll = (e) => {
-          e.preventDefault();
-        };
-        
-        // iOSのスクロール伝播対策
-        [scrollSliderRight, scrollSliderLeft].forEach(slider => {
-          slider.addEventListener('touchstart', () => {
-            document.addEventListener('touchmove', preventScroll, { passive: false });
-          });
-        
-          slider.addEventListener('touchend', () => {
-            document.removeEventListener('touchmove', preventScroll);
-          });
-        
-          slider.addEventListener('touchcancel', () => {
-            document.removeEventListener('touchmove', preventScroll);
-          });
-        });
           
         // ==============================
         // Slider Settings
