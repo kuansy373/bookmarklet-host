@@ -935,6 +935,7 @@
           slider.max = 25;
           slider.value = 0;
           Object.assign(slider.style, {
+            overscrollBehavior: 'none',
             appearance: 'none',
             border: 'none',
             position: 'fixed',
@@ -953,7 +954,8 @@
             position: 'fixed',
             height: '210vh',
             bottom: '-108vh',
-            zIndex: '9998', // スライダーより1つ下
+            zIndex: '9998',
+            overscrollBehavior: 'none',
             width: '80px',
             [position]: '30px',
             pointerEvents: 'auto',
