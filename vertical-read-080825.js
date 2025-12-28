@@ -935,7 +935,6 @@
           slider.max = 25;
           slider.value = 0;
           Object.assign(slider.style, {
-            overscrollBehavior: 'none',
             appearance: 'none',
             border: 'none',
             position: 'fixed',
@@ -945,8 +944,24 @@
             width: '80px',
             opacity: '1',
             [position]: '30px',
+            overscrollBehavior: 'none',
+            touchAction: 'none', // タッチアクション自体を無効化
             ...additionalStyle,
           });
+          
+          // input要素でのタッチイベントを制御
+          slider.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
+          
+          slider.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }, { passive: false });
+          
+          slider.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
           
           // タッチイベント無効化用のラップ要素を作成
           const touchBlocker = doc.createElement('div');
@@ -955,10 +970,10 @@
             height: '210vh',
             bottom: '-108vh',
             zIndex: '9998',
-            overscrollBehavior: 'none',
             width: '80px',
             [position]: '30px',
             pointerEvents: 'auto',
+            overscrollBehavior: 'none',
             ...additionalStyle,
           });
           
