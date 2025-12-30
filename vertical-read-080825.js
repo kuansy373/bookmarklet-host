@@ -606,6 +606,8 @@
         contain-intrinsic-size: 1000px;
         will-change: scroll-position;
         transform: translateZ(0);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       ruby rt {
         font-size: 0.5em;
@@ -929,12 +931,36 @@
         
         // スライダー作成関数
         function createSlider(position, additionalStyle = {}) {
-          const slider = doc.createElement('input');
-          slider.type = 'range';
-          slider.min = 0;
-          slider.max = 25;
-          slider.value = 0;
+          // コンテナを作成してinputを隔離
+          const isolatContainer = doc.createElement('div');
+          Object.assign(isolatContainer.style, {
+            position: 'fixed',
+            height: '210vh',
+            bottom: '-108vh',
+            zIndex: '9999',
+            width: '80px',
+            [position]: '30px',
+            pointerEvents: 'auto',
+            overflow: 'hidden', // 重要
+            ...additionalStyle,
+          });
           
+          // コンテナレベルでスクロール伝播を完全ブロック
+          isolatContainer.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
+          
+          isolatContainer.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }, { passive: false });
+          
+          isolatContainer.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
+          
+          const slider = doc.createElement('input');
+          // inputフォーカス解除
           slider.addEventListener('touchstart', () => {
             slider.blur();
           }, { passive: true });
@@ -942,20 +968,25 @@
           slider.addEventListener('pointerdown', () => {
             slider.blur();
           });
-
+          slider.type = 'range';
+          slider.min = 0;
+          slider.max = 25;
+          slider.value = 0;
           Object.assign(slider.style, {
             appearance: 'none',
             border: 'none',
-            position: 'fixed',
-            height: '210vh',
-            bottom: '-108vh',
-            zIndex: '9999',
-            width: '80px',
+            position: 'absolute', // fixedからabsoluteに変更
+            height: '100%',
+            width: '100%',
+            top: '0',
+            left: '0',
             opacity: '1',
-            [position]: '30px',
-            ...additionalStyle,
           });
-          doc.body.appendChild(slider);
+          
+          // 組み立て
+          isolatContainer.appendChild(slider);
+          doc.body.appendChild(isolatContainer);
+          
           return slider;
         }
         
@@ -990,7 +1021,6 @@
             scrollSliderLeft.value = slider.value;
           });
         });
-        
         win.requestAnimationFrame(forceScroll);
           
         // ==============================
