@@ -927,8 +927,39 @@
           doc.documentElement.style.overflow = '';
         }
         
-        // スライダー作成関数
-        function createSlider(position, additionalStyle = {}) {
+        // タッチイベント隔離コンテナ
+        function createIsolatedContainer(position) {
+          const isolateContainer = doc.createElement('div');
+          Object.assign(isolateContainer.style, {
+            position: 'fixed',
+            [position]: '30px',
+            bottom: '-108vh',
+            width: '80px',
+            height: '210vh',
+            zIndex: '9998',
+            pointerEvents: 'auto',
+          });
+          
+          // タッチイベント伝播を完全ブロック
+          isolateContainer.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
+          
+          isolateContainer.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }, { passive: false });
+          
+          isolateContainer.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+          }, { passive: false });
+          
+          doc.body.appendChild(isolateContainer);
+          return isolateContainer;
+        }
+        
+        // スライダー作成関数（コンテナ内に配置）
+        function createSlider(isolateContainer, position, additionalStyle = {}) {
           const slider = doc.createElement('input');
           slider.type = 'range';
           slider.min = 0;
@@ -937,22 +968,23 @@
           Object.assign(slider.style, {
             appearance: 'none',
             border: 'none',
-            position: 'fixed',
-            height: '210vh',
-            bottom: '-108vh',
-            zIndex: '9999',
-            width: '80px',
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
             opacity: '1',
-            [position]: '30px',
+            left: '0',
+            top: '0',
             ...additionalStyle,
           });
-          doc.body.appendChild(slider);
+          isolateContainer.appendChild(slider);
           return slider;
         }
         
-        // 左右スライダー作成
-        const scrollSliderRight = createSlider('right');
-        const scrollSliderLeft = createSlider('left', { direction: 'rtl' });
+        // 左右コンテナとスライダー作成
+        const containerRight = createIsolatedContainer('right');
+        const containerLeft = createIsolatedContainer('left');
+        const scrollSliderRight = createSlider(containerRight, 'right');
+        const scrollSliderLeft = createSlider(containerLeft, 'left', { direction: 'rtl' });
         
         // === スクロール処理 ===
         const scroller = doc.scrollingElement || doc.documentElement;
@@ -987,7 +1019,7 @@
         // ==============================
         // Slider Settings
         // ==============================
-      
+        
         const scrollUI = doc.createElement('div');
         Object.assign(scrollUI.style, {
           position: 'fixed',
@@ -1039,10 +1071,10 @@
         });
         
         // === イベント ===
-        // 共通のスタイル適用関数
+        // 共通スタイル適用関数
         const applyToSliders = (fn) => {
-          fn(scrollSliderRight);
-          fn(scrollSliderLeft);
+          fn(scrollSliderRight, containerRight);
+          fn(scrollSliderLeft, containerLeft);
         };
         
         // Border & Color
@@ -1053,12 +1085,12 @@
               const otherId = i ? 'scrollB' : 'scrollC';
               const otherEl = doc.getElementById(otherId);
               otherEl.checked = false;
-              applyToSliders(sl => {
+              applyToSliders((sl) => {
                 sl.style.border = id === 'scrollB' ? '1px solid currentColor' : 'none';
                 sl.style.setProperty("background", id === 'scrollC' ? "currentColor" : "transparent", "important");
               });
             } else {
-              applyToSliders(sl => {
+              applyToSliders((sl) => {
                 sl.style.border = 'none';
                 sl.style.setProperty("background", "transparent", "important");
               });
@@ -1079,7 +1111,7 @@
             applyToSliders(el => el.style.boxShadow = '0 0 0px');
           }
         });
-
+        
         // Opacity
         const opacityInput = doc.getElementById('scrollO');
         let lastValue = opacityInput.value;
@@ -1112,8 +1144,8 @@
         const bothbox = doc.getElementById('scrollBoth');
         
         function updateDisplay() {
-          scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
-          scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
+          containerRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
+          containerLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
         }
         
         function uncheckOthers(current) {
@@ -1133,10 +1165,14 @@
         });
         
         // Position & Width
-        setupXWInput('scrollX', val => applyToSliders(el => {
-          el.style[el === scrollSliderRight ? 'right' : 'left'] = `${val}px`;
-        }));
-        setupXWInput('scrollW', val => applyToSliders(el => el.style.width = `${val}px`));
+        setupXWInput('scrollX', val => {
+          containerRight.style.right = `${val}px`;
+          containerLeft.style.left = `${val}px`;
+        });
+        setupXWInput('scrollW', val => {
+          containerRight.style.width = `${val}px`;
+          containerLeft.style.width = `${val}px`;
+        });
         
         function setupXWInput(inputId, applyWideXpos) {
           const input = doc.getElementById(inputId);
@@ -1177,10 +1213,10 @@
         // Slider ball 
         doc.getElementById('scrollHide').addEventListener('change', e => {
           const [height, bottom] = e.target.checked ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
-          applyToSliders(el => {
-            el.style.height = height;
-            el.style.bottom = bottom;
-          });
+          containerRight.style.height = height;
+          containerRight.style.bottom = bottom;
+          containerLeft.style.height = height;
+          containerLeft.style.bottom = bottom;
         });
         
         // 開くボタン共通スタイル
