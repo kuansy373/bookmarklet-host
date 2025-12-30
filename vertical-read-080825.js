@@ -932,8 +932,8 @@
         // スライダー作成関数
         function createSlider(position, additionalStyle = {}) {
           // コンテナを作成してinputを隔離
-          const isolatContainer = doc.createElement('div');
-          Object.assign(isolatContainer.style, {
+          const isolateContainer = doc.createElement('div');
+          Object.assign(isolateContainer.style, {
             position: 'fixed',
             height: '210vh',
             bottom: '-108vh',
@@ -941,21 +941,21 @@
             width: '80px',
             [position]: '30px',
             pointerEvents: 'auto',
-            overflow: 'hidden', // 重要
+            overflow: 'hidden',
             ...additionalStyle,
           });
           
           // コンテナレベルでスクロール伝播を完全ブロック
-          isolatContainer.addEventListener('touchstart', (e) => {
+          isolateContainer.addEventListener('touchstart', (e) => {
             e.stopPropagation();
           }, { passive: false });
           
-          isolatContainer.addEventListener('touchmove', (e) => {
+          isolateContainer.addEventListener('touchmove', (e) => {
             e.stopPropagation();
             e.preventDefault();
           }, { passive: false });
           
-          isolatContainer.addEventListener('touchend', (e) => {
+          isolateContainer.addEventListener('touchend', (e) => {
             e.stopPropagation();
           }, { passive: false });
           
@@ -984,8 +984,8 @@
           });
           
           // 組み立て
-          isolatContainer.appendChild(slider);
-          doc.body.appendChild(isolatContainer);
+          isolateContainer.appendChild(slider);
+          doc.body.appendChild(isolateContainer);
           
           return slider;
         }
