@@ -934,6 +934,15 @@
           slider.min = 0;
           slider.max = 25;
           slider.value = 0;
+          
+          slider.addEventListener('touchstart', () => {
+            slider.blur();
+          }, { passive: true });
+          
+          slider.addEventListener('pointerdown', () => {
+            slider.blur();
+          });
+
           Object.assign(slider.style, {
             appearance: 'none',
             border: 'none',
@@ -944,48 +953,9 @@
             width: '80px',
             opacity: '1',
             [position]: '30px',
-            overscrollBehavior: 'none',
-            touchAction: 'none', // タッチアクション自体を無効化
             ...additionalStyle,
           });
-          
-          // input要素でのタッチイベントを制御
-          slider.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-          }, { passive: false });
-          
-          slider.addEventListener('touchmove', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }, { passive: false });
-          
-          slider.addEventListener('touchend', (e) => {
-            e.stopPropagation();
-          }, { passive: false });
-          
-          // タッチイベント無効化用のラップ要素を作成
-          const touchBlocker = doc.createElement('div');
-          Object.assign(touchBlocker.style, {
-            position: 'fixed',
-            height: '210vh',
-            bottom: '-108vh',
-            zIndex: '9998',
-            width: '80px',
-            [position]: '30px',
-            pointerEvents: 'auto',
-            overscrollBehavior: 'none',
-            ...additionalStyle,
-          });
-          
-          // 下方向へのタッチスクロールを無効化
-          touchBlocker.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-          }, { passive: false });
-          
-          // ラップ要素とスライダーを追加
-          doc.body.appendChild(touchBlocker);
           doc.body.appendChild(slider);
-          
           return slider;
         }
         
@@ -1020,6 +990,7 @@
             scrollSliderLeft.value = slider.value;
           });
         });
+        
         win.requestAnimationFrame(forceScroll);
           
         // ==============================
