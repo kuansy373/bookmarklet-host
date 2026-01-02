@@ -606,8 +606,6 @@
         contain-intrinsic-size: 1000px;
         will-change: scroll-position;
         transform: translateZ(0);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
       }
       ruby rt {
         font-size: 0.5em;
@@ -931,43 +929,7 @@
         
         // スライダー作成関数
         function createSlider(position, additionalStyle = {}) {
-          // コンテナを作成してinputを隔離
-          const isolateContainer = doc.createElement('div');
-          Object.assign(isolateContainer.style, {
-            position: 'fixed',
-            height: '210vh',
-            bottom: '-108vh',
-            zIndex: '9999',
-            width: '80px',
-            [position]: '30px',
-            pointerEvents: 'auto',
-            overflow: 'hidden',
-            ...additionalStyle,
-          });
-          
-          // コンテナレベルでスクロール伝播を完全ブロック
-          isolateContainer.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-          }, { passive: false });
-          
-          isolateContainer.addEventListener('touchmove', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }, { passive: false });
-          
-          isolateContainer.addEventListener('touchend', (e) => {
-            e.stopPropagation();
-          }, { passive: false });
-          
           const slider = doc.createElement('input');
-          // inputフォーカス解除
-          slider.addEventListener('touchstart', () => {
-            slider.blur();
-          }, { passive: true });
-          
-          slider.addEventListener('pointerdown', () => {
-            slider.blur();
-          });
           slider.type = 'range';
           slider.min = 0;
           slider.max = 25;
@@ -975,18 +937,16 @@
           Object.assign(slider.style, {
             appearance: 'none',
             border: 'none',
-            position: 'absolute', // fixedからabsoluteに変更
-            height: '100%',
-            width: '100%',
-            top: '0',
-            left: '0',
+            position: 'fixed',
+            height: '210vh',
+            bottom: '-108vh',
+            zIndex: '9999',
+            width: '80px',
             opacity: '1',
+            [position]: '30px',
+            ...additionalStyle,
           });
-          
-          // 組み立て
-          isolateContainer.appendChild(slider);
-          doc.body.appendChild(isolateContainer);
-          
+          doc.body.appendChild(slider);
           return slider;
         }
         
@@ -1021,6 +981,7 @@
             scrollSliderLeft.value = slider.value;
           });
         });
+        
         win.requestAnimationFrame(forceScroll);
           
         // ==============================
@@ -1750,6 +1711,7 @@
               padding: 1px;
               border: 1px solid #999;
               border-radius: 4px;
+              color: #000;
               background: #F0FFEC;
               cursor: pointer;
             }
@@ -1760,6 +1722,7 @@
               font-size: 1em;
               font-weight: bolder;
               border: 1px solid #aaa;
+              color: #000;
               background: #dddddd;
               border-radius: 4px;
             }
@@ -1803,6 +1766,7 @@
             }
       
             #randomColorBtn {
+              color: #000;
               background: #E6FDFF;
               border: 1px solid #aaa;
               border-radius: 4px;
@@ -1838,7 +1802,7 @@
               width: 25px;
               margin: 0px;
               cursor: pointer;
-              border: 1px solid;
+              border: 1px solid #000;
               border-radius: 2px;
               background-size: 0;
               transition: all .3s;
