@@ -610,6 +610,7 @@
       ruby rt {
         font-size: 0.5em;
         background: transparent !important;
+        user-select: none;
       }
       #yesButton,
       #noButton,
@@ -1711,7 +1712,6 @@
               padding: 1px;
               border: 1px solid #999;
               border-radius: 4px;
-              color: #000;
               background: #F0FFEC;
               cursor: pointer;
             }
@@ -1722,7 +1722,6 @@
               font-size: 1em;
               font-weight: bolder;
               border: 1px solid #aaa;
-              color: #000;
               background: #dddddd;
               border-radius: 4px;
             }
@@ -1766,7 +1765,6 @@
             }
       
             #randomColorBtn {
-              color: #000;
               background: #E6FDFF;
               border: 1px solid #aaa;
               border-radius: 4px;
@@ -1802,7 +1800,7 @@
               width: 25px;
               margin: 0px;
               cursor: pointer;
-              border: 1px solid #000;
+              border: 1px solid;
               border-radius: 2px;
               background-size: 0;
               transition: all .3s;
