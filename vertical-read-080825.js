@@ -984,6 +984,13 @@
         });
         
         win.requestAnimationFrame(forceScroll);
+
+        // タブまたはウィンドウの非アクティブでスライダー値リセット
+        doc.addEventListener('visibilitychange', () => {
+        if (doc.hidden) resetScrollSliders();
+        });
+
+        win.addEventListener('blur', resetScrollSliders);
           
         // ==============================
         // Slider Settings
