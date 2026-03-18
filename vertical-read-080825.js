@@ -320,8 +320,7 @@
     
       const content = html.slice(start + 1, end);
       const isClosing = /^\s*\//.test(content);
-      const nameMatch = content.replace(/^\s*\//, '')
-                               .match(/^([a-zA-Z0-9-]+)/);
+      const nameMatch = content.replace(/^\s*\//, '').match(/^([a-zA-Z0-9-]+)/);
     
       return {
         end,
@@ -330,7 +329,8 @@
       };
     }
     
-    // <ruby>の外でspan分割する関数
+    // 長文の負荷軽減のため50文字毎にspan分割する関数
+    // ルビタグ内は避ける
     function chunkHTMLSafe(html, chunkSize) {
       const chunks = [];
       const len = html.length;
@@ -666,54 +666,6 @@
       
         // 初期表示
         win.renderPart(0);
-
-        // テキスト選択メニュー（意味、読み）
-        const selecText = doc.getElementById('novelDisplay');
-
-        selecText.addEventListener('mouseup', () => {
-          const text = win.getSelection().toString().trim();
-          if (!text) return;
-
-          showMenu(text);
-        });
-
-        const menu = doc.createElement('div');
-        menu.style.position = 'fixed';
-        menu.style.border = '1px solid';
-        menu.style.padding = '5px';
-        menu.style.zIndex = '9999';
-        menu.style.display = 'none';
-
-        menu.innerHTML = `
-          <button id="mAndrBtn" style="border:1px solid;">意味と読み方</button>
-        `;
-
-        doc.body.appendChild(menu);
-        
-        function showMenu(text) {
-          const sel = win.getSelection();
-          const range = sel.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-
-          menu.style.left = rect.left + 'px';
-          menu.style.top = rect.bottom + 'px';
-          menu.style.display = 'block';
-
-          menu.dataset.text = text;
-        }
-
-        doc.getElementById('mAndrBtn').onclick = () => {
-          const text = menu.dataset.text;
-          const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " 意味と読み方");
-          win.open(url, '_blank');
-          menu.style.display = 'none';
-        };
-
-        doc.addEventListener('mousedown', (e) => {
-          if (!menu.contains(e.target)) {
-            menu.style.display = 'none';
-          }
-        });
 
         // ページ切り替えオーバーレイ作成関数
         function createOverlay() {
@@ -2092,7 +2044,7 @@
             updateLockIcons();
           };
       
-          // --- Pickr関連・状態変数 ---
+          // Pickr関連・状態変数の初期化
           const contrastEl = doc.getElementById('contrastRatio');
 
           colorState = {
@@ -2111,7 +2063,7 @@
               colorState.currentBg
             ));
           
-          // --- pcr-appドラッグ用グローバル変数を追加 ---
+          // pcr-appドラッグ用グローバル変数を追加
           let globalDragStyle = null;
           let globalDragRuleIndex = null;
       
@@ -2153,7 +2105,7 @@
             pickr.on('init', instance => {
               win.setTimeout(() => {
                 doc.querySelectorAll('.pcr-app').forEach(app => {
-                  // --- pcr-appドラッグボタン追加 ---
+                  // pcr-appドラッグボタン追加
                   if (!app.querySelector('.pcr-drag-handle')) {
                     const saveBtn = app.querySelector('.pcr-save');
                     if (saveBtn) {
@@ -2172,10 +2124,10 @@
                       `;
                       saveBtn.insertAdjacentElement('afterend', dragBtn);
             
-                      // --- ドラッグ処理 ---
+                      // ドラッグ処理
                       let isDragging = false, offsetX = 0, offsetY = 0;
             
-                      // --- グローバルなドラッグ用CSSルールを使う ---
+                      // グローバルなドラッグ用CSSルールを使う
                       function applyDragCss(left, top) {
                         if (!globalDragStyle) {
                           globalDragStyle = doc.createElement('style');
@@ -2235,7 +2187,7 @@
                     }
                   }
             
-                  // --- Copyボタン追加 ---
+                  // Copyボタン追加
                   if (!app.querySelector('.pcr-copy')) {
                     const resultInput = app.querySelector('.pcr-result');
                     if (resultInput) {
@@ -2332,9 +2284,9 @@
               destroyAndRemove: () => {},
             }
           }
-          // --- イベントハンドラ・UI操作 ---
+          // イベントハンドラ・UI操作
           updateColorHexDisplays();
-          // --- ロックアイコン制御 ---
+          // ロックアイコン制御
           function updateLockIcons() {
             const bgLocked = doc.getElementById('color-toggle-bg-lock').checked;
             const fgLocked = doc.getElementById('color-toggle-fg-lock').checked;
@@ -2393,7 +2345,7 @@
             const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
             let trials = 0;
             const maxTrials = 300;
-            // --- HSLオブジェクトが不正な場合は初期化 ---
+            // HSLオブジェクトが不正な場合は初期化
             if (!win.__bgHSL || typeof win.__bgHSL.h !== 'number' || typeof win.__bgHSL.s !== 'number' || typeof win.__bgHSL.l !== 'number') {
               win.__bgHSL = hexToHSL(colorState.currentBg);
             }
@@ -3457,6 +3409,74 @@
           `;
           newDoc.body.appendChild(script);
         };
+        // ---
+        
+        // テキスト選択メニュー（意味、読み）
+        const selectText = doc.getElementById('novelDisplay');
+
+        // スマホ対応のためmouseupイベントではなくselectionchangeイベントで実装
+        // doc全体に反応してしまうためselectTextかどうかチェック
+        doc.addEventListener('selectionchange', () => {
+          const sel = win.getSelection();
+
+          if (!sel.rangeCount) return;
+
+          const range = sel.getRangeAt(0);
+          const text = sel.toString().trim();
+          if (!text) return;
+
+          const startNode = range.startContainer;
+          const endNode = range.endContainer;
+
+          if (
+            !selectText.contains(startNode) ||
+            !selectText.contains(endNode)
+          ) {
+            return; // novelDisplay外なら無視
+          }
+
+          showMenu(text);
+        });
+
+        const menu = doc.createElement('div');
+        menu.style.position = 'fixed';
+        menu.style.border = '1px solid';
+        menu.style.borderRadius = '5px';
+        menu.style.padding = '5px';
+        menu.style.zIndex = '9999';
+        menu.style.display = 'none';
+
+        menu.innerHTML = `
+          <button id="mAndrBtn" style="padding:0;margin:0;border:none;background:none;">意味と読み方</button>
+        `;
+
+        doc.body.appendChild(menu);
+        
+        function showMenu(text) {
+          const sel = win.getSelection();
+          const range = sel.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+
+          menu.style.left = (rect.right + 20) + 'px';
+          menu.style.top = (rect.bottom - 60) + 'px';
+          menu.style.display = 'block';
+
+          menu.dataset.text = text;
+        }
+
+        doc.getElementById('mAndrBtn').onclick = () => {
+          const text = menu.dataset.text;
+          const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " 意味と読み方");
+          win.open(url, '_blank');
+          menu.style.display = 'none';
+        };
+
+        doc.addEventListener('mousedown', (e) => {
+          if (!menu.contains(e.target)) {
+            menu.style.display = 'none';
+          }
+        });
+
       }, { once: true });
     }
     openNovelWindow();
