@@ -666,7 +666,55 @@
       
         // 初期表示
         win.renderPart(0);
+
+        // テキスト選択メニュー（意味、読み）
+        const selecText = doc.getElementById('novelDisplay');
+
+        selecText.addEventListener('mouseup', () => {
+          const text = win.getSelection().toString().trim();
+          if (!text) return;
+
+          showMenu(text);
+        });
+
+        const menu = doc.createElement('div');
+        menu.style.position = 'fixed';
+        menu.style.border = '1px solid';
+        menu.style.padding = '5px';
+        menu.style.zIndex = '9999';
+        menu.style.display = 'none';
+
+        menu.innerHTML = `
+          <button id="mAndrBtn" style="border:1px solid;">意味と読み方</button>
+        `;
+
+        doc.body.appendChild(menu);
         
+        function showMenu(text) {
+          const sel = win.getSelection();
+          const range = sel.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+
+          menu.style.left = rect.left + 'px';
+          menu.style.top = rect.bottom + 'px';
+          menu.style.display = 'block';
+
+          menu.dataset.text = text;
+        }
+
+        doc.getElementById('mAndrBtn').onclick = () => {
+          const text = menu.dataset.text;
+          const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " 意味と読み方");
+          win.open(url, '_blank');
+          menu.style.display = 'none';
+        };
+
+        doc.addEventListener('mousedown', (e) => {
+          if (!menu.contains(e.target)) {
+            menu.style.display = 'none';
+          }
+        });
+
         // ページ切り替えオーバーレイ作成関数
         function createOverlay() {
           const overlay = doc.createElement('div');
