@@ -3570,7 +3570,7 @@
           });
         }
 
-        doc.addEventListener('mouseup', (e) => {
+        doc.addEventListener('pointerup', (e) => {
           if (!pendingSelection) return;
 
           showMenus(pendingSelection);
