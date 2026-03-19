@@ -3422,10 +3422,10 @@
         };
         // ---
         
-        // テキスト選択メニュー
+        // ---テキスト選択メニュー---
         const novelText = doc.getElementById('novelDisplay');
+        let pendingSelection = null;
 
-        // スマホ対応のためmouseupイベントではなくselectionchangeイベントで実装
         doc.addEventListener('selectionchange', () => {
           const sel = win.getSelection();
 
@@ -3446,15 +3446,13 @@
             return;
           }
 
-          showMenus(text);
+          pendingSelection = text;
         });
-
-        const menu = doc.createElement('div');
 
         // divスタイル
         function applyMenuStyle(el) {
           Object.assign(el.style, {
-            position: 'fixed',
+            position: 'absolute',
             border: '1px solid',
             borderRadius: '5px',
             padding: '5px',
@@ -3513,25 +3511,71 @@
 
         function showMenus(text) {
           const sel = win.getSelection();
-          const rect = sel.getRangeAt(0).getBoundingClientRect();
+          const range = sel.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+
+          const direction = getSelectionDirection(sel);
+
+          const fontSize = parseFloat(getComputedStyle(novelText).fontSize) || 20;
+          const offset = fontSize + 10;
+
+          const textRect = novelText.getBoundingClientRect();
+          const centerX = textRect.left + textRect.width / 2;
 
           menus.forEach(({ div, cfg }) => {
+            div.style.display = 'block';
+
+            const width = div.offsetWidth;
+            const height = div.offsetHeight;
+
+            // 横位置
             if (cfg.side === 'right') {
-              div.style.left = (rect.right + 20) + 'px';
+              div.style.left = (centerX + offset + win.scrollX) + 'px'; 
             } else {
-              div.style.right = (win.innerWidth - rect.left + 10) + 'px';
+              div.style.left = (centerX - offset - width + win.scrollX) + 'px';
             }
 
-            div.style.top = (rect.bottom - 10 + cfg.offsetY) + 'px';
-            div.style.display = 'block';
+            // 縦位置
+            let top;
+
+            if (text.length === 1) {
+              top = rect.bottom - height - 40;
+            } else if (direction === 'forward') {
+              top = rect.bottom - height - 80;
+            } else {
+              top = rect.top;
+            }
+
+            div.style.top = (top + cfg.offsetY + win.scrollY) + 'px';
             div.dataset.text = text;
-            
           });
         }
 
-        function hideMenus() {
-          menus.forEach(({ div }) => div.style.display = 'none');
+        function getSelectionDirection(sel) {
+          if (sel.anchorNode === sel.focusNode) {
+            return sel.anchorOffset <= sel.focusOffset ? 'forward' : 'backward';
+          }
+
+          const pos = sel.anchorNode.compareDocumentPosition(sel.focusNode);
+
+          if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return 'forward';
+          if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 'backward';
+
+          return 'none';
         }
+
+        function hideMenus() {
+          menus.forEach(({ div }) => {
+            div.style.display = 'none';
+          });
+        }
+
+        doc.addEventListener('mouseup', (e) => {
+          if (!pendingSelection) return;
+
+          showMenus(pendingSelection);
+          pendingSelection = null;
+        });
 
         doc.addEventListener('mousedown', (e) => {
           if (!menus.some(({ div }) => div.contains(e.target))) {
