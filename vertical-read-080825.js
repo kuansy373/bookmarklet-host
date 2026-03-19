@@ -330,7 +330,7 @@
     }
     
     // 長文の負荷軽減のため50文字毎にspan分割する関数
-    // ルビタグ内は避ける
+    // タグ内は避ける
     function chunkHTMLSafe(html, chunkSize) {
       const chunks = [];
       const len = html.length;
@@ -431,7 +431,7 @@
     
     const fullHTML = text;
 
-    // ページ分割がルビタグ内を避ける関数
+    // タグ内を避ける関数
     function avoidInsideRuby(posMap, visiblePos) {
       while (visiblePos > 0 && posMap[visiblePos]?.rubyDepth > 0) {
         visiblePos--;
@@ -1976,7 +1976,7 @@
             doc
           );
       
-          // bodyの色を取得しrgb→Hex変換する関数
+          // bodyの色を取得しrgbをHex変換する関数
           const getHex = (prop) => {
             const rgb = getComputedStyle(doc.body)[prop];
             return rgbToHex(rgb);
@@ -2066,7 +2066,7 @@
           // pcr-appドラッグ用グローバル変数を追加
           let globalDragStyle = null;
           let globalDragRuleIndex = null;
-      
+          
           const initPickr = (id, prop) => {
             const swatch = doc.getElementById(id + 'Swatch');
             const isFg = id === 'fg';
@@ -2223,7 +2223,7 @@
                 });
               }, 0);
             });
-      
+
             pickr.on('change', (color) => {
               const hex = color.toHEXA().toString();
               setCurrent(hex);
@@ -2231,6 +2231,7 @@
               updateSwatch(swatch, hex, getSaved());
               updateContrast()
             });
+            
             pickr.on('save', (color) => {
               const hex = color.toHEXA().toString();
               setCurrent(hex);
@@ -2242,19 +2243,24 @@
               if (isFg) win.__fgHSL = hexToHSL(hex);
               else win.__bgHSL = hexToHSL(hex);
             });
+
             pickr.on('hide', () => {
               setCurrent(getSaved());
               applyStyle(prop, getSaved());
               updateSwatch(swatch, getSaved(), getSaved());
               updateContrast()
             });
+
             updateSwatch(swatch, getCurrent(), getSaved());
             applyStyle(prop, getCurrent());
             updateContrast();
             return pickr
           };
+
+          // Pickr初期化
           let bgPickr = null;
           let fgPickr = null;
+
           try {
             bgPickr = initPickr('bg', 'background-color');
             fgPickr = initPickr('fg', 'color')
@@ -2286,7 +2292,8 @@
           }
           // イベントハンドラ・UI操作
           updateColorHexDisplays();
-          // ロックアイコン制御
+
+          // ロックアイコン制御関数
           function updateLockIcons() {
             const bgLocked = doc.getElementById('color-toggle-bg-lock').checked;
             const fgLocked = doc.getElementById('color-toggle-fg-lock').checked;
@@ -2345,6 +2352,7 @@
             const contrastMax = parseFloat(doc.getElementById("contrastMax").value) || 21;
             let trials = 0;
             const maxTrials = 300;
+
             // HSLオブジェクトが不正な場合は初期化
             if (!win.__bgHSL || typeof win.__bgHSL.h !== 'number' || typeof win.__bgHSL.s !== 'number' || typeof win.__bgHSL.l !== 'number') {
               win.__bgHSL = hexToHSL(colorState.currentBg);
@@ -2387,6 +2395,7 @@
           }
           doc.getElementById("randomColorBtn").onclick = changeColors;
           doc.getElementById("swapColorsBtn").onclick = () => {
+            
             // ロック状態を無視してスワップ
             [colorState.currentFg, colorState.currentBg] = [colorState.currentBg, colorState.currentFg];
             [colorState.savedFg, colorState.savedBg] = [colorState.savedBg, colorState.savedFg];
@@ -2401,18 +2410,22 @@
             win.__fgHSL = hexToHSL(colorState.currentFg);
             updateLockIcons();
           };
+
           // 初期非表示
           container.style.display = 'none';
           style.disabled = true;
-          // □ ボタン作成関数
+
+          // 開くボタン □ 作成関数
           function createPickrOpenButton() {
-            // 開くボタン □
+
             const pUIOpenBtn = doc.createElement('div');
+
             pUIOpenBtn.innerHTML = `
               <svg width="14" height="14" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1"/>
               </svg>
             `;
+
             Object.assign(pUIOpenBtn.style, baseOpenBtnStyle, {
               top: '80px',
               right: '18px',
@@ -2434,11 +2447,8 @@
           
           // Pickr の閉じるボタンの処理
           doc.getElementById('pickrClose').onclick = () => {
-            // UI を閉じる
             container.style.display = 'none';
             style.disabled = true;
-          
-            // □ ボタンを再生成
             createPickrOpenButton();
           };
           
@@ -2461,6 +2471,7 @@
           console.error("Pickr load error:", err);
         });
 
+        // ==関数==
         function hexToHSL(hex) {
           if (!hex || typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) {
             return { h: 0, s: 0, l: 0 };
@@ -3017,7 +3028,7 @@
               });
             }
             
-            /// フォーカスをオーバーレイに移してキーボードの影響を抑える
+            // フォーカスをオーバーレイに移してキーボードの影響を抑える
             overlay.tabIndex = -1;
             overlay.focus();
             
@@ -3411,11 +3422,10 @@
         };
         // ---
         
-        // テキスト選択メニュー（意味、読み）
-        const selectText = doc.getElementById('novelDisplay');
+        // テキスト選択メニュー
+        const novelText = doc.getElementById('novelDisplay');
 
         // スマホ対応のためmouseupイベントではなくselectionchangeイベントで実装
-        // doc全体に反応してしまうためselectTextかどうかチェック
         doc.addEventListener('selectionchange', () => {
           const sel = win.getSelection();
 
@@ -3425,55 +3435,107 @@
           const text = sel.toString().trim();
           if (!text) return;
 
+          // doc全体に反応してしまうためnovelTextかどうかチェック
           const startNode = range.startContainer;
           const endNode = range.endContainer;
 
           if (
-            !selectText.contains(startNode) ||
-            !selectText.contains(endNode)
+            !novelText.contains(startNode) ||
+            !novelText.contains(endNode)
           ) {
-            return; // novelDisplay外なら無視
+            return;
           }
 
-          showMenu(text);
+          showMenus(text);
         });
 
         const menu = doc.createElement('div');
-        menu.style.position = 'fixed';
-        menu.style.border = '1px solid';
-        menu.style.borderRadius = '5px';
-        menu.style.padding = '5px';
-        menu.style.zIndex = '9999';
-        menu.style.display = 'none';
 
-        menu.innerHTML = `
-          <button id="mAndrBtn" style="padding:0;margin:0;border:none;background:none;">意味と読み方</button>
-        `;
-
-        doc.body.appendChild(menu);
-        
-        function showMenu(text) {
-          const sel = win.getSelection();
-          const range = sel.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-
-          menu.style.left = (rect.right + 20) + 'px';
-          menu.style.top = (rect.bottom - 60) + 'px';
-          menu.style.display = 'block';
-
-          menu.dataset.text = text;
+        // divスタイル
+        function applyMenuStyle(el) {
+          Object.assign(el.style, {
+            position: 'fixed',
+            border: '1px solid',
+            borderRadius: '5px',
+            padding: '5px',
+            userSelect: 'none',
+            zIndex: '9999',
+            display: 'none'
+          });
         }
 
-        doc.getElementById('mAndrBtn').onclick = () => {
-          const text = menu.dataset.text;
-          const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " 意味と読み方");
-          win.open(url, '_blank');
-          menu.style.display = 'none';
-        };
+        // buttonスタイル
+        function applyBtnStyle(btn) {
+          Object.assign(btn.style, {
+            padding: '0',
+            margin: '0',
+            border: 'none',
+            background: 'none',
+            userSelect: 'none',
+            cursor: 'alias'
+          });
+        }
+
+        // メニュー定義
+        const configs = [
+          { id: 'nameBtn', label: '何者', side: 'left', offsetY: 0, query: '何者' },
+          { id: 'sourceBtn', label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' },
+          { id: 'translationBtn', label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' },
+
+          { id: 'meaningBtn', label: '意味', side: 'right', offsetY: 0, query: '意味' },
+          { id: 'readingBtn', label: '読み方', side: 'right', offsetY: 40, query: '読み方' },
+          { id: 'mAndrBtn', label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' }
+        ];
+
+        const menus = [];
+
+        // div作成
+        configs.forEach(cfg => {
+          const div = doc.createElement('div');
+          applyMenuStyle(div);
+
+          const btn = doc.createElement('button');
+          btn.textContent = cfg.label;
+          applyBtnStyle(btn);
+
+          btn.onclick = () => {
+            const text = div.dataset.text;
+            const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " " + cfg.query);
+            win.open(url, '_blank');
+            hideMenus();
+          };
+
+          div.appendChild(btn);
+          doc.body.appendChild(div);
+
+          menus.push({ div, cfg });
+        });
+
+        function showMenus(text) {
+          const sel = win.getSelection();
+          const rect = sel.getRangeAt(0).getBoundingClientRect();
+
+          menus.forEach(({ div, cfg }) => {
+            if (cfg.side === 'right') {
+              div.style.left = (rect.right + 20) + 'px';
+            } else {
+              div.style.right = (win.innerWidth - rect.left + 10) + 'px';
+            }
+
+            div.style.top = (rect.bottom - 10 + cfg.offsetY) + 'px';
+            div.style.display = 'block';
+            div.dataset.text = text;
+            
+          });
+        }
+
+        function hideMenus() {
+          menus.forEach(({ div }) => div.style.display = 'none');
+        }
 
         doc.addEventListener('mousedown', (e) => {
-          if (!menu.contains(e.target)) {
-            menu.style.display = 'none';
+          if (!menus.some(({ div }) => div.contains(e.target))) {
+            hideMenus();
           }
         });
 
