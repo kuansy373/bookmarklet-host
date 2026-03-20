@@ -1015,7 +1015,6 @@
           <label><input id="scrollC" class="settingCheckbox" type="checkbox"><span class="labelText"> Color in</span></label><br>
           <label>Shadow: <input id="scrollS" class="settingInputbox" type="number" value="0"> px</label><br>
           <label>Opacity: <input id="scrollO" class="settingInputbox" type="text" inputmode="decimal" min="0" max="1" step="0.05" value="1"> (0~1)</label><br>
-          <label><input id="scrollBoth" class="settingCheckbox" type="checkbox"><span class="labelText"> Both sides</span></label><br>
           <label><input id="scrollRight" class="settingCheckbox" type="checkbox" checked><span class="labelText"> Right side</span></label><br>
           <label><input id="scrollLeft" class="settingCheckbox" type="checkbox"><span class="labelText"> Left side</span></label><br>
           <label>Position: <input id="scrollX" class="settingInputbox" type="number" value="30"> px</label><br>
@@ -1114,30 +1113,20 @@
           }
         });
         
-        // Right/Left/Both
+        // Right/Left
         const rightbox = doc.getElementById('scrollRight');
         const leftbox = doc.getElementById('scrollLeft');
-        const bothbox = doc.getElementById('scrollBoth');
         
         function updateDisplay() {
-          scrollSliderRight.style.display = (rightbox.checked || bothbox.checked) ? 'block' : 'none';
-          scrollSliderLeft.style.display = (leftbox.checked || bothbox.checked) ? 'block' : 'none';
-        }
-        
-        function uncheckOthers(current) {
-          [rightbox, leftbox, bothbox].forEach(box => {
-            if (box !== current) box.checked = false;
-          });
+          scrollSliderRight.style.display = rightbox.checked ? 'block' : 'none';
+          scrollSliderLeft.style.display = leftbox.checked ? 'block' : 'none';
         }
         
         rightbox.checked = true;
         updateDisplay();
         
-        [rightbox, leftbox, bothbox].forEach(box => {
-          box.addEventListener('change', e => {
-            if (e.target.checked) uncheckOthers(box);
-            updateDisplay();
-          });
+        [rightbox, leftbox].forEach(box => {
+          box.addEventListener('change', updateDisplay);
         });
         
         // Position & Width
@@ -2744,7 +2733,6 @@
               border:       ['scrollB', 'checked'],
               colorIn:      ['scrollC', 'checked'],
               shadow:       ['scrollS', 'value',   Number],
-              both:         ['scrollBoth', 'checked'],
               right:        ['scrollRight', 'checked'],
               left:         ['scrollLeft', 'checked'],
               position:     ['scrollX', 'value',   Number],
@@ -2774,7 +2762,7 @@
             backgroundColor,
             fontSize,
             fontWeight,
-            textShadow: blur,
+            fontShadow: blur,
             fontFamily,
             scrollSettings
           };
@@ -3230,7 +3218,6 @@
               scrollB:        { prop: 'checked', value: s.border },
               scrollC:        { prop: 'checked', value: s.colorIn },
               scrollS:        { prop: 'value',   value: s.shadow },
-              scrollBoth:     { prop: 'checked', value: s.both },
               scrollRight:    { prop: 'checked', value: s.right },
               scrollLeft:     { prop: 'checked', value: s.left },
               scrollX:        { prop: 'value',   value: s.position },
