@@ -2754,7 +2754,6 @@
             }
             return result;
           })();
-      
         
           // 保存プレビューオブジェクト
           const savePreview = {
@@ -2764,7 +2763,8 @@
             fontWeight,
             fontShadow: blur,
             fontFamily,
-            scrollSettings
+            scrollSettings,
+            searchConfigs: getSearchConfigs(),
           };
         
           // オーバーレイで確認
@@ -3049,6 +3049,7 @@
             'textShadow',
             'fontFamily',
             'scrollSettings'
+            
           ]);
 
           if (!jsonText) {
@@ -3122,6 +3123,8 @@
           if (!data) return win.alert(`${name} は保存されていません`);
         
           if (applyStyleData(data)) {
+            win.appConfig = data;
+            createMenus();
             onetapUI.style.display = 'none';
           }
         }
@@ -3160,6 +3163,8 @@
             if (!proceed) return;
         
             if (applyStyleData(data)) {
+              win.appConfig = data;
+              createMenus();
               onetapUI.style.display = 'none';
               jsonInput.value = '';
             }
@@ -3461,41 +3466,77 @@
           });
         }
 
-        // メニュー定義
-        const configs = [
-          { id: 'nameBtn', label: '何者', side: 'left', offsetY: 0, query: '何者' },
-          { id: 'sourceBtn', label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' },
-          { id: 'translationBtn', label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' },
+        // メニュー初期設定
+        const defaultConfigs = [
+          { label: '何者', side: 'left', offsetY: 0, query: '何者' },
+          { label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' },
+          { label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' },
 
-          { id: 'meaningBtn', label: '意味', side: 'right', offsetY: 0, query: '意味' },
-          { id: 'readingBtn', label: '読み方', side: 'right', offsetY: 40, query: '読み方' },
-          { id: 'mAndrBtn', label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' }
+          { label: '意味', side: 'right', offsetY: 0, query: '意味' },
+          { label: '読み方', side: 'right', offsetY: 40, query: '読み方' },
+          { label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' }
         ];
+
+        // メニュー設定を受け取る関数
+        function getSearchConfigs() {
+          const cfg = win.appConfig;
+
+          if (!cfg || !Array.isArray(cfg.searchConfigs)) {
+            return defaultConfigs;
+          }
+
+          return cfg.searchConfigs
+            .filter(item =>
+              item &&
+              typeof item.label === 'string' &&
+              typeof item.query === 'string'
+            )
+            .map(item => ({
+              label: item.label,
+              side: item.side === 'right' ? 'right' : 'left',
+              offsetY: Number(item.offsetY) || 0,
+              query: item.query
+            }));
+        }
 
         const menus = [];
 
-        // div作成
-        configs.forEach(cfg => {
-          const div = doc.createElement('div');
-          applyMenuStyle(div);
+        // div作成関数
+        function createMenus() {
+          hideMenus();
 
-          const btn = doc.createElement('button');
-          btn.textContent = cfg.label;
-          applyBtnStyle(btn);
+          // 既存削除
+          menus.forEach(({ div }) => div.remove());
+          menus.length = 0;
 
-          btn.onclick = () => {
-            const text = div.dataset.text;
-            const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " " + cfg.query);
-            win.open(url, '_blank');
-            hideMenus();
-          };
+          // 受け取ったメニュー設定を採用
+          const configs = getSearchConfigs();
 
-          div.appendChild(btn);
-          doc.body.appendChild(div);
+          configs.forEach(cfg => {
+            const div = doc.createElement('div');
+            applyMenuStyle(div);
 
-          menus.push({ div, cfg });
-        });
+            const btn = doc.createElement('button');
+            btn.textContent = cfg.label;
+            applyBtnStyle(btn);
 
+            btn.onclick = () => {
+              const text = div.dataset.text;
+              const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " " + cfg.query);
+              win.open(url, '_blank');
+              hideMenus();
+            };
+
+            div.appendChild(btn);
+            doc.body.appendChild(div);
+
+            menus.push({ div, cfg });
+          });
+        }
+
+        createMenus();
+
+        // div表示制御関数
         function showMenus(text) {
           const sel = win.getSelection();
           const range = sel.getRangeAt(0);
@@ -3538,6 +3579,7 @@
           });
         }
 
+        // 選択方向を検査する関数
         function getSelectionDirection(sel) {
           if (sel.anchorNode === sel.focusNode) {
             return sel.anchorOffset <= sel.focusOffset ? 'forward' : 'backward';
