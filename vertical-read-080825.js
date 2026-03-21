@@ -2821,6 +2821,7 @@
               max-height: 50vh;
               overflow-y: auto;
               overscroll-behavior: contain;
+              scrollbar-width: thin;
               z-index: 10008
             `;
             
@@ -2834,15 +2835,16 @@
               font-weight: bold;
             `;
             
-            // プリティプリントチェックボックスコンテナ
-            const checkboxContainer = doc.createElement('div');
-            checkboxContainer.style.cssText = `
+            // 上段コンテナ
+            const topContainer = doc.createElement('div');
+            topContainer.style.cssText = `
               margin: 0 0 12px 0;
               display: flex;
               align-items: center;
               gap: 8px;
             `;
             
+            // チェックボックス
             const prettyCheckbox = doc.createElement('input');
             prettyCheckbox.type = 'checkbox';
             prettyCheckbox.id = 'prettyPrintCheckbox';
@@ -2851,6 +2853,7 @@
               cursor: pointer;
             `;
             
+            // ラベル
             const prettyLabel = doc.createElement('label');
             prettyLabel.htmlFor = 'prettyPrintCheckbox';
             prettyLabel.textContent = 'プリティプリント';
@@ -2860,6 +2863,54 @@
               font-size: 14px;
               user-select: none;
             `;
+
+            // 編集ボタン
+            const jsonEditBtn = doc.createElement('button');
+            jsonEditBtn.textContent = '編集';
+            jsonEditBtn.id = 'jsonEditBtn';
+            jsonEditBtn.style.cssText = `
+              padding: 6px 12px;
+              margin-left: auto;
+              color: unset;
+              border: 1px solid currentColor;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 12px;
+            `;
+
+            let isEditing = false;
+
+            const setEditingMode = (editing) => {
+              isEditing = editing;
+
+              // プレビュー編集切替
+              preview.contentEditable = editing ? 'true' : 'false';
+              preview.style.border = editing ? 'none' : '1px solid';
+              preview.style.outline = editing ? '3px dashed' : 'none';
+
+              // ボタンの無効化対象
+              const controls = [
+                prettyCheckbox,
+                prettyLabel,
+                jsonCopyBtn,
+                saveBtn,
+                cancelBtn
+              ];
+
+              controls.forEach(el => {
+                el.disabled = editing;
+                el.style.opacity = editing ? '0.5' : '1';
+                el.style.cursor = editing ? 'not-allowed' : 'pointer';
+              });
+
+              // 編集ボタンの表示切替
+              jsonEditBtn.textContent = editing ? '編集中...' : '編集';
+            };
+
+            // 編集ボタンのクリック処理
+            jsonEditBtn.onclick = () => {
+              setEditingMode(!isEditing);
+            };
         
             // コピーボタン
             const jsonCopyBtn = doc.createElement('button');
@@ -2867,7 +2918,6 @@
             jsonCopyBtn.id = 'jsonCopyBtn';
             jsonCopyBtn.style.cssText = `
               padding: 6px 12px;
-              margin-left: auto;
               color: unset;
               border: 1px solid currentColor;
               border-radius: 4px;
@@ -2879,7 +2929,7 @@
               if (jsonCopyBtn.disabled) return;
               try {
                 jsonCopyBtn.disabled = true;
-                const textToCopy = prettyCheckbox.checked ? jsonTextFormatted : jsonTextCompressed;
+                const textToCopy = preview.textContent;
                 await win.navigator.clipboard.writeText(textToCopy);
                 jsonCopyBtn.textContent = 'コピー完了!';
                 win.setTimeout(() => {
@@ -2892,9 +2942,10 @@
               }
             };
             
-            checkboxContainer.appendChild(prettyCheckbox);
-            checkboxContainer.appendChild(prettyLabel);
-            checkboxContainer.appendChild(jsonCopyBtn);
+            topContainer.appendChild(prettyCheckbox);
+            topContainer.appendChild(prettyLabel);
+            topContainer.appendChild(jsonEditBtn);
+            topContainer.appendChild(jsonCopyBtn);
             
             // プレビューコンテナ
             const previewContainer = doc.createElement('div');
@@ -2930,21 +2981,21 @@
               }
             };
             
-            // ボタンコンテナ
-            const buttonContainer = doc.createElement('div');
-            buttonContainer.style.cssText = `
+            // 下段コンテナ
+            const bottomContainer = doc.createElement('div');
+            bottomContainer.style.cssText = `
               display: flex;
               gap: 12px;
               justify-content: flex-end;
             `;
         
-            // 操作の処理まとめ
+            // キャンセル・保存共通のクリーンアップ関数
             const cleanupAndResolve = (result) => {
               if (overlay.parentNode) doc.body.removeChild(overlay);
               __saveConfirmOpen = false;
               isSwitching = false;
               enableBodyScroll();
-              doc.removeEventListener('keydown', handleKeydown); // イベントリスナーを削除
+              doc.removeEventListener('keydown', handleKeydown);
               resolve(result);
             };
             
@@ -2988,12 +3039,12 @@
             
             // 組み立て
             previewContainer.appendChild(preview);
-            buttonContainer.appendChild(cancelBtn);
-            buttonContainer.appendChild(saveBtn);
+            bottomContainer.appendChild(cancelBtn);
+            bottomContainer.appendChild(saveBtn);
             box.appendChild(title);
-            box.appendChild(checkboxContainer);
+            box.appendChild(topContainer);
             box.appendChild(previewContainer);
-            box.appendChild(buttonContainer);
+            box.appendChild(bottomContainer);
             overlay.appendChild(box);
             doc.body.appendChild(overlay);
         
@@ -3049,7 +3100,6 @@
             'textShadow',
             'fontFamily',
             'scrollSettings'
-            
           ]);
 
           if (!jsonText) {
@@ -3096,6 +3146,7 @@
           }
           
           // 保存処理
+          const savedKeys = [];
           for (const key of Object.keys(parsedData)) {
             const styleObj = parsedData[key];
 
@@ -3105,9 +3156,10 @@
             }
 
             savedStyles[key] = styleObj;
+            savedKeys.push(key);
           }
 
-          win.alert('JSONデータを保存しました！');
+          win.alert(`${savedKeys.join(', ')} に保存しました！`);
           bulkJsonInput.value = '';
           initApplyButtonStyle();
 
@@ -3321,9 +3373,11 @@
             pre { white-space: pre-wrap; word-wrap: break-word; border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
             .controls { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
             .controls-left { display: flex; align-items: center; }
+            input[type="checkbox"] { cursor: pointer; }
+            label { font-size: 15px; cursor: pointer; }
             button { margin-left: 8px; font-size: 15px; cursor: pointer; }
-            button:disabled { opacity: 0.5; cursor: not-allowed; }
-            #jsonDisplay[contenteditable="true"] { border: 3px dashed #000000; border-radius: 0px; }
+            .disabled { opacity: 0.5; cursor: not-allowed; }
+            #jsonDisplay[contenteditable="true"] { outline: 3px dashed #000000; border-radius: 0px; }
           `;
           head.appendChild(style);
 
@@ -3340,7 +3394,7 @@
                 </label>
                 <button id="copyJsonBtn">コピー</button>
               </div>
-              <button id="editBtn">編集</button>
+              <button id="allJsonEditBtn">編集</button>
             </div>
             <pre id="jsonDisplay"></pre>
           `;
@@ -3355,11 +3409,11 @@
             const prettyCheckbox = document.getElementById('prettyPrintCheckbox');
             const prettyLabel = document.getElementById('prettyPrintLabel');
             const copyJsonBtn = document.getElementById('copyJsonBtn');
-            const editBtn = document.getElementById('editBtn');
-            let isEditing = false;
+            const allJsonEditBtn = document.getElementById('allJsonEditBtn');
+            let isAllEditing = false;
       
             const updateJsonDisplay = () => {
-              if (isEditing) return;
+              if (isAllEditing) return;
               const jsonText = prettyCheckbox.checked
                 ? JSON.stringify(currentJson, null, 2)
                 : JSON.stringify(currentJson);
@@ -3378,20 +3432,20 @@
               }
             });
       
-            editBtn.addEventListener('click', () => {
-              isEditing = !isEditing;
-              if (isEditing) {
-                editBtn.textContent = '編集中…';
+            allJsonEditBtn.addEventListener('click', () => {
+              isAllEditing = !isAllEditing;
+              if (isAllEditing) {
+                allJsonEditBtn.textContent = '編集中…';
                 jsonDisplay.contentEditable = 'true';
-                prettyCheckbox.disabled = true;
-                prettyLabel.style.opacity = "0.5";
-                copyJsonBtn.disabled = true;
+                prettyCheckbox.classList.add("disabled");
+                prettyLabel.classList.add("disabled");
+                copyJsonBtn.classList.add("disabled");
               } else {
-                editBtn.textContent = '編集';
+                allJsonEditBtn.textContent = '編集';
                 jsonDisplay.contentEditable = 'false';
-                prettyCheckbox.disabled = false;
-                prettyLabel.style.opacity = "1";
-                copyJsonBtn.disabled = false;
+                prettyCheckbox.classList.remove("disabled");
+                prettyLabel.classList.remove("disabled");
+                copyJsonBtn.classList.remove("disabled");
                 try {
                   currentJson = JSON.parse(jsonDisplay.textContent);
                 } catch (e) {
@@ -3448,7 +3502,6 @@
             border: '1px solid',
             borderRadius: '5px',
             padding: '5px',
-            userSelect: 'none',
             zIndex: '9999',
             display: 'none'
           });
@@ -3468,13 +3521,13 @@
 
         // メニュー初期設定
         const defaultConfigs = [
-          { label: '何者', side: 'left', offsetY: 0, query: '何者' },
-          { label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' },
-          { label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' },
+          { label: '何者', side: 'left', offsetY: 0, query: '何者' , engine: 'https://www.google.com/search?q=' },
+          { label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' , engine: 'https://www.google.com/search?q=' },
+          { label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' , engine: 'https://www.google.com/search?q=' },
 
-          { label: '意味', side: 'right', offsetY: 0, query: '意味' },
-          { label: '読み方', side: 'right', offsetY: 40, query: '読み方' },
-          { label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' }
+          { label: '意味', side: 'right', offsetY: 0, query: '意味' , engine: 'https://www.google.com/search?q=' },
+          { label: '読み方', side: 'right', offsetY: 40, query: '読み方' , engine: 'https://www.google.com/search?q=' },
+          { label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' , engine: 'https://www.google.com/search?q=' }
         ];
 
         // メニュー設定を受け取る関数
@@ -3495,7 +3548,10 @@
               label: item.label,
               side: item.side === 'right' ? 'right' : 'left',
               offsetY: Number(item.offsetY) || 0,
-              query: item.query
+              query: item.query,
+              engine: typeof item.engine === 'string'
+                ? item.engine
+                : 'https://www.google.com/search?q='
             }));
         }
 
@@ -3522,7 +3578,12 @@
 
             btn.onclick = () => {
               const text = div.dataset.text;
-              const url = "https://www.google.com/search?q=" + encodeURIComponent(text + " " + cfg.query);
+
+              const base = cfg.engine || "https://www.google.com/search?q=";
+              const query = encodeURIComponent(text + " " + cfg.query);
+
+              const url = base + query;
+
               win.open(url, '_blank');
               hideMenus();
             };
