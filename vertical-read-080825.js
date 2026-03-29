@@ -1198,6 +1198,7 @@
           </svg>
         `;
         Object.assign(sUIOpenBtn.style, baseOpenBtnStyle, {
+          padding: '0px 5px 5px 0px',
           top: '10px',
           left: '18px',
           zIndex: '10006',
@@ -1540,6 +1541,7 @@
           </svg>
         `;
         Object.assign(fUIOpenBtn.style, baseOpenBtnStyle, {
+          padding: '0px 0px 5px 5px',
           top: '10px',
           right: '18px',
           zIndex: '10006'
@@ -2416,7 +2418,8 @@
             `;
 
             Object.assign(pUIOpenBtn.style, baseOpenBtnStyle, {
-              top: '80px',
+              padding: '5px 0px 5px 5px',
+              top: '75px',
               right: '18px',
               zIndex: '20000'
             });
@@ -2653,7 +2656,8 @@
           </svg>
         `;
         Object.assign(oUIOpenBtn.style, baseOpenBtnStyle, {
-          top: '80px',
+          padding: '5px 5px 5px 0px',
+          top: '75px',
           left: '18px',
           zIndex: '10000',
         });
