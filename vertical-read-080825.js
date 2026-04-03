@@ -3529,7 +3529,7 @@
           { label: '元ネタ', side: 'left', offsetY: 40, query: '元ネタ' , engine: 'https://www.google.com/search?q=' },
           { label: '日本語訳', side: 'left', offsetY: 80, query: '日本語訳' , engine: 'https://www.google.com/search?q=' },
 
-          { label: '意味', side: 'right', offsetY: 0, query: '意味' , engine: 'https://www.google.com/search?q=' },
+          { label: '意味', side: 'right', offsetY: 0, query: 'とは' , engine: 'https://www.google.com/search?q=' },
           { label: '読み方', side: 'right', offsetY: 40, query: '読み方' , engine: 'https://www.google.com/search?q=' },
           { label: '意味 読み方', side: 'right', offsetY: 80, query: '意味 読み方' , engine: 'https://www.google.com/search?q=' }
         ];
@@ -3601,7 +3601,7 @@
 
         createMenus();
 
-        // div表示制御関数
+        // 表示制御
         function showMenus(text) {
           const sel = win.getSelection();
           const range = sel.getRangeAt(0);
