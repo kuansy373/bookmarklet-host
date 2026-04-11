@@ -3118,26 +3118,29 @@
           return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
         }
 
-        function hasValidStyleProperty(styleObj, validKeys) {
-          if (!isPlainObject(styleObj)) return false;
-        
-          return Object.keys(styleObj).some(key => validKeys.has(key));
+        function getInvalidStyleKeys(styleObj, validKeys) {
+          if (!isPlainObject(styleObj)) return null; // オブジェクトでない場合
+          const keys = Object.keys(styleObj);
+          if (keys.length === 0) return null; // 空オブジェクトの場合
+          return keys.filter(key => !validKeys.has(key)); // 無効なキー一覧
         }
+
+        const VALID_STYLE_KEYS = new Set([
+          'color',
+          'backgroundColor',
+          'fontSize',
+          'fontWeight',
+          'fontShadow',
+          'fontFamily',
+          'scrollSettings',
+          'searchConfigs'
+        ]);
 
         // jsonInputのSAVEボタン
         doc.getElementById('bulkSaveBtn').onclick = () => {
           const bulkJsonInput = doc.getElementById('bulkJsonInput');
           const jsonText = bulkJsonInput.value.trim();
-          const VALID_STYLE_KEYS = new Set([
-            'color',
-            'backgroundColor',
-            'fontSize',
-            'fontWeight',
-            'textShadow',
-            'fontFamily',
-            'scrollSettings'
-          ]);
-
+          
           if (!jsonText) {
             win.alert('JSONデータを入力してください');
             return;
@@ -3185,9 +3188,15 @@
           const savedKeys = [];
           for (const key of Object.keys(parsedData)) {
             const styleObj = parsedData[key];
+            const invalidKeys = getInvalidStyleKeys(styleObj, VALID_STYLE_KEYS);
 
-            if (!hasValidStyleProperty(styleObj, VALID_STYLE_KEYS)) {
-              win.alert(`${key} に有効なスタイルプロパティがありません`);
+            if (invalidKeys === null) {
+              win.alert(`形式が正しくありません`);
+              return;
+            }
+
+            if (invalidKeys.length > 0) {
+              win.alert(`許可されていないキーが含まれています:\n${invalidKeys.join(', ')}`);
               return;
             }
 
@@ -3198,7 +3207,6 @@
           win.alert(`${savedKeys.join(', ')} に保存しました！`);
           bulkJsonInput.value = '';
           initApplyButtonStyle();
-
         };
 
         // APPLYボタン
