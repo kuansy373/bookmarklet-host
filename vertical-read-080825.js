@@ -2581,6 +2581,35 @@
         // JSONで各値を保存/反映
         // ==============================
         
+        // スクロールUIのマッピング定数（saveStyle / applyStyleData で共用）
+        const SCROLL_UI_MAP = [
+          { key: 'border',     id: 'scrollB',          prop: 'checked', parser: Boolean    },
+          { key: 'colorIn',    id: 'scrollC',          prop: 'checked', parser: Boolean    },
+          { key: 'shadow',     id: 'scrollS',          prop: 'value',   parser: Number     },
+          { key: 'right',      id: 'scrollRight',      prop: 'checked', parser: Boolean    },
+          { key: 'left',       id: 'scrollLeft',       prop: 'checked', parser: Boolean    },
+          { key: 'position',   id: 'scrollX',          prop: 'value',   parser: parseFloat },
+          { key: 'width',      id: 'scrollW',          prop: 'value',   parser: parseFloat },
+          { key: 'opacity',    id: 'scrollO',          prop: 'value',   parser: parseFloat },
+          { key: 'speedScale', id: 'scrollSpeedScale', prop: 'value',   parser: parseFloat },
+          { key: 'hideBall',   id: 'scrollHide',       prop: 'checked', parser: Boolean    },
+        ];
+        
+        const VALID_STYLE_KEYS = new Set([
+          'color',
+          'backgroundColor',
+          'fontSize',
+          'fontWeight',
+          'fontShadow',
+          'fontFamily',
+          'scrollSettings',
+          'searchConfigs',
+        ]);
+        
+        // ==============================
+        // UI構築
+        // ==============================
+        
         const onetapUI = doc.createElement('div');
         Object.assign(onetapUI.style, {
           position: 'fixed',
@@ -2596,8 +2625,7 @@
           display: 'none',
         });
         
-        // ボタンセットを生成
-        const buttonSets = Array.from({ length: 8 }, (_, i) => 
+        const buttonSets = Array.from({ length: 8 }, (_, i) =>
           `<div class="button-set">
             <span class="label">${i + 1}.</span>
             <button id="saveBtn${i + 1}" class="button">SAVE</button>
@@ -2625,8 +2653,7 @@
             </div>
           </div>
         `;
-      
-        // ボタン群のスタイル
+        
         const buttonsContainer = onetapUI.querySelector('.ui-buttons');
         Object.assign(buttonsContainer.style, {
           display: 'flex',
@@ -2635,10 +2662,8 @@
           gap: '9px',
           fontSize: '14px',
         });
-      
-        // ボタンのスタイル
-        const buttons = onetapUI.querySelectorAll('.button');
-        buttons.forEach(btn => {
+        
+        onetapUI.querySelectorAll('.button').forEach(btn => {
           Object.assign(btn.style, {
             fontSize: '14px',
             color: 'unset',
@@ -2646,10 +2671,8 @@
             border: '1px solid',
           });
         });
-      
-        // JSON入力欄のスタイル
-        const jsonInputs = onetapUI.querySelectorAll('.json-input');
-        jsonInputs.forEach(input => {
+        
+        onetapUI.querySelectorAll('.json-input').forEach(input => {
           Object.assign(input.style, {
             fontSize: '12px',
             padding: '4px',
@@ -2659,8 +2682,8 @@
             fontFamily: 'monospace',
           });
         });
-      
-        const jsonStyle  = doc.createElement('style');
+        
+        const jsonStyle = doc.createElement('style');
         jsonStyle.textContent = `
           #jsonInput::placeholder,
           #bulkJsonInput::placeholder {
@@ -2669,17 +2692,15 @@
           }
         `;
         doc.head.appendChild(jsonStyle);
-      
-        // 数字、矢印のスタイル
-        const labels = onetapUI.querySelectorAll('.label');
-        labels.forEach(span => {
+        
+        onetapUI.querySelectorAll('.label').forEach(span => {
           Object.assign(span.style, {
             color: 'inherit',
             background: 'inherit',
             fontSize: '14px',
           });
         });
-
+        
         // 開くボタン ☆
         const oUIOpenBtn = doc.createElement('div');
         oUIOpenBtn.innerHTML = `
@@ -2694,7 +2715,7 @@
           zIndex: '10000',
         });
         doc.body.appendChild(oUIOpenBtn);
-
+        
         oUIOpenBtn.addEventListener('click', () => {
           onetapUI.style.display = 'block';
         });
@@ -2702,96 +2723,130 @@
         // 閉じるボタン ✕
         const oUICloseBtn = createCloseBtn();
         onetapUI.appendChild(oUICloseBtn);
-
+        
         oUICloseBtn.addEventListener('click', () => {
           onetapUI.style.display = 'none';
         });
-      
-        // UIをbodyに追加
+        
         doc.body.appendChild(onetapUI);
         
-        // ボタンごとのイベント登録
+        // ==============================
+        // ボタンイベント登録
+        // ==============================
+        
         for (let i = 1; i <= 8; i++) {
           doc.getElementById(`saveBtn${i}`).onclick = () => saveStyle(`Style${i}`);
           doc.getElementById(`applyBtn${i}`).onclick = () => applyStyleByName(`Style${i}`);
         }
         
-        // 保存されたスタイルを保持するローカル変数
+        // ==============================
+        // 保存スタイル管理
+        // ==============================
+        
         const savedStyles = {};
         
-        // APPLYボタンの色を初期化
-        function initApplyButtonStyle() {
-          const styles = ['Style1', 'Style2', 'Style3', 'Style4', 'Style5', 'Style6', 'Style7', 'Style8'];
-        
-          for (const styleName of styles) {
-            const applyBtn = doc.getElementById(`applyBtn${styleName.slice(-1)}`);
-            if (applyBtn && savedStyles[styleName]) {
-              const data = savedStyles[styleName];
-              if (data.color) applyBtn.style.color = data.color;
-              if (data.backgroundColor) applyBtn.style.backgroundColor = data.backgroundColor;
-            }
-          }
+        // APPLYボタンに保存済みスタイルの色を反映
+        function updateApplyBtnColor(name) {
+          const num = name.replace('Style', '');
+          const data = savedStyles[name];
+          const btn = doc.getElementById(`applyBtn${num}`);
+          if (!btn || !data) return;
+          if (data.color) btn.style.color = data.color;
+          if (data.backgroundColor) btn.style.backgroundColor = data.backgroundColor;
         }
         
-        // ページ読み込み時に呼ぶ
+        // ページ読み込み時に全APPLYボタンを初期化
+        function initApplyButtonStyle() {
+          for (let i = 1; i <= 8; i++) {
+            updateApplyBtnColor(`Style${i}`);
+          }
+        }
         initApplyButtonStyle();
         
-        // RGB → HEX 変換関数
+        // ==============================
+        // ユーティリティ
+        // ==============================
+        
+        // RGB → HEX 変換
         function rgbToHex(rgb) {
-          if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) {
-            return null;
-          }
+          if (!rgb || rgb === 'transparent' || rgb.startsWith('rgba(0, 0, 0, 0)')) return null;
           const nums = rgb.match(/\d+/g)?.map(Number);
-          return nums && nums.length >= 3 
-            ? '#' + nums.slice(0, 3).map((n) => n.toString(16).padStart(2, '0')).join('') 
+          return nums && nums.length >= 3
+            ? '#' + nums.slice(0, 3).map(n => n.toString(16).padStart(2, '0')).join('')
             : null;
         }
         
+        function isPlainObject(obj) {
+          return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
+        }
+        
+        function getInvalidStyleKeys(styleObj) {
+          if (!isPlainObject(styleObj)) return null;
+          const keys = Object.keys(styleObj);
+          if (keys.length === 0) return null;
+          return keys.filter(key => !VALID_STYLE_KEYS.has(key));
+        }
+        
+        // JSON文字列をパースして検証。エラー時は { error } を返す
+        function parseStyleJson(jsonText) {
+          let data;
+          try {
+            data = JSON.parse(jsonText);
+          } catch (e) {
+            return { error: 'JSONの解析に失敗しました:\n' + e.message };
+          }
+          if (!isPlainObject(data)) {
+            return { error: 'JSONの形式が正しくありません' };
+          }
+          return { data };
+        }
+
+        // スタイルオブジェクトのキーを検証。エラー時は { error } を返す
+        function validateStyleObj(styleObj) {
+          const invalidKeys = getInvalidStyleKeys(styleObj);
+          if (invalidKeys === null) return { error: '形式が正しくありません' };
+          if (invalidKeys.length > 0) return { error: `許可されていないキーが含まれています:\n${invalidKeys.join(', ')}` };
+          return {};
+        }
+        
+        // ==============================
+        // スクロールUI 読み書き
+        // ==============================
+        
+        function getScrollSettings() {
+          return Object.fromEntries(
+            SCROLL_UI_MAP.map(({ key, id, prop, parser }) => {
+              const el = doc.getElementById(id);
+              return [key, el ? parser(el[prop]) : null];
+            })
+          );
+        }
+        
+        function applyScrollSettingsToUI(s) {
+          SCROLL_UI_MAP.forEach(({ key, id, prop }) => {
+            const el = doc.getElementById(id);
+            if (el && s[key] != null) el[prop] = s[key];
+          });
+        }
+        
+        // ==============================
         // SAVEボタン
+        // ==============================
+        
         async function saveStyle(name) {
           const target = doc.getElementById('novelDisplay');
           if (!target) return win.alert('対象要素が見つかりません');
+        
           const computed = win.getComputedStyle(target);
           let { color, backgroundColor, fontSize, fontWeight, textShadow } = computed;
           const fontFamily = fontSelect.value;
         
-          // blur 値を抽出
           const match = textShadow?.match(/(-?\d+)px$/);
           const blur = match ? parseInt(match[1], 10) : 0;
         
-          // HEX に変換
           color = rgbToHex(color);
           backgroundColor = rgbToHex(backgroundColor);
         
-          // スクロールUIの値を取得
-          const scrollSettings = (() => {
-            const map = {
-              border:       ['scrollB', 'checked'],
-              colorIn:      ['scrollC', 'checked'],
-              shadow:       ['scrollS', 'value',   Number],
-              right:        ['scrollRight', 'checked'],
-              left:         ['scrollLeft', 'checked'],
-              position:     ['scrollX', 'value',   Number],
-              width:        ['scrollW', 'value',   Number],
-              opacity:      ['scrollO', 'value',   parseFloat],
-              speedScale:   ['scrollSpeedScale', 'value', parseFloat],
-              hideBall:     ['scrollHide', 'checked']
-            };
-            const result = {};
-            for (const key in map) {
-              const [id, prop, parser] = map[key];
-              const el = doc.getElementById(id);
-              if (!el) {
-                result[key] = null;
-                continue;
-              }
-              const raw = el[prop];
-              result[key] = parser ? parser(raw) : raw;
-            }
-            return result;
-          })();
-        
-          // 保存プレビューオブジェクト
           const savePreview = {
             color,
             backgroundColor,
@@ -2799,54 +2854,45 @@
             fontWeight,
             fontShadow: blur,
             fontFamily,
-            scrollSettings,
+            scrollSettings: getScrollSettings(),
             searchConfigs: getSearchConfigs(),
           };
         
-          // オーバーレイで確認
-          const confirmed = await showSaveConfirmOverlay(name, savePreview);
+          const { confirmed, editedData } = await showSaveConfirmOverlay(name, savePreview);
           if (!confirmed) return;
         
-          // ローカル変数に保存
-          savedStyles[name] = savePreview;
-        
-          // 保存成功後にAPPLYボタンに色を反映
-          const num = name.replace('Style', '');
-          const applyBtn = doc.getElementById(`applyBtn${num}`);
-          if (applyBtn) {
-            applyBtn.style.color = color;
-            applyBtn.style.backgroundColor = backgroundColor;
-          }
-          win.alert(`☆ 保存しました！`);
+          savedStyles[name] = editedData ?? savePreview;
+          updateApplyBtnColor(name);
+          win.alert('☆ 保存しました！');
         }
         
+        // ==============================
+        // 保存確認オーバーレイ
+        // ==============================
+        
         let __saveConfirmOpen = false;
-        // オーバーレイを表示する関数
+        
         function showSaveConfirmOverlay(name, savePreview) {
-          
-          // 二重表示を防ぐ
           if (__saveConfirmOpen) return Promise.resolve(false);
           __saveConfirmOpen = true;
           isSwitching = true;
           resetScrollSliders();
           disableBodyScroll();
-          
+        
           return new Promise((resolve) => {
             // オーバーレイ
             const overlay = doc.createElement('div');
             overlay.style.cssText = `
               position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
+              top: 0; left: 0;
+              width: 100%; height: 100%;
               background: rgba(0, 0, 0, 0.5);
               display: flex;
               justify-content: center;
               align-items: center;
               z-index: 10005;
             `;
-          
+        
             // コンテンツボックス
             const box = doc.createElement('div');
             box.style.cssText = `
@@ -2858,19 +2904,15 @@
               overflow-y: auto;
               overscroll-behavior: contain;
               scrollbar-width: thin;
-              z-index: 10008
+              z-index: 10008;
             `;
-            
+        
             // タイトル
             const title = doc.createElement('h3');
             title.textContent = `☆ ${name} に保存しますか？`;
             title.id = 'title';
-            title.style.cssText = `
-              margin: 0 0 16px 0;
-              font-size: 16px;
-              font-weight: bold;
-            `;
-            
+            title.style.cssText = `margin: 0 0 16px 0; font-size: 16px; font-weight: bold;`;
+        
             // 上段コンテナ
             const topContainer = doc.createElement('div');
             topContainer.style.cssText = `
@@ -2879,27 +2921,20 @@
               align-items: center;
               gap: 8px;
             `;
-            
-            // チェックボックス
+        
+            // プリティプリント チェックボックス
             const prettyCheckbox = doc.createElement('input');
             prettyCheckbox.type = 'checkbox';
             prettyCheckbox.id = 'prettyPrintCheckbox';
             prettyCheckbox.checked = false;
-            prettyCheckbox.style.cssText = `
-              cursor: pointer;
-            `;
-            
-            // ラベル
+            prettyCheckbox.style.cursor = 'pointer';
+        
             const prettyLabel = doc.createElement('label');
             prettyLabel.htmlFor = 'prettyPrintCheckbox';
             prettyLabel.textContent = 'プリティプリント';
             prettyLabel.id = 'prettyLabel';
-            prettyLabel.style.cssText = `
-              cursor: pointer;
-              font-size: 14px;
-              user-select: none;
-            `;
-
+            prettyLabel.style.cssText = `cursor: pointer; font-size: 14px; user-select: none;`;
+        
             // 編集ボタン
             const jsonEditBtn = doc.createElement('button');
             jsonEditBtn.textContent = '編集';
@@ -2913,40 +2948,6 @@
               cursor: pointer;
               font-size: 12px;
             `;
-
-            let isEditing = false;
-
-            const setEditingMode = (editing) => {
-              isEditing = editing;
-
-              // プレビュー編集切替
-              preview.contentEditable = editing ? 'true' : 'false';
-              preview.style.border = editing ? 'none' : '1px solid';
-              preview.style.outline = editing ? '3px dashed' : 'none';
-
-              // ボタンの無効化対象
-              const controls = [
-                prettyCheckbox,
-                prettyLabel,
-                jsonCopyBtn,
-                saveBtn,
-                cancelBtn
-              ];
-
-              controls.forEach(el => {
-                el.disabled = editing;
-                el.style.opacity = editing ? '0.5' : '1';
-                el.style.cursor = editing ? 'not-allowed' : 'pointer';
-              });
-
-              // 編集ボタンの表示切替
-              jsonEditBtn.textContent = editing ? '編集中...' : '編集';
-            };
-
-            // 編集ボタンのクリック処理
-            jsonEditBtn.onclick = () => {
-              setEditingMode(!isEditing);
-            };
         
             // コピーボタン
             const jsonCopyBtn = doc.createElement('button');
@@ -2960,40 +2961,12 @@
               cursor: pointer;
               font-size: 12px;
             `;
-            
-            jsonCopyBtn.onclick = async () => {
-              if (jsonCopyBtn.disabled) return;
-              try {
-                jsonCopyBtn.disabled = true;
-                const textToCopy = preview.textContent;
-                await win.navigator.clipboard.writeText(textToCopy);
-                jsonCopyBtn.textContent = 'コピー完了!';
-                win.setTimeout(() => {
-                  jsonCopyBtn.textContent = 'コピー';
-                  jsonCopyBtn.disabled = false;
-                }, 1500);
-              } catch (err) {
-                jsonCopyBtn.disabled = false;
-                win.alert('コピーに失敗しました: ' + err);
-              }
-            };
-            
-            topContainer.appendChild(prettyCheckbox);
-            topContainer.appendChild(prettyLabel);
-            topContainer.appendChild(jsonEditBtn);
-            topContainer.appendChild(jsonCopyBtn);
-            
-            // プレビューコンテナ
-            const previewContainer = doc.createElement('div');
-            previewContainer.style.cssText = `
-              position: relative;
-              margin: 0 0 20px 0;
-            `;
-            
-            // プレビュー内容
-            const preview = doc.createElement('pre');
+        
+            // プレビュー
             const jsonTextFormatted = JSON.stringify(savePreview, null, 2);
             const jsonTextCompressed = JSON.stringify(savePreview);
+        
+            const preview = doc.createElement('pre');
             preview.textContent = jsonTextCompressed;
             preview.style.cssText = `
               padding: 12px;
@@ -3005,27 +2978,8 @@
               white-space: nowrap;
               scrollbar-width: thin;
             `;
-            
-            // プリティプリントチェックイベント
-            prettyCheckbox.onchange = () => {
-              if (prettyCheckbox.checked) {
-                preview.textContent = jsonTextFormatted;
-                preview.style.whiteSpace = 'pre-wrap';
-              } else {
-                preview.textContent = jsonTextCompressed;
-                preview.style.whiteSpace = 'nowrap';
-              }
-            };
-            
-            // 下段コンテナ
-            const bottomContainer = doc.createElement('div');
-            bottomContainer.style.cssText = `
-              display: flex;
-              gap: 12px;
-              justify-content: flex-end;
-            `;
         
-            // キャンセル・保存共通のクリーンアップ関数
+            // キャンセル・保存共通クリーンアップ
             const cleanupAndResolve = (result) => {
               if (overlay.parentNode) doc.body.removeChild(overlay);
               __saveConfirmOpen = false;
@@ -3034,7 +2988,7 @@
               doc.removeEventListener('keydown', handleKeydown);
               resolve(result);
             };
-            
+        
             // キャンセルボタン
             const cancelBtn = doc.createElement('button');
             cancelBtn.textContent = 'キャンセル';
@@ -3048,8 +3002,8 @@
               cursor: pointer;
               font-size: 14px;
             `;
-            cancelBtn.onclick = () => cleanupAndResolve(false);
-            
+            cancelBtn.onclick = () => cleanupAndResolve({ confirmed: false });
+        
             // 保存ボタン
             const saveBtn = doc.createElement('button');
             saveBtn.textContent = '保存する';
@@ -3063,20 +3017,93 @@
               cursor: pointer;
               font-size: 14px;
             `;
-            saveBtn.onclick = () => cleanupAndResolve(true);
+            // 編集モード切替（data-disable-on-edit 属性で対象を管理）
+            [prettyCheckbox, jsonCopyBtn, saveBtn].forEach(el => {
+              el.dataset.disableOnEdit = 'true';
+            });
         
-            // エンターキーで「保存する」ボタンを押す処理
-            const handleKeydown = (e) => {
-              if (e.key === 'Enter') {
-                saveBtn.click();
+            // 編集後のデータを保持（未編集なら null）
+            let editedData = null;
+        
+            let isEditing = false;
+            const setEditingMode = (editing) => {
+        
+              // 編集モード終了時：パース・検証
+              if (!editing) {
+                const { data: parsed, error: parseError } = parseStyleJson(preview.textContent);
+                if (parseError) { win.alert(parseError); return; }
+                const { error: validationError } = validateStyleObj(parsed);
+                if (validationError) { win.alert(validationError); return; }
+                editedData = parsed;
+              }
+        
+              isEditing = editing;
+              preview.contentEditable = editing ? 'true' : 'false';
+              preview.style.border = editing ? 'none' : '1px solid currentColor';
+              preview.style.outline = editing ? '3px dashed' : 'none';
+        
+              overlay.querySelectorAll('[data-disable-on-edit]').forEach(el => {
+                el.disabled = editing;
+                el.style.opacity = editing ? '0.5' : '1';
+                el.style.cursor = editing ? 'not-allowed' : 'pointer';
+              });
+        
+              jsonEditBtn.textContent = editing ? '編集中...' : '編集';
+            };
+        
+            jsonEditBtn.onclick = () => setEditingMode(!isEditing);
+        
+            saveBtn.onclick = () => cleanupAndResolve({ confirmed: true, editedData });
+        
+            // プリティプリント切替
+            prettyCheckbox.onchange = () => {
+              if (prettyCheckbox.checked) {
+                preview.textContent = jsonTextFormatted;
+                preview.style.whiteSpace = 'pre-wrap';
+              } else {
+                preview.textContent = jsonTextCompressed;
+                preview.style.whiteSpace = 'nowrap';
               }
             };
+        
+            // コピー
+            jsonCopyBtn.onclick = async () => {
+              if (jsonCopyBtn.disabled) return;
+              try {
+                jsonCopyBtn.disabled = true;
+                await win.navigator.clipboard.writeText(preview.textContent);
+                jsonCopyBtn.textContent = 'コピー完了!';
+                win.setTimeout(() => {
+                  jsonCopyBtn.textContent = 'コピー';
+                  jsonCopyBtn.disabled = false;
+                }, 1500);
+              } catch (err) {
+                jsonCopyBtn.disabled = false;
+                win.alert('コピーに失敗しました: ' + err);
+              }
+            };
+        
+            // Enterキーで保存
+            const handleKeydown = (e) => {
+              if (e.key === 'Enter') saveBtn.click();
+            };
             doc.addEventListener('keydown', handleKeydown);
-            
+        
             // 組み立て
+            const previewContainer = doc.createElement('div');
+            previewContainer.style.cssText = `position: relative; margin: 0 0 20px 0;`;
             previewContainer.appendChild(preview);
+        
+            const bottomContainer = doc.createElement('div');
+            bottomContainer.style.cssText = `display: flex; gap: 12px; justify-content: flex-end;`;
             bottomContainer.appendChild(cancelBtn);
             bottomContainer.appendChild(saveBtn);
+        
+            topContainer.appendChild(prettyCheckbox);
+            topContainer.appendChild(prettyLabel);
+            topContainer.appendChild(jsonEditBtn);
+            topContainer.appendChild(jsonCopyBtn);
+        
             box.appendChild(title);
             box.appendChild(topContainer);
             box.appendChild(previewContainer);
@@ -3084,134 +3111,115 @@
             overlay.appendChild(box);
             doc.body.appendChild(overlay);
         
-            // 現在のfontFamilyを要素に適用
-            const overlayElements = [
-              doc.getElementById('title'),
-              doc.getElementById('prettyLabel'),
-              doc.getElementById('jsonCopyBtn'),
-              doc.getElementById('cancelBtn'),
-              doc.getElementById('saveBtn')
-            ];
-            
+            // 現在のフォントをオーバーレイ要素に適用
             if (currentFont && currentFont !== '游明朝') {
-              const fontFamily = currentFont === 'sans-serif' 
-                ? 'sans-serif' 
-                : `'${currentFont}', sans-serif`;
-              
-              overlayElements.forEach(el => {
-                if (el) el.style.fontFamily = fontFamily;
+              const ff = currentFont === 'sans-serif' ? 'sans-serif' : `'${currentFont}', sans-serif`;
+              [title, prettyLabel, jsonCopyBtn, cancelBtn, saveBtn].forEach(el => {
+                if (el) el.style.fontFamily = ff;
               });
             }
-            
-            // フォーカスをオーバーレイに移してキーボードの影響を抑える
+        
             overlay.tabIndex = -1;
             overlay.focus();
-            
-            // オーバーレイ背景クリック
             overlay.onclick = (e) => {
-              if (e.target === overlay) cleanupAndResolve(false);
+              if (e.target === overlay) cleanupAndResolve({ confirmed: false });
             };
           });
         }
-
-        function isPlainObject(obj) {
-          return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
-        }
-
-        function getInvalidStyleKeys(styleObj, validKeys) {
-          if (!isPlainObject(styleObj)) return null; // オブジェクトでない場合
-          const keys = Object.keys(styleObj);
-          if (keys.length === 0) return null; // 空オブジェクトの場合
-          return keys.filter(key => !validKeys.has(key)); // 無効なキー一覧
-        }
-
-        const VALID_STYLE_KEYS = new Set([
-          'color',
-          'backgroundColor',
-          'fontSize',
-          'fontWeight',
-          'fontShadow',
-          'fontFamily',
-          'scrollSettings',
-          'searchConfigs'
-        ]);
-
-        // jsonInputのSAVEボタン
+        
+        // ==============================
+        // bulkSaveBtn（複数JSON保存）
+        // ==============================
+        
         doc.getElementById('bulkSaveBtn').onclick = () => {
           const bulkJsonInput = doc.getElementById('bulkJsonInput');
           const jsonText = bulkJsonInput.value.trim();
-          
+        
           if (!jsonText) {
             win.alert('JSONデータを入力してください');
             return;
           }
-          
-          let parsedData;
-          try {
-            parsedData = JSON.parse(jsonText);
-          } catch (e) {
-            win.alert('JSONの解析に失敗しました:\n' + e.message);
-            return;
-          }
-          
-          if (!isPlainObject(parsedData)) {
-            win.alert('JSONの形式が正しくありません');
-            return;
-          }
-
-          const keys = Object.keys(parsedData);
-
-          // Styleキーを抽出
-          const styleKeys = keys.filter(k => /^Style\d+$/.test(k));
-
-          // Styleキーなしの場合
+        
+          const { data: parsedData, error } = parseStyleJson(jsonText);
+          if (error) { win.alert(error); return; }
+        
+          let normalized = parsedData;
+          const styleKeys = Object.keys(parsedData).filter(k => /^Style\d+$/.test(k));
+        
+          // Styleキーなし → 空き番号を付与して包む
           if (styleKeys.length === 0) {
-
-            // 既存のStyle番号を取得し、空いているStyle数字を付与
             const usedNums = Object.keys(savedStyles)
               .map(k => /^Style(\d+)$/.exec(k))
               .filter(Boolean)
               .map(m => Number(m[1]));
-
+        
             let newNum = 1;
-            while (usedNums.includes(newNum)) {
-              newNum++;
-            }
-
-            parsedData = {
-              [`Style${newNum}`]: parsedData
-            };
-
+            while (usedNums.includes(newNum)) newNum++;
+            normalized = { [`Style${newNum}`]: parsedData };
           }
-          
-          // 保存処理
-          const savedKeys = [];
-          for (const key of Object.keys(parsedData)) {
-            const styleObj = parsedData[key];
-            const invalidKeys = getInvalidStyleKeys(styleObj, VALID_STYLE_KEYS);
-
-            if (invalidKeys === null) {
-              win.alert(`形式が正しくありません`);
-              return;
-            }
-
-            if (invalidKeys.length > 0) {
-              win.alert(`許可されていないキーが含まれています:\n${invalidKeys.join(', ')}`);
-              return;
-            }
-
+        
+          // 各Styleオブジェクトのキー検証と保存
+          for (const [key, styleObj] of Object.entries(normalized)) {
+            const { error } = validateStyleObj(styleObj);
+            if (error) { win.alert(error); return; }
             savedStyles[key] = styleObj;
-            savedKeys.push(key);
           }
-
+        
+          const savedKeys = Object.keys(normalized);
           win.alert(`${savedKeys.join(', ')} に保存しました！`);
           bulkJsonInput.value = '';
-          initApplyButtonStyle();
+          savedKeys.forEach(updateApplyBtnColor);
         };
-
-        // APPLYボタン
+        
+        // ==============================
+        // applyJsonBtn（個別JSON適用）
+        // ==============================
+        
+        doc.getElementById('applyJsonBtn').onclick = async () => {
+          const jsonInput = doc.getElementById('jsonInput');
+          const jsonText = jsonInput.value.trim();
+        
+          if (!jsonText) {
+            win.alert('JSONデータを入力してください');
+            return;
+          }
+        
+          const { data, error } = parseStyleJson(jsonText);
+          if (error) { win.alert(error); jsonInput.value = ''; return; }
+        
+          let resolved = data;
+          const styleKeys = Object.keys(data).filter(k => k.startsWith('Style'));
+        
+          if (styleKeys.length > 0) {
+            if (styleKeys.length === 1 && Object.keys(data).length === 1) {
+              resolved = data[styleKeys[0]];
+            } else {
+              win.alert('個別のJSONを入力してください');
+              jsonInput.value = '';
+              return;
+            }
+          }
+        
+          // キー検証
+          const { error: validationError } = validateStyleObj(resolved);
+          if (validationError) { win.alert(validationError); jsonInput.value = ''; return; }
+        
+          const proceed = win.confirm('☆ JSONデータを反映します！');
+          if (!proceed) return;
+        
+          if (applyStyleData(resolved)) {
+            win.appConfig = resolved;
+            createMenus();
+            onetapUI.style.display = 'none';
+            jsonInput.value = '';
+          }
+        };
+        
+        // ==============================
+        // APPLYボタン（名前指定）
+        // ==============================
+        
         async function applyStyleByName(name) {
-          
           const proceed = win.confirm(`☆ ${name} を反映します！`);
           if (!proceed) return;
         
@@ -3225,58 +3233,14 @@
           }
         }
         
-        // jsonInputのAPPLYボタン
-        doc.getElementById('applyJsonBtn').onclick = async () => {
-          const jsonInput = doc.getElementById('jsonInput');
-          const jsonText = jsonInput.value.trim();
+        // ==============================
+        // スタイル適用
+        // ==============================
         
-          if (!jsonText) {
-            win.alert('JSONデータを入力してください');
-            return;
-          }
-        
-          try {
-            let data = JSON.parse(jsonText); // JSON構文チェック
-
-            const keys = Object.keys(data); // キーチェック
-
-            // Styleで始まるキーだけを抽出
-            const styleKeys = keys.filter(k => k.startsWith('Style'));
-
-            if (styleKeys.length > 0) {
-              if (styleKeys.length === 1 && keys.length === 1) {
-                // StyleX が1つだけ → 中身を使う
-                data = data[styleKeys[0]];
-              } else {
-                // Styleが複数、または Style以外と混在
-                win.alert('個別のJSONを入力してください');
-                jsonInput.value = '';
-                return;
-              }
-            }
-        
-            const proceed = win.confirm(`☆ JSONデータを反映します！`);
-            if (!proceed) return;
-        
-            if (applyStyleData(data)) {
-              win.appConfig = data;
-              createMenus();
-              onetapUI.style.display = 'none';
-              jsonInput.value = '';
-            }
-          } catch (e) {
-            win.alert('JSONの解析に失敗しました:\n' + e.message);
-            jsonInput.value = '';
-          }
-        };
-
-        // スタイル適用関数
         function applyStyleData(data) {
           const target = doc.getElementById('novelDisplay');
-          if (!target) {
-            win.alert('対象要素が見つかりません');
-            return false;
-          }
+          if (!target) { win.alert('対象要素が見つかりません'); return false; }
+        
           // color
           if (data.color) {
             const hex = data.color;
@@ -3286,7 +3250,8 @@
             const fgHex = doc.getElementById('fgHex');
             if (fgHex) fgHex.value = hex;
           }
-          // background
+        
+          // backgroundColor
           if (data.backgroundColor) {
             const hex = data.backgroundColor;
             applyStyle('background-color', hex);
@@ -3295,63 +3260,56 @@
             const bgHex = doc.getElementById('bgHex');
             if (bgHex) bgHex.value = hex;
           }
+        
           // scrollbar-color
           if (data.color && data.backgroundColor) {
             applyStyle('scrollbar-color', `${data.color} ${data.backgroundColor}`);
           }
+        
           updateContrast();
           updateColorHexDisplays();
-          if (data.fontSize) target.style.fontSize = data.fontSize;
-          if (data.fontWeight) target.style.fontWeight = data.fontWeight;
-          if (data.textShadow !== null && data.textShadow !== undefined) {
-            target.style.textShadow = data.textShadow > 0 ? `0 0 ${data.textShadow}px` : 'none';
-            target.dataset.textShadow = data.textShadow;
+        
+          if (data.fontSize)   target.style.fontSize   = data.fontSize;
+          if (data.fontWeight) target.style.fontWeight  = data.fontWeight;
+        
+          // fontShadow（保存キー）→ textShadow（CSSプロパティ）
+          if (data.fontShadow != null) {
+            target.style.textShadow = data.fontShadow > 0 ? `0 0 ${data.fontShadow}px` : 'none';
+            target.dataset.textShadow = data.fontShadow;
           }
+        
           if (data.fontFamily && fontSelect) {
             fontSelect.value = data.fontFamily;
             fontSelect.dispatchEvent(new Event('change'));
           }
         
-          // スライダーセッティングUIの状態反映
+          // スクロール設定の反映
           if (data.scrollSettings) {
             const s = data.scrollSettings;
-            const uiMap = {
-              scrollB:        { prop: 'checked', value: s.border },
-              scrollC:        { prop: 'checked', value: s.colorIn },
-              scrollS:        { prop: 'value',   value: s.shadow },
-              scrollRight:    { prop: 'checked', value: s.right },
-              scrollLeft:     { prop: 'checked', value: s.left },
-              scrollX:        { prop: 'value',   value: s.position },
-              scrollW:        { prop: 'value',   value: s.width },
-              scrollO:        { prop: 'value',   value: s.opacity },
-              scrollSpeedScale:{prop: 'value',   value: s.speedScale },
-              scrollHide:     { prop: 'checked', value: s.hideBall }
-            };
-            Object.entries(uiMap).forEach(([id, info]) => {
-              const el = doc.getElementById(id);
-              if (el) el[info.prop] = info.value;
-            });
+            applyScrollSettingsToUI(s);
         
-            // スライダースタイルは直接適用
+            // スライダースタイル
             if (s.border) {
               applyToSliders(el => {
                 el.style.border = '1px solid';
-                el.style.setProperty("background", "transparent", "important");
+                el.style.setProperty('background', 'transparent', 'important');
               });
             } else if (s.colorIn) {
               applyToSliders(el => {
                 el.style.border = 'none';
-                el.style.setProperty("background", "currentColor", "important");
+                el.style.setProperty('background', 'currentColor', 'important');
               });
             } else {
               applyToSliders(el => {
                 el.style.border = 'none';
-                el.style.setProperty("background", "transparent", "important");
+                el.style.setProperty('background', 'transparent', 'important');
               });
             }
         
             const shadowVal = Number(s.shadow) || 0;
-            const shadowStyle = shadowVal < 0 ? `inset 0 0 ${Math.abs(shadowVal)}px` : `0 0 ${shadowVal}px`;
+            const shadowStyle = shadowVal < 0
+              ? `inset 0 0 ${Math.abs(shadowVal)}px`
+              : `0 0 ${shadowVal}px`;
             applyToSliders(el => el.style.boxShadow = shadowStyle);
         
             const posVal = parseFloat(s.position);
@@ -3360,26 +3318,30 @@
                 el.style[el === scrollSliderRight ? 'right' : 'left'] = `${posVal}px`;
               });
             }
+        
             const widthVal = parseFloat(s.width);
-            if (!isNaN(widthVal)) {
-              applyToSliders(el => el.style.width = `${widthVal}px`);
-            }
+            if (!isNaN(widthVal)) applyToSliders(el => el.style.width = `${widthVal}px`);
+        
             const opacityVal = parseFloat(s.opacity);
             if (!isNaN(opacityVal) && opacityVal >= 0 && opacityVal <= 1) {
               applyToSliders(el => el.style.opacity = opacityVal);
             }
+        
             const speedVal = parseFloat(s.speedScale);
             if (!isNaN(speedVal)) {
               speedScale = Math.max(0, Math.min(20, speedVal));
               syncScrollSpeed(scrollSliderRight.value);
             }
+        
             const [height, bottom] = s.hideBall ? ['200vh', '-98vh'] : ['210vh', '-108vh'];
             applyToSliders(el => {
               el.style.height = height;
               el.style.bottom = bottom;
             });
+        
             updateDisplay();
           }
+        
           updateControls();
           return true;
         }
