@@ -2046,7 +2046,7 @@
               ${prop}: ${value};
             }`;
             
-            if (prop === 'background-color') updateThemeColor();
+            if (prop === 'background-color') updateHtmlBackgroundColor();
             updateScrollbarColor();
           };
           
@@ -2064,15 +2064,9 @@
             }`;
           };
 
-          // theme-colorを更新する関数
-          const updateThemeColor = () => {
-            let el = doc.querySelector('meta[name="theme-color"]');
-            if (!el) {
-              el = doc.createElement('meta');
-              el.name = 'theme-color';
-              doc.head.appendChild(el);
-            }
-            el.content = colorState.currentBg;
+          // htmlタグのbackground-colorを更新する関数
+          const updateHtmlBackgroundColor = () => {
+            doc.documentElement.style.backgroundColor = colorState.currentBg;
           };
       
           const updateSwatch = (swatch, current, saved) => {
